@@ -1,0 +1,10 @@
+<main>
+	<form action="/stocks" method="POST">
+		<label for="stock_ticker">Look for a stock ticker: </label>
+		<input type="text" name="stock_ticker" id="stock_ticker" />
+
+		<button type="submit" value="search">Search</button>
+	</form>
+	<h1>{{stock}}</h1>
+	<h2>${{price}}</h2>
+</main>

@@ -1,0 +1,13 @@
+<h1>Paper Trading Stock Website</h1>
+<main>
+	<form action="/stocks" method="POST">
+		<label for="stock_ticker">Look for a stock ticker: </label>
+		<input type="text" name="stock_ticker" id="stock_ticker" />
+
+		<button type="submit" value="search">Search</button>
+	</form>
+
+	{{#if hasErrors}}
+	<p>{{error}}</p>
+	{{/if}}
+</main>
