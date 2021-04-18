@@ -1,0 +1,24 @@
+{
+  "name": "cs-546-final-project",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "seed": "node ./tasks/seed.js",
+    "start": "node app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/markpipko/CS-546-Final-Project.git"
+  },
+  "author": "Edward Yaroslavsky, Mark Pipko, Julia Nelson, Christopher Moon",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/markpipko/CS-546-Final-Project/issues"
+  },
+  "homepage": "https://github.com/markpipko/CS-546-Final-Project#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mongodb": "^3.6.6"
+  }
+}
