@@ -1,5 +1,4 @@
-const yahooStockPrices = require("yahoo-stock-prices");
-
+const finvizor = require("finvizor");
 const exportedMethods = {
 	async getStock(ticker) {
 		if (!ticker) {
@@ -12,7 +11,7 @@ const exportedMethods = {
 		if (!ticker) {
 			throw "Ticker is just spaces";
 		}
-		const data = await yahooStockPrices.getCurrentPrice(ticker);
+		const data = await finvizor.stock(ticker);
 		if (!data) {
 			throw "Ticker not found";
 		}
