@@ -100,6 +100,7 @@ async function updateUser(id, updatedUser) {
 }
 
 module.exports = {
+    getAllUsers,
     getUserById,
     addUser,
     removeUser,
