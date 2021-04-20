@@ -18,7 +18,7 @@ router.post('/login', async (req, res) => {
 	let match = bcrypt.compare(password, 'HASHED_PW_FROM DB');
 	if they match then set req.session.user and then redirect them to the login page
 	 I will just do that here */
-  req.session.user = { firstName: req.body.username, lastName: req.body.password, userId: 123 };
+  req.session.user = { email: req.body.email }; //TODO: include password and clear cookie data?
   res.redirect('/private');
 });
 
