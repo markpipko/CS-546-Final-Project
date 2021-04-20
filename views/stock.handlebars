@@ -12,4 +12,18 @@
 	<p>52 Week High: ${{stock.range52W.high}}</p>
 	<p>52 Week Low: ${{stock.range52W.low}}</p>
 	<p>Volume: {{stock.volume}}</p>
+
+
+	<form>
+		<label for="buy">Buy</label>
+		<input type="radio" id="buy" name="transaction" value="buy">
+		<label for="sell">Sell</label>
+		<input type="radio" id="sell" name="transaction" value="sell"><br>
+
+		<label for="amount">Shares: </label>
+		<input type="number" min="1" id="amount" />
+		<label for="price">Price: </label>
+		<input type="number" id="price" min="0.01" step="any" />
+		<button type="submit">Submit</button>
+	</form>
 </main>
