@@ -1,0 +1,13 @@
+<h1>View Buy/Sell History</h1>
+<main>
+	<form action="/stockHistory" method="POST">
+		<label for="user_email">Find History: </label>
+		<input type="text" name="user_email" id="user_email" />
+
+		<button type="submit" value="Submit">Submit</button>
+	</form>
+
+	{{#if hasErrors}}
+	<p>{{error}}</p>
+	{{/if}}
+</main> 
