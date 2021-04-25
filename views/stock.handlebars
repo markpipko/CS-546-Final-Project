@@ -1,19 +1,23 @@
 <main>
-	<form action="/stocks" method="POST">
+	<form action="/private/stocks" method="POST" id="search_stock">
 		<label for="stock_ticker">Look for a stock ticker: </label>
 		<input type="text" name="stock_ticker" id="stock_ticker" />
 
 		<button type="submit" value="search">Search</button>
 	</form>
-	<h1>{{stock.name}} ({{stock.ticker}})</h1>
-	<h2>${{stock.price}}</h2>
-	<p>Exchange: {{stock.exchange}}</p>
-	<p>Industry: {{stock.industry}}</p>
-	<p>52 Week High: ${{stock.range52W.high}}</p>
-	<p>52 Week Low: ${{stock.range52W.low}}</p>
-	<p>Volume: {{stock.volume}}</p>
-
-
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<script src="/public/js/stock.js" async defer></script>
+	<div id="error_container"></div>
+	<div id="stock_info">
+		<h1>{{stock.name}} ({{stock.ticker}})</h1>
+		<h2>${{stock.price}}</h2>
+		<p>Exchange: {{stock.exchange}}</p>
+		<p>Industry: {{stock.industry}}</p>
+		<p>52 Week High: ${{stock.range52W.high}}</p>
+		<p>52 Week Low: ${{stock.range52W.low}}</p>
+		<p>Volume: {{stock.volume}}</p>
+	</div>
 	<form>
 		<label for="buy">Buy</label>
 		<input type="radio" id="buy" name="transaction" value="buy">

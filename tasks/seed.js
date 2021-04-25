@@ -19,6 +19,7 @@ async function main() {
     const myUser = await users.addUser(user.firstName, user.lastname, user.email, user.age, user.password, user.cash, user.stocksPurchased);
 
     console.log('Done seeding database');
+
     await db.serverConfig.close();
 }
 

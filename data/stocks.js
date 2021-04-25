@@ -12,6 +12,7 @@ const exportedMethods = {
 		if (!ticker) {
 			throw "Ticker is just spaces";
 		}
+		ticker = ticker.toUpperCase();
 		const data = await finvizor.stock(ticker);
 		if (!data) {
 			throw "Ticker not found";
@@ -20,8 +21,8 @@ const exportedMethods = {
 		if (!yahoo_data) {
 			throw "Ticker not found";
 		}
-		data.price = yahoo_data;
 
+		data.price = yahoo_data;
 		return data;
 	},
 };
