@@ -1,0 +1,39 @@
+{{!-- 
+form for buy
+form for sell  
+form to view the history    
+      --}}
+
+<h1>Buy or Sell a Stock:</h1>
+<main>
+	<form action="/buysell" method="POST">                 {{!-- should action be buysell or p --}}      
+
+        <label for="transaction_type">Transaction Type:</label><br>
+        <input type="radio" id="Buy" name="transaction_type" value="Buy" />
+        <label for="Buy">Buy</label><br>
+        <input type="radio" id="Sell" name="transaction_type" value="Sell" />
+        <label for="Sell">Sell</label><br>
+
+        <label for="stock_ticker">Stock Ticker:</label><br>
+        <input type="text" id="stock_ticker" name="stock_ticker"><br>
+
+
+        <label for="amount">Amount of Shares:</label><br>
+        <input type="integer" id="amount" name="amount"><br>
+
+        
+        <label for="date">Date:</label><br>
+        <input type="Date" id="date" name="date"><br>
+        {{!-- can i add the value of stock share on purchase time --}}
+		<button type="submit" value="Submit"> Submit</button>
+	</form>
+
+
+	{{!-- show insert successful or not --}}
+
+    {{!-- add error message --}}
+
+</main>
+
+
+	{{!-- where does this submit to ??? --}}
