@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/home', async (req, res) => {
-    res.render("home", { title: "Home" });
+    res.render("home", { title: "Home", name: req.session.user.firstName });
 });
 
 //Taken from routes/stocks.js 
