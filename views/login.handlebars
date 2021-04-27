@@ -10,3 +10,12 @@
     </label>
     <button type="submit">Submit</button>
 </form>
+
+{{#if hasErrors}}
+<p>{{error}}</p>
+{{/if}}
+
+<div>
+    New User? Sign up here:
+    <a href="/signup">Sign Up</a>
+</div>
