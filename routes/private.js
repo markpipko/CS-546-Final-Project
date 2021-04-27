@@ -7,8 +7,8 @@ router.get("/", async (req, res) => {
 	res.redirect("/private/home");
 });
 
-router.get("/home", async (req, res) => {
-	res.render("home", { title: "Home" });
+router.get('/home', async (req, res) => {
+    res.render("home", { title: "Home", name: req.session.user.firstName });
 });
 
 router.post("/find", async (req, res) => {
