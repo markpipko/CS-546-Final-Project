@@ -23,7 +23,6 @@ router.post("/", async (req, res) => {
 
 	try {
 		const stockInfo = await stocksData.getStock(ticker);
-
 		res.render("stock", { title: ticker.toUpperCase(), stock: stockInfo });
 	} catch (e) {
 		return res.render("home", {

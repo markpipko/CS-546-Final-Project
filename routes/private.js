@@ -1,20 +1,38 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
 const data = require("../data");
 const stocksData = data.stocks;
 
-router.get('/', async (req, res) => {
-    res.redirect("/private/home");
+router.get("/", async (req, res) => {
+	res.redirect("/private/home");
 });
 
 router.get('/home', async (req, res) => {
     res.render("home", { title: "Home", name: req.session.user.firstName });
 });
 
-//Taken from routes/stocks.js 
+router.post("/find", async (req, res) => {
+	let ticker = req.body["stock_ticker"];
+	if (!ticker) {
+		return res.json({ error: "Please input a ticker" });
+	}
+	ticker = ticker.trim();
+	if (!ticker) {
+		return res.json({ error: "Please input a ticker" });
+	}
+
+	try {
+		const stockInfo = await stocksData.getStock(ticker);
+		res.json({ stock: stockInfo });
+	} catch (e) {
+		return res.json({ error: "Ticker not found" });
+	}
+});
+
+//Taken from routes/stocks.js
 //TODO: routes/stocks.js can be deleted
 router.post("/stocks", async (req, res) => {
-    let ticker = req.body["stock_ticker"];
+	let ticker = req.body["stock_ticker"];
 	if (!ticker) {
 		return res.render("home", {
 			title: "Home",
