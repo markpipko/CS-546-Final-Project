@@ -3,9 +3,39 @@ const UserMetrics = mongoCollections.UserMetrics;
 const users = mongoCollections.users;
 const buySell = mongoCollections.BuySellHistory;
 const stocks = mongoCollections.Stocks;
-let { ObjectId } = require('mongodb');
+var yahooStockPrices = require('yahoo-stock-prices');
+var finviz = require('finviz');
+//let { ObjectId } = require('mongodb');
+
+function checkStr(str){
+    if(str == undefined){
+        throw 'All fields need to have valid values'
+    }
+    if(typeof str != 'string'){
+        throw 'Input must be string'
+    }
+    let empty = true
+    for(var i of str){
+        if(i != ' '){
+            empty = false
+            break
+        }
+    }
+    if(empty){
+        throw 'Input cannot be empty string'
+    }
+}
 
 const create = async function create(email, totalReturn, percentGrowth, volatility){
+    checkStr(email)
+    if(!totalReturn || !percentGrowth || !volatility){
+        throw 'Input is undefined'
+    }
+
+    if(isNaN(totalReturn) || isNaN(percentGrowth) || isNaN(volatility)){
+        throw 'Must be of type number'
+    }
+
     const metricsCollection = await UserMetrics()
 
     let newMetric = {
@@ -26,9 +56,47 @@ const create = async function create(email, totalReturn, percentGrowth, volatili
 }
 
 const get = async function get(email){
+    checkStr(email)
     const metricsCollection = await UserMetrics()
     const metric = await metricsCollection.findOne({ email: email});
     return metric
+}
+
+function getDate(date){
+    return `${date.getFullYear()}-${date.getMonth()+1}-${date.getDate()+1}`
+}
+
+async function getVolatility(stocksPurchased){
+    var stocksOwned = 0
+    var totalVolatility = 0
+    for(var i = 0; i < stocksPurchased.length; i++){
+        let ticker = stocksPurchased[i].ticker
+        let date = stocksPurchased[i].datePurchased
+        stocksOwned += stocksPurchased[i].amount
+        let today = new Date()
+        const prices = await yahooStockPrices.getHistoricalPrices(date.getMonth(), date.getDate(), date.getFullYear(), today.getMonth(), today.getDate(), today.getFullYear(), ticker, '1d')
+        
+        var dailyReturns
+        for(var k = 1; k < prices.length; k++){
+            dailyReturns[k-1] = (prices[k] - prices[k-1]) / prices[k-1]
+        }
+
+        var mean = 0
+        for(var k = 0; k < dailyReturns.length; k++){
+            mean += dailyReturns[k]
+        }
+        mean = mean / dailyReturns.length
+
+        var sd = 0
+        for(var k = 0; k < dailyReturns.length; k++){
+            sd += Math.pow(dailyReturns[k] - mean, 2)
+        }
+        sd = Math.sqrt(sd/dailyReturns.length) 
+        sd = sd * Math.sqrt(dailyReturns.length)
+
+        totalVolatility += sd * stocksPurchased[i].amount
+    }
+    return totalVolatility/stocksOwned
 }
 
 async function getReturns(email){
@@ -56,31 +124,38 @@ async function getReturns(email){
     }
 
     for(var i = 0; i < userList.length; i++){
-        let ticker = userList[i].stocksPurchased.ticker
-        for(var k = 0; k < stocks.length; k++){
-            if(ticker == stocks[k].ticker){
-                owned += stocks[k].value * person.stocksPurchased[i].amount
+        if(userList[i].email = email){
+            person = userList[i]
+            for(var j = 0; j < person.stocksPurchased.length; j++){
+                let ticker = person.stocksPurchased[j].ticker
+                const data = await yahooStockPrices.getCurrentPrice(ticker)
+                owned += data * person.stocksPurchased[j].amount
             }
         }
     }
 
+    let volatility = getVolatility(person.stocksPurchased)
+
     let totalReturn = (sold + owned) - bought
     let percentGrowth = totalReturn / bought * 100
-    return [totalReturn, percentGrowth]
+    return [totalReturn, percentGrowth, volatility]
 }
 
 const update = async function update(email){
+    checkStr(email)
     const metricsCollection = await UserMetrics()
 
     returns =  await getReturns(email);
     let totalReturn = returns[0]
     let percentGrowth = returns[1]
+    let volatility = returns[2]
 
     let metric = await get(email)
     let newMetric = {
         email: metric.email,
         totalReturn: totalReturn,
-        percentGrowth: percentGrowth
+        percentGrowth: percentGrowth,
+        volatility: volatility
     }
 
     const updatedInfo = await metricsCollection.updateOne(
@@ -98,6 +173,7 @@ const update = async function update(email){
 }
 
 const remove = async function remove(email){
+    checkStr(email)
     const metricsCollection = await UserMetrics()
     const deletionInfo  = await metricsCollection.deleteOne({ email: email });
 
