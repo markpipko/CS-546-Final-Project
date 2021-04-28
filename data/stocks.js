@@ -1,30 +1,37 @@
-const finvizor = require("finvizor");
-const yahooStockPrices = require("yahoo-stock-prices");
-const exportedMethods = {
-	async getStock(ticker) {
-		if (!ticker) {
-			throw "Ticker not provided";
-		}
-		if (typeof ticker != "string") {
-			throw "Ticker not of type string";
-		}
-		ticker = ticker.trim();
-		if (!ticker) {
-			throw "Ticker is just spaces";
-		}
-		ticker = ticker.toUpperCase();
-		const data = await finvizor.stock(ticker);
-		if (!data) {
-			throw "Ticker not found";
-		}
-		const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker);
-		if (!yahoo_data) {
-			throw "Ticker not found";
-		}
+const express = require("express");
+const router = express.Router();
+const data = require("../data");
+const stocksData = data.stocks;
 
-		data.price = yahoo_data;
-		return data;
-	},
-};
+router.post("/", async (req, res) => {
+	let ticker = req.body["stock_ticker"];
+	if (!ticker) {
+		return res.render("home", {
+			title: "Home",
+			hasErrors: true,
+			error: "Please input a ticker",
+		});
+	}
+	ticker = ticker.trim();
+	if (!ticker) {
+		return res.render("home", {
+			title: "Home",
+			hasErrors: true,
+			error: "Please input a ticker",
+		});
+	}
 
-module.exports = exportedMethods;
+	try {
+		const stockInfo = await stocksData.getStock(ticker);
+		const rec = await stocksData.buyOrSell(ticker);
+		res.render("stock", { title: ticker.toUpperCase(), stock: stockInfo, recommendation: rec});
+	} catch (e) {
+		return res.render("home", {
+			title: "Home",
+			hasErrors: true,
+			error: "Ticker not found",
+		});
+	}
+});
+
+module.exports = router;
