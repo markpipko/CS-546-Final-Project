@@ -2,14 +2,21 @@ const express = require("express");
 const router = express.Router();
 const data = require("../data");
 const stocksData = data.stocks;
+const userMetrics = data.userMetrics;
 
 router.get("/", async (req, res) => {
 	res.redirect("/private/home");
 });
 
 router.get('/home', async (req, res) => {
-    res.render("home", { title: "Home", name: req.session.user.firstName });
+	const metrics = await userMetrics.update(req.session.user.email)
+    res.render("home", { title: "Home", name: req.session.user.firstName, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility});
 });
+
+router.get('/update', async (req,res) => {
+	const metrics = await userMetrics.update(req.session.user.email)
+	res.json({totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility})
+})
 
 router.post("/find", async (req, res) => {
 	let ticker = req.body["stock_ticker"];
