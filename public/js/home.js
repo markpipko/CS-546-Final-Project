@@ -12,8 +12,8 @@ refresh.click(function(event) {
     };
 
     $.ajax(requestConfig).then(function(responseMessage) {
-        totalReturn.innerHTML = responseMessage.totalReturn
-        percentGrowth.innerHTML = responseMessage.percentGrowth
-        volatility.innerHTML = responseMessage.volatility
+        totalReturn.innerHTML = "Total Return: " + responseMessage.totalReturn
+        percentGrowth.innerHTML = "Total Growth: " + responseMessage.percentGrowth
+        volatility.innerHTML = "Volatility: " + responseMessage.volatility
     })
 })
