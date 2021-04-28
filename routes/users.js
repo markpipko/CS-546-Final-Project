@@ -3,7 +3,9 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const saltRounds = 16;
 const data = require("../data");
+const { userMetrics } = require('../config/mongoCollections');
 const users = data.users;
+const userMetrics = data.userMetrics;
 
 router.get('/', async (req, res) => {
     res.render("login", { title: "Login" });
@@ -21,6 +23,7 @@ router.post("/signup", async (req, res) => {
   const { firstName, lastName, email, password, age, cash } = req.body;
   const hash = await bcrypt.hash(password, saltRounds);
   let user = await users.addUser(firstName, lastName, email, parseInt(age), hash, Number(cash), []);
+  let userMetrics = await userMetrics.create(user.email, 0, 0, 0)
   req.session.user = { email: email };
   res.redirect("/private");
 });

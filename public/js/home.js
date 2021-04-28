@@ -1,0 +1,19 @@
+const userMetrics = data.userMetrics;
+const totalReturn = document.getElementById("totalReturn");
+const percentGrowth = document.getElementById("percentGrowth");
+const volatility = document.getElementById("volatility");
+const refresh = document.getElementById("refresh");
+
+refresh.click(function(event) {
+    event.preventDefault();
+    var requestConfig = {
+        method: 'GET',
+        url: `/private/update`
+    };
+
+    $.ajax(requestConfig).then(function(responseMessage) {
+        totalReturn.innerHTML = responseMessage.totalReturn
+        percentGrowth.innerHTML = responseMessage.percentGrowth
+        volatility.innerHTML = responseMessage.volatility
+    })
+})
