@@ -50,12 +50,12 @@ const create = async function create(
 		volatility: volatility,
 	};
 
-	const insertInfo = await UserMetrics.insertOne(newMetric);
+	const insertInfo = await metricsCollection.insertOne(newMetric);
 	if (insertInfo.insertedCount === 0) throw "Could not add metric";
 
-	const newId = insertInfo.insertedId;
+	//const newId = insertInfo.insertedId;
 
-	const metric = await get(newId.toString());
+	const metric = await get(email);
 	metric._id = metric._id.toString();
 	return metric;
 };
