@@ -1,6 +1,7 @@
 const stocksRoutes = require("./stocks");
 const privateRoutes = require("./private");
 const userRoutes = require("./users");
+const historyRoutes = require("./stockHistory");
 
 const constructorMethods = (app) => {
 	app.use("/", userRoutes);
@@ -11,6 +12,8 @@ const constructorMethods = (app) => {
 		res.render("home", { title: "Home" });
 	});*/
 	app.use("/stocks", stocksRoutes);
+
+	app.use("/history", historyRoutes);
 
 	app.use("*", (req, res) => {
 		res.sendStatus(404);

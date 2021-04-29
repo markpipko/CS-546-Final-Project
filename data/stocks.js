@@ -67,16 +67,16 @@ const exportedMethods = {
 		var closingPrices
 		var movingAverage
 		for(var i = 0; i < prices.length; i++){
-			closingPrices[i] = prices[i].close
+			closingPrices[i] = prices[i].adjclose
 			movingAverage[i] = getMean(closingPrices)
 		}
 		var sd = getSD(closingPrices)
 
 		var upperBand
 		var lowerBand
-		for(var i = 0; i < closingPrices.length; i++){
-			upperBand[i] = closingPrices[i] + sd*2
-			lowerBand[i] = closingPrices[i] - sd*2
+		for(var i = 0; i < movingAverage.length; i++){
+			upperBand[i] = movingAverage[i] + sd*2
+			lowerBand[i] = movingAverage[i] - sd*2
 		}
 		const data = await finvizor.stock(ticker);
 		const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker);
