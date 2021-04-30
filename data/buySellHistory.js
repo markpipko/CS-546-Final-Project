@@ -60,7 +60,7 @@ async function addHistory(email, transaction, ticker, value, amount, date){
       if (!updateInfo.matchedCount && !updateInfo.modifiedCount)
         throw 'Could not add transaction';
 
-    let user = await getHistoryByEmail(email)
+    user = await getHistoryByEmail(email)
 
     return user
 }
