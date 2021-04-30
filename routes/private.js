@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const data = require("../data");
+const { giveRecommendation } = require("../data/stocks");
 const stocksData = data.stocks;
 const userMetrics = data.userMetrics;
 
@@ -9,8 +10,18 @@ router.get("/", async (req, res) => {
 });
 
 router.get('/home', async (req, res) => {
-	const metrics = await userMetrics.update(req.session.user.email)
-    res.render("home", { title: "Home", name: req.session.user.firstName, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility});
+	//TODO: uncomment later
+	//const metrics = await userMetrics.update(req.session.user.email)
+	let userStocks = req.session.user.stocksPurchased;
+	let recList = [];
+	if (userStocks.length != 0) {
+		recList = await stocksData.giveRecommendation(userStocks);
+	}
+	else {
+		recList.push("AAPL");
+		recList.push("T");
+	}
+    res.render("home", { title: "Home", name: req.session.user.firstName, recList: recList/*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility*/});
 });
 
 router.get('/update', async (req,res) => {

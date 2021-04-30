@@ -1,8 +1,8 @@
 const mongoCollections = require("../config/mongoCollections");
-const UserMetrics = mongoCollections.UserMetrics;
+const UserMetrics = mongoCollections.userMetrics;
 const users = mongoCollections.users;
-const buySell = mongoCollections.BuySellHistory;
-const stocks = mongoCollections.Stocks;
+const buySell = mongoCollections.buySellHistory;
+const stocks = mongoCollections.stocks;
 var yahooStockPrices = require("yahoo-stock-prices");
 var finviz = require("finvizor");
 //let { ObjectId } = require('mongodb');
@@ -118,12 +118,18 @@ async function getReturns(email) {
 	const buySellHistory = await buySell();
 	const stockList = await stocks();
 
+	let bshData = await buySellHistory.find({}).toArray();
+
 	let person;
-	for (var i = 0; i < buySellHistory.length; i++) {
-		if (email == buySellHistory[i].email) {
-			person = buySellHistory[i];
+	for (var i = 0; i < bshData.length; i++) {
+		if (email == bshData[i].email) {
+			person = bshData[i];
 		}
 	}
+
+	//TODO: Delete this later
+	person = {}; //For testing
+	person.history = []; //For testing
 
 	let bought = 0;
 	let sold = 0;
@@ -138,7 +144,7 @@ async function getReturns(email) {
 	}
 
 	for (var i = 0; i < userList.length; i++) {
-		if ((userList[i].email = email)) {
+		if ((userList[i].email == email)) {
 			person = userList[i];
 			for (var j = 0; j < person.stocksPurchased.length; j++) {
 				let ticker = person.stocksPurchased[j].ticker;
