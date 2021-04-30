@@ -13,6 +13,13 @@
 	<p id="percentGrowth">Total Growth: {{{percentGrowth}}}% </p>
 	<p id="volatility">Volatility: {{{volatility}}} </p>
 
+	<h3>Recommendations</h3>
+	<ul>
+		{{#each recList}}
+			<li>{{this}}</li>
+		{{/each}}
+	</ul>
+
 	<button id="refresh"> Refresh </button>
 
 	<div>
