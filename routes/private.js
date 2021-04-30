@@ -3,6 +3,7 @@ const router = express.Router();
 const data = require("../data");
 const stocksData = data.stocks;
 const userMetrics = data.userMetrics;
+const historyData = data.buySellHistory;
 
 router.get("/", async (req, res) => {
 	res.redirect("/private/home");
@@ -16,6 +17,11 @@ router.get('/home', async (req, res) => {
 router.get('/update', async (req,res) => {
 	const metrics = await userMetrics.update(req.session.user.email)
 	res.json({totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility})
+})
+
+router.get("/stockHistory", async (req, res) => {
+	const trade = await historyData.getHistoryByEmail(req.session.user.email);
+    res.render("stockHistory", {title: "History", trade: trade.history})
 })
 
 router.post("/find", async (req, res) => {

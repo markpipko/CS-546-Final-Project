@@ -3,7 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const saltRounds = 16;
 const data = require("../data");
-const { userMetrics } = require('../config/mongoCollections');
+//const { userMetrics } = require('../config/mongoCollections'); Do we need this?
 const users = data.users;
 const userMetrics = data.userMetrics;
 
