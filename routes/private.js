@@ -14,20 +14,24 @@ router.get("/", async (req, res) => {
 router.get("/home", async (req, res) => {
 	//TODO: uncomment later
 	//const metrics = await userMetrics.update(req.session.user.email)
-	const user = await users.getUserById(req.session.user.email) //should be getUserByEmail
-	let userStocks = req.session.user.stocksPurchased;
-	let recList = [];
-	// if (userStocks.length != 0) {
-	// 	recList = await stocksData.giveRecommendation(userStocks);
-	// } else {
-	// 	recList.push("AAPL");
-	// 	recList.push("T");
-	// }
-	res.render("home", {
-		title: "Home",
-		name: req.session.user.firstName,
-		recList: recList /*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility, stocks: user.stocksPurchased .*/,
-	});
+	try {
+		const user = await users.getUserByEmail(req.session.user.email); //should be getUserByEmail
+		let userStocks = req.session.user.stocksPurchased;
+		let recList = [];
+		// if (userStocks.length != 0) {
+		// 	recList = await stocksData.giveRecommendation(userStocks);
+		// } else {
+		// 	recList.push("AAPL");
+		// 	recList.push("T");
+		// }
+		res.render("home", {
+			title: "Home",
+			name: req.session.user.firstName,
+			recList: recList /*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility, stocks: user.stocksPurchased .*/,
+		});
+	} catch (e) {
+		res.render("login", { hasErrors: true, error: e });
+	}
 });
 
 router.get("/update", async (req, res) => {
