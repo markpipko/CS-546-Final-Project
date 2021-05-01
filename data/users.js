@@ -44,11 +44,6 @@ async function addUser(firstName, lastName, email, age, password, cash, stocksPu
     return getUserById(newInsertInformation.insertedId);
 }
 
-function hashPassword(password) {
-    //TODO: implement hashing for passwords
-    return true;
-}
-
 function isValidEmail(email) {
     //TODO: check if email is valid
 }
