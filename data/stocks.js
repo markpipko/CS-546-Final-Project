@@ -1,6 +1,9 @@
 const finvizor = require("finvizor");
 const yahooStockPrices = require("yahoo-stock-prices");
 const axios = require("axios");
+const mongoCollections = require("../config/mongoCollections");
+const users = mongoCollections.users;
+let { ObjectId } = require("mongodb");
 
 function getMean(arr) {
 	if (!arr) {
@@ -79,6 +82,121 @@ const exportedMethods = {
 		return data;
 	},
 
+	async buy(email, ticker, quantity) {
+		if (!email) {
+			throw "Email not provided";
+		}
+		if (typeof email != "string") {
+			throw "Email not of type string";
+		}
+		email = email.trim();
+		if (!email) {
+			throw "Email is empty";
+		}
+
+		if (!ticker) {
+			throw "Ticker not provided";
+		}
+		if (typeof ticker != "string") {
+			throw "Ticker not of type string";
+		}
+		ticker = ticker.trim();
+		if (!ticker) {
+			throw "Ticker is just spaces";
+		}
+		ticker = ticker.toUpperCase();
+
+		if (!quantity) {
+			throw "Quantity not provided";
+		}
+		if (typeof quantity != "string") {
+			throw "Quantity not of type string";
+		}
+		quantity = quantity.trim();
+		if (!quantity) {
+			throw "Email is empty";
+		}
+		const userCollection = await users();
+		const user = await userCollection.findOne({ email: email });
+
+		if (!user) {
+			throw "User not found";
+		}
+
+		const price = await yahooStockPrices.getCurrentPrice(ticker);
+		if (!price) {
+			throw "Ticker not found";
+		}
+		let total_amount = parseFloat(price.toFixed(2)) * parseInt(quantity);
+		if (user.cash < total_amount) {
+			throw "Not enough cash available";
+		}
+		let stocksPurchased = user.stocksPurchased;
+		if (!stocksPurchased) {
+			throw "Stocks purchases could not be found";
+		}
+		let transactionDetails = {};
+		let index = 0;
+		for (let i = 0; i < stocksPurchased.length; i++) {
+			if (stocksPurchased[i]["ticker"] == ticker) {
+				index = i;
+				transactionDetails = stocksPurchased[i];
+			}
+		}
+		if (Object.keys(transactionDetails) != 0) {
+			let sum =
+				parseFloat(transactionDetails.purchaseValue) *
+					parseInt(transactionDetails.amount) +
+				total_amount;
+			let updatedValue =
+				sum / (transactionDetails.amount + parseInt(quantity)).toFixed(2);
+
+			let updatedAmount =
+				parseInt(quantity) + parseInt(transactionDetails.amount);
+
+			let updatedTransaction = {
+				_id: transactionDetails._id,
+				ticker: ticker,
+				amount: updatedAmount,
+				purchaseValue: updatedValue,
+				datePurchased: transactionDetails.datePurchased,
+			};
+			let newUser = user;
+			newUser.cash -= total_amount.toFixed(2);
+			newUser.stocksPurchased[index] = updatedTransaction;
+
+			let updateInfo = await userCollection.updateOne(
+				{ email: email },
+				{ $set: newUser }
+			);
+			if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+				throw "Transaction could not be processed";
+			}
+			return 1;
+		} else {
+			let month = new Date().getMonth();
+			let day = new Date().getDay();
+			let year = new Date().getFullYear();
+			transactionDetails = {
+				_id: new ObjectId(),
+				ticker: ticker,
+				amount: parseInt(quantity),
+				purchaseValue: parseFloat(price.toFixed(2)),
+				datePurchased: `${month}/${day}/${year}`,
+			};
+			let newUser = user;
+			newUser.cash -= total_amount.toFixed(2);
+			newUser.stocksPurchased.push(transactionDetails);
+			let updateInfo = await userCollection.updateOne(
+				{ email: email },
+				{ $set: newUser }
+			);
+			if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+				throw "Transaction could not be processed";
+			}
+			return 1;
+		}
+	},
 	async buyOrSell(ticker) {
 		if (!ticker) {
 			throw "Ticker not provided";

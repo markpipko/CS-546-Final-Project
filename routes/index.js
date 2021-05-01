@@ -1,4 +1,3 @@
-const stocksRoutes = require("./stocks");
 const privateRoutes = require("./private");
 const userRoutes = require("./users");
 
@@ -10,7 +9,6 @@ const constructorMethods = (app) => {
 	/*app.get("/home", (req, res) => {
 		res.render("home", { title: "Home" });
 	});*/
-	app.use("/stocks", stocksRoutes);
 
 	app.use("*", (req, res) => {
 		res.sendStatus(404);

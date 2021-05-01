@@ -1,13 +1,12 @@
 <link rel="stylesheet" href="/public/css/stocks.css">
 <main>
-	<form id="search_stock">
+	<form action="/private/stocks" method="POST" id="search_stock">
 		<label for="stock_ticker">Look for a stock ticker: </label>
 		<input type="text" name="stock_ticker" id="stock_ticker" />
 
-		<button type="submit" value="search">Search</button>
+		<button type="submit" value="search" id="search_button">Search</button>
 	</form>
 	<div id="error_container"></div>
-	<p id="loading" hidden>Loading</p>
 	<div id="stock_info">
 		<h1>{{stock.name}} ({{stock.ticker}})</h1>
 		{{#ifEquals status 1}}
@@ -21,8 +20,8 @@
 		{{/ifEquals}}
 		<form id="refresh">
 			<label for="temp_ticker" hidden></label>
-			<input type="text" name="temp_ticker" id="temp_ticker" value={{stock.ticker}} hidden />
-			<button type="submit">Refresh</button>
+			<input type="text" name="temp_ticker" id="temp_ticker" value={{stock.ticker}} />
+			<button type="submit" id="refresh_button">Refresh</button>
 		</form>
 		<p>Exchange: {{stock.exchange}}</p>
 		<p>Industry: {{stock.industry}}</p>
@@ -47,14 +46,17 @@
 
 		<label for="amount">Shares: </label>
 		<input type="number" min="1" id="amount" />
-		{{!-- <label for="price">Price: </label>
-		<input type="number" id="price" min="0.01" step="any" /> --}}
-		<button type="submit">Submit</button>
+		<button type="submit" id="transaction_submit">Submit</button>
 	</form>
+	<p id="disclaimer">Due to periods of market volatility, the current displayed price may not reflect the price that
+		the transaction
+		will
+		use. </p>
 	<div id="error_container2" hidden></div>
 	<a href="/private" id="homeLink">Back to home page</a>
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+	<script src="/public/js/jquery.blockUI.js"></script>
 	<script src="/public/js/stock.js"></script>
 
 </main>
