@@ -34,7 +34,7 @@ router.get("/home", async (req, res) => {
 	}
 });
 
-router.get("/update", async (req, res) => {
+router.post("/update", async (req, res) => {
 	const metrics = await userMetrics.update(req.session.user.email);
 	res.json({
 		totalReturn: metrics.totalReturn,
@@ -42,6 +42,12 @@ router.get("/update", async (req, res) => {
 		volatility: metrics.volatility,
 	});
 });
+
+router.post("/graph", async(req, res) => {
+	console.log(req.data)
+	const data = await stocksData.getGraphData(req.data.ticker, req.data.subtract)
+	res.json({chart: data})
+})
 
 router.get("/stockHistory", async (req, res) => {
 	const trade = await historyData.getHistoryByEmail(req.session.user.email);
