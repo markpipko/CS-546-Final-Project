@@ -4,6 +4,7 @@ const data = require("../data");
 const { giveRecommendation } = require("../data/stocks");
 const stocksData = data.stocks;
 const userMetrics = data.userMetrics;
+const users = data.users;
 const historyData = data.buySellHistory;
 
 router.get("/", async (req, res) => {
@@ -15,12 +16,12 @@ router.get("/home", async (req, res) => {
 	//const metrics = await userMetrics.update(req.session.user.email)
 	let userStocks = req.session.user.stocksPurchased;
 	let recList = [];
-	if (userStocks.length != 0) {
-		recList = await stocksData.giveRecommendation(userStocks);
-	} else {
-		recList.push("AAPL");
-		recList.push("T");
-	}
+	// if (userStocks.length != 0) {
+	// 	recList = await stocksData.giveRecommendation(userStocks);
+	// } else {
+	// 	recList.push("AAPL");
+	// 	recList.push("T");
+	// }
 	res.render("home", {
 		title: "Home",
 		name: req.session.user.firstName,
@@ -114,6 +115,34 @@ router.post("/stocks", async (req, res) => {
 			hasErrors: true,
 			error: "Ticker not found",
 		});
+	}
+});
+
+router.post("/transaction", async (req, res) => {
+	let transaction = req.body["transaction"];
+	let quantity = req.body["quantity"];
+	let ticker = req.body["stock_ticker"];
+
+	if (!transaction || !quantity || !ticker) {
+		return res.json({ error: "One or more inputs were not provided" });
+	}
+	transaction = transaction.trim();
+	quantity = quantity.trim();
+	ticker = ticker.trim();
+
+	if (!transaction || !quantity || !ticker) {
+		return res.json({ error: "One or more inputs were not provided" });
+	}
+
+	let user = req.session.user;
+	if (transaction == "buy") {
+		try {
+			let status = await stocksData.buy(user.email, ticker, quantity);
+			return res.json({ success: true, ticker: ticker, quantity: quantity });
+		} catch (e) {
+			return res.json({ error: e });
+		}
+	} else {
 	}
 });
 
