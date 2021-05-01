@@ -7,9 +7,18 @@
 		<button type="submit" value="search">Search</button>
 	</form>
 	<div id="error_container"></div>
+	<p id="loading" hidden>Loading</p>
 	<div id="stock_info">
 		<h1>{{stock.name}} ({{stock.ticker}})</h1>
-		<h2 id="price" class="price">${{stock.price}}</h2>
+		{{#ifEquals status 1}}
+		<h2 id="price" class="up">${{stock.price}}</h2>
+		{{else}}
+		{{#ifEquals status -1}}
+		<h2 id="price" class="down">${{stock.price}}</h2>
+		{{else}}
+		<h2 id="price">${{stock.price}}</h2>
+		{{/ifEquals}}
+		{{/ifEquals}}
 		<form id="refresh">
 			<label for="temp_ticker" hidden></label>
 			<input type="text" name="temp_ticker" id="temp_ticker" value={{stock.ticker}} hidden />
@@ -28,6 +37,7 @@
 		<p id="52low">52 Week Low: ${{stock.range52W.low}}</p>
 		{{/ifEquals}}
 		<p id="volume">Volume: {{stock.volume}}</p>
+		<p id="recommendation">Recommendation: {{recommendation}}</p>
 	</div>
 	<form id="transForm">
 		<label for="buy">Buy</label>
