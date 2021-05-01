@@ -18,7 +18,16 @@ async function getUserById(id) {
 }
 
 async function getUserByEmail(email) {
-	if (!email || typeof email !== "object") throw "Invalid email parameter";
+	if (!email) {
+		throw "Email not provided";
+	}
+	if (typeof email !== "string") {
+		throw "Email not of type string";
+	}
+	email = email.trim();
+	if (!email) {
+		throw "Email is empty";
+	}
 
 	const userCollection = await users();
 	const user = await userCollection.findOne({ email: email });
