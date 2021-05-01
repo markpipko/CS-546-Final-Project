@@ -5,3 +5,8 @@
 .down {
 	color: red;
 }
+
+#loading {
+	color: green;
+	font-weight: bold;
+}
