@@ -6,7 +6,6 @@ const stocksData = data.stocks;
 const userMetrics = data.userMetrics;
 const users = data.users;
 const historyData = data.buySellHistory;
-const users = data.users;
 
 router.get("/", async (req, res) => {
 	res.redirect("/private/home");
