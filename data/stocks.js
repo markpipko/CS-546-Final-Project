@@ -314,7 +314,35 @@ const exportedMethods = {
 			return recommendationList.slice(0, recommendationList.length);
 		else return recommendationList;
 	},
-	
+
+	async getGraphData(ticker, subtract){
+		var prices = [] //y-axis
+		var dates = [] //x-axis
+		var today = new Date()
+		var monthAgo = new Date()
+		monthAgo.setDate(today.getDate() - subtract)
+		const stocksData = await yahooStockPrices.getHistoricalPrices(
+			monthAgo.getMonth(),
+			monthAgo.getDate(),
+			monthAgo.getFullYear(), 
+			today.getMonth(),
+			today.getDate(),
+			today.getFullYear(), 
+			ticker, 
+			'1d');
+		for(var i = 0; i < stocksData.length; i++){
+			prices[i] = stocksData[i].adjclose
+			dates[i] = `${monthAgo.getMonth()+1}/${monthAgo.getDate()}/${monthAgo.getFullYear()}`
+		}
+		var trace = {
+			x: dates,
+			y: prices,
+			mode: 'lines'
+		}
+		var data = [trace]
+		return data
+	}
+
 };
 
 module.exports = exportedMethods;

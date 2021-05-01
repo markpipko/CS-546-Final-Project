@@ -7,7 +7,7 @@ const refresh = document.getElementById("refresh");
 refresh.click(function (event) {
 	event.preventDefault();
 	var requestConfig = {
-		method: "GET",
+		method: "POST",
 		url: `/private/update`,
 	};
 
