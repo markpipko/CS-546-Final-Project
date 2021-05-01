@@ -44,7 +44,7 @@ const create = async function create(
 		throw "Percent growth was not provided";
 	}
 	if (!volatility && volatility != 0) {
-		throw "Volatility was not provideds";
+		throw "Volatility was not provided";
 	}
 
 	if (isNaN(totalReturn) || isNaN(percentGrowth) || isNaN(volatility)) {
@@ -57,15 +57,14 @@ const create = async function create(
 		email: email,
 		totalReturn: totalReturn,
 		percentGrowth: percentGrowth,
-		volatility: volatility,
+		volatility: volatility
 	};
 
 	const insertInfo = await metricsCollection.insertOne(newMetric);
 	if (insertInfo.insertedCount === 0) throw "Could not add metric";
 
-	//const newId = insertInfo.insertedId;
-
 	const metric = await get(email);
+
 	metric._id = metric._id.toString();
 	return metric;
 };
