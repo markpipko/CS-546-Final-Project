@@ -19,8 +19,8 @@
 		{{/ifEquals}}
 		{{/ifEquals}}
 		<form id="refresh">
-			<label for="temp_ticker" hidden></label>
-			<input type="text" name="temp_ticker" id="temp_ticker" value={{stock.ticker}} />
+			<label for="temp_ticker"></label>
+			<input type="text" name="temp_ticker" id="temp_ticker" value={{stock.ticker}} hidden />
 			<button type="submit" id="refresh_button">Refresh</button>
 		</form>
 		<p>Exchange: {{stock.exchange}}</p>

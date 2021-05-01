@@ -32,9 +32,19 @@ const create = async function create(
 	percentGrowth,
 	volatility
 ) {
-	checkStr(email);
-	if (!totalReturn || !percentGrowth || !volatility) {
-		throw "Input is undefined";
+	try {
+		checkStr(email);
+	} catch (e) {
+		throw e;
+	}
+	if (!totalReturn && totalReturn != 0) {
+		throw "Total return was not provided";
+	}
+	if (!percentGrowth && percentGrowth != 0) {
+		throw "Percent growth was not provided";
+	}
+	if (!volatility && volatility != 0) {
+		throw "Volatility was not provideds";
 	}
 
 	if (isNaN(totalReturn) || isNaN(percentGrowth) || isNaN(volatility)) {
@@ -92,7 +102,8 @@ async function getVolatility(stocksPurchased) {
 
 		var dailyReturns;
 		for (var k = 1; k < prices.length; k++) {
-			dailyReturns[k - 1] = (prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose;
+			dailyReturns[k - 1] =
+				(prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose;
 		}
 
 		var mean = 0;
@@ -144,7 +155,7 @@ async function getReturns(email) {
 	}
 
 	for (var i = 0; i < userList.length; i++) {
-		if ((userList[i].email == email)) {
+		if (userList[i].email == email) {
 			person = userList[i];
 			for (var j = 0; j < person.stocksPurchased.length; j++) {
 				let ticker = person.stocksPurchased[j].ticker;
