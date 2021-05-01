@@ -14,6 +14,7 @@ router.get("/", async (req, res) => {
 router.get("/home", async (req, res) => {
 	//TODO: uncomment later
 	//const metrics = await userMetrics.update(req.session.user.email)
+	const user = await users.getUserById(req.session.user.email) //should be getUserByEmail
 	let userStocks = req.session.user.stocksPurchased;
 	let recList = [];
 	// if (userStocks.length != 0) {
@@ -25,7 +26,7 @@ router.get("/home", async (req, res) => {
 	res.render("home", {
 		title: "Home",
 		name: req.session.user.firstName,
-		recList: recList /*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility*/,
+		recList: recList /*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility, stocks: user.stocksPurchased .*/,
 	});
 });
 

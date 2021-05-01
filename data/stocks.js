@@ -314,6 +314,7 @@ const exportedMethods = {
 			return recommendationList.slice(0, recommendationList.length);
 		else return recommendationList;
 	},
+	
 };
 
 module.exports = exportedMethods;

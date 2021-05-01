@@ -16,6 +16,14 @@
 	<p id="percentGrowth">Total Growth: {{{percentGrowth}}}% </p>
 	<p id="volatility">Volatility: {{{volatility}}} </p>
 
+	<h3> Portfolio </h3>
+		{{#each stock}}
+		<p> Stock: {{this.ticker}} </p>
+		<p> Amount: {{this.amount}} </p>
+		<p> Average Cost: {{this.purchaseValue}} </p>
+		<br>
+		{{/each}}
+
 	<h3>Recommendations</h3>
 	<ul>
 		{{#each recList}}

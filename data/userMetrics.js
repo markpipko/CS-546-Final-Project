@@ -33,7 +33,7 @@ const create = async function create(
 	volatility
 ) {
 	checkStr(email);
-	if (!totalReturn || !percentGrowth || !volatility) {
+	if (totalReturn == undefined || percentGrowth == undefined || volatility == undefined) {
 		throw "Input is undefined";
 	}
 
@@ -47,15 +47,14 @@ const create = async function create(
 		email: email,
 		totalReturn: totalReturn,
 		percentGrowth: percentGrowth,
-		volatility: volatility,
+		volatility: volatility
 	};
 
 	const insertInfo = await metricsCollection.insertOne(newMetric);
 	if (insertInfo.insertedCount === 0) throw "Could not add metric";
 
-	//const newId = insertInfo.insertedId;
-
 	const metric = await get(email);
+
 	metric._id = metric._id.toString();
 	return metric;
 };
