@@ -7,6 +7,9 @@
 
 		<button type="submit" value="search">Search</button>
 	</form>
+	{{#if hasErrors}}
+	<p>{{error}}</p>
+	{{/if}}
 
 	<h3> Metrics </h3>
 	<p id="totalReturn">Total Return: {{{totalReturn}}} </p>
@@ -16,7 +19,7 @@
 	<h3>Recommendations</h3>
 	<ul>
 		{{#each recList}}
-			<li>{{this}}</li>
+		<li>{{this}}</li>
 		{{/each}}
 	</ul>
 
@@ -26,9 +29,7 @@
 		<a href="/logout">Logout</a>
 	</div>
 
-	{{#if hasErrors}}
-	<p>{{error}}</p>
-	{{/if}}
+
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>

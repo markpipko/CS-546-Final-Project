@@ -10,30 +10,37 @@ router.get("/", async (req, res) => {
 	res.redirect("/private/home");
 });
 
-router.get('/home', async (req, res) => {
+router.get("/home", async (req, res) => {
 	//TODO: uncomment later
 	//const metrics = await userMetrics.update(req.session.user.email)
 	let userStocks = req.session.user.stocksPurchased;
 	let recList = [];
 	if (userStocks.length != 0) {
 		recList = await stocksData.giveRecommendation(userStocks);
-	}
-	else {
+	} else {
 		recList.push("AAPL");
 		recList.push("T");
 	}
-    res.render("home", { title: "Home", name: req.session.user.firstName, recList: recList/*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility*/});
+	res.render("home", {
+		title: "Home",
+		name: req.session.user.firstName,
+		recList: recList /*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility*/,
+	});
 });
 
-router.get('/update', async (req,res) => {
-	const metrics = await userMetrics.update(req.session.user.email)
-	res.json({totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility})
-})
+router.get("/update", async (req, res) => {
+	const metrics = await userMetrics.update(req.session.user.email);
+	res.json({
+		totalReturn: metrics.totalReturn,
+		percentGrowth: metrics.percentGrowth,
+		volatility: metrics.volatility,
+	});
+});
 
 router.get("/stockHistory", async (req, res) => {
 	const trade = await historyData.getHistoryByEmail(req.session.user.email);
-    res.render("stockHistory", {title: "History", trade: trade.history})
-})
+	res.render("stockHistory", { title: "History", trade: trade.history });
+});
 
 router.post("/find", async (req, res) => {
 	let ticker = req.body["stock_ticker"];
@@ -47,7 +54,16 @@ router.post("/find", async (req, res) => {
 
 	try {
 		const stockInfo = await stocksData.getStock(ticker);
-		res.json({ stock: stockInfo });
+		const rec = await stocksData.buyOrSell(ticker);
+		let status = 0;
+		if (stockInfo.price > stockInfo.prevClose) {
+			status = 1;
+		} else if (stockInfo.price < stockInfo.prevClose) {
+			status = -1;
+		} else {
+			status = 0;
+		}
+		res.json({ stock: stockInfo, recommendation: rec, status: status });
 	} catch (e) {
 		return res.json({ error: "Ticker not found" });
 	}
@@ -76,12 +92,23 @@ router.post("/stocks", async (req, res) => {
 	try {
 		const stockInfo = await stocksData.getStock(ticker);
 		const rec = await stocksData.buyOrSell(ticker);
-		res.render('stock', {
+		let status = 0;
+
+		if (stockInfo.price > stockInfo.prevClose) {
+			status = 1;
+		} else if (stockInfo.price < stockInfo.prevClose) {
+			status = -1;
+		} else {
+			status = 0;
+		}
+		res.render("stock", {
 			title: ticker.toUpperCase(),
 			stock: stockInfo,
 			recommendation: rec,
+			status: status,
 		});
 	} catch (e) {
+		console.log(e);
 		return res.render("home", {
 			title: "Home",
 			hasErrors: true,

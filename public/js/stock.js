@@ -42,6 +42,13 @@ if (myForm) {
 				let h2 = document.createElement("h2");
 				h2.innerHTML = "$" + x.stock.price;
 				h2.id = "price";
+				if (x.status == 1) {
+					h2.className = "up";
+				} else if (x.status == 0) {
+					h2.className = "same";
+				} else {
+					h2.className = "down";
+				}
 				stockInfo.append(h2);
 				stockInfo.append(refreshForm);
 
@@ -76,6 +83,10 @@ if (myForm) {
 				p5.id = "volume";
 				stockInfo.append(p5);
 
+				let p6 = document.createElement("p");
+				p6.innerHTML = "Recommendation: " + x.recommendation;
+				p6.id = "recommendation";
+				stockInfo.append(p6);
 				$("#temp_ticker").attr("value", x.stock.ticker);
 				myForm.reset();
 			});
@@ -91,6 +102,7 @@ if (refreshForm) {
 		event.preventDefault();
 		if (temp.value.trim()) {
 			temp.value = temp.value.trim();
+			$("#loading").show();
 			$.ajax({
 				method: "POST",
 				url: "/private/find",
@@ -110,9 +122,9 @@ if (refreshForm) {
 					console.log("This is price: " + price.innerHTML.substring(1));
 					console.log("This is new price: " + x.stock.price);
 					console.log(price.innerHTML.substring(1) == x.stock.price);
-					if (price.innerHTML.substring(1) < x.stock.price) {
+					if (x.status == 1) {
 						price.className = "up";
-					} else if (price.innerHTML.substring(1) == x.stock.price) {
+					} else if (x.status == 0) {
 						price.className = "same";
 					} else {
 						price.className = "down";
@@ -140,7 +152,13 @@ if (refreshForm) {
 				if (volume != x.stock.volume) {
 					volume.innerHTML = "Volume: " + x.stock.volume;
 				}
+
+				const recommendation = document.getElementById("recommendation");
+				if (recommendation != x.recommendation) {
+					recommendation.innerHTML = "Recommendation: " + x.recommendation;
+				}
 				$("#temp_ticker").attr("value", x.stock.ticker);
+				$("#loading").hide();
 
 				refreshForm.reset();
 			});
