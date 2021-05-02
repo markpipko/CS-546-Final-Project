@@ -321,39 +321,41 @@ const exportedMethods = {
 		else return recommendationList;
 	},
 
-	async getGraphData(ticker, subtract){
-		var prices = [] //y-axis
-		var dates = [] //x-axis
-		var today = new Date()
-		var monthAgo = new Date()
-		monthAgo.setDate(today.getDate() - subtract)
+	async getGraphData(ticker, subtract) {
+		var prices = []; //y-axis
+		var dates = []; //x-axis
+		var today = new Date();
+		var monthAgo = new Date();
+		monthAgo.setDate(today.getDate() - subtract);
 		const stocksData = await yahooStockPrices.getHistoricalPrices(
 			monthAgo.getMonth(),
 			monthAgo.getDate(),
-			monthAgo.getFullYear(), 
+			monthAgo.getFullYear(),
 			today.getMonth(),
 			today.getDate(),
 			today.getFullYear(), 
 			ticker, 
 			'1d');
 		let k = 0
+		let reversedData = stocksData.reverse();
 		for(var i = 0; i < stocksData.length; i++){
 			if(stocksData[i].adjclose != undefined){
 				prices[k] = stocksData[i].adjclose
-				let day = stocksData[i].date
-				dates[k] = `${day.getMonth()+1}/${day.getDate()}/${day.getFullYear()}`
+				let utcseconds = reversedData[i].date;
+				let d = new Date(0);
+				d.setUTCSeconds(utcseconds);
+				dates[i] = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
 				k++
 			}
 		}
 		var trace = {
 			x: dates,
 			y: prices,
-			mode: 'lines'
-		}
-		var data = [trace]
-		return data
-	}
-
+			mode: "lines",
+		};
+		var data = [trace];
+		return data;
+	},
 };
 
 module.exports = exportedMethods;

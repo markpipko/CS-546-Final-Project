@@ -43,10 +43,13 @@ router.post("/update", async (req, res) => {
 	});
 });
 
-router.post("/graph", async(req, res) => {
-	const data = await stocksData.getGraphData(req.body.ticker, req.body.num)
-	res.json({chart: data})
-})
+router.post("/graph", async (req, res) => {
+	let ticker = req.body["ticker"];
+	let subtract = req.body["subtract"];
+	// console.log(ticker, subtract);
+	const data = await stocksData.getGraphData(ticker, subtract);
+	res.json({ chart: data });
+});
 
 router.get("/stockHistory", async (req, res) => {
 	const trade = await historyData.getHistoryByEmail(req.session.user.email);
