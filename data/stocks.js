@@ -4,6 +4,7 @@ const axios = require("axios");
 const mongoCollections = require("../config/mongoCollections");
 const users = mongoCollections.users;
 let { ObjectId } = require("mongodb");
+const historyData = require('./buySellHistory');
 
 function getMean(arr) {
 	if (!arr) {
@@ -181,20 +182,25 @@ const exportedMethods = {
 				{ email: email },
 				{ $set: newUser }
 			);
+
+			let updateHistory = await historyData.addHistory(email, 
+				'BUY', 
+				ticker, 
+				parseInt(transactionDetails.purchaseValue), 
+				parseInt(transactionDetails.amount), 
+				new Date())
+
 			if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
 				throw "Transaction could not be processed";
 			}
 			return 1;
 		} else {
-			let month = new Date().getMonth();
-			let day = new Date().getDay();
-			let year = new Date().getFullYear();
 			transactionDetails = {
 				_id: new ObjectId(),
 				ticker: ticker,
 				amount: parseInt(quantity),
 				purchaseValue: parseFloat(price.toFixed(2)),
-				datePurchased: `${month}/${day}/${year}`,
+				datePurchased: new Date(),
 			};
 			let newUser = user;
 			newUser.cash -= total_amount.toFixed(2);
@@ -203,6 +209,14 @@ const exportedMethods = {
 				{ email: email },
 				{ $set: newUser }
 			);
+
+			let updateHistory = await historyData.addHistory(email, 
+				'BUY', 
+				ticker, 
+				parseFloat(price.toFixed(2)), 
+				parseInt(quantity), 
+				new Date())
+
 			if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
 				throw "Transaction could not be processed";
 			}

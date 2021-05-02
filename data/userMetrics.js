@@ -81,6 +81,9 @@ function getDate(date) {
 }
 
 async function getVolatility(stocksPurchased) {
+	if(stocksPurchased.length == 0){
+		return 0
+	}
 	var stocksOwned = 0;
 	var totalVolatility = 0;
 	for (var i = 0; i < stocksPurchased.length; i++) {
@@ -99,7 +102,7 @@ async function getVolatility(stocksPurchased) {
 			"1d"
 		);
 
-		var dailyReturns;
+		var dailyReturns = [];
 		var j = 0
 		for (var k = 1; k < prices.length; k++) {
 			if(prices[k].adjclose != undefined){
@@ -150,11 +153,11 @@ async function getReturns(email) {
 	let owned = 0;
 
 	for (var i = 0; i < person.history.length; i++) {
-		if (person.history.transaction == "BUY") {
-			bought += person.history.value * person.history.amount;
+		if (person.history[i].transaction == "BUY") {
+			bought += person.history[i].value * person.history[i].amount;
 		}
-		if (history.transaction == "SOLD") {
-			sold += history.value * history.amount;
+		if (person.history[i].transaction == "SOLD") {
+			sold += person.history[i].value * person.history[i].amount;
 		}
 	}
 
@@ -164,11 +167,16 @@ async function getReturns(email) {
 		owned += data * user.stocksPurchased[i].amount;
 	}
 
-	let volatility = getVolatility(user.stocksPurchased);
+	if(bought == 0 && sold == 0){
+		return [0,0,0]
+	}
+
+	let volatility = await getVolatility(user.stocksPurchased);
 
 	let totalReturn = sold + owned - bought;
 	let percentGrowth = (totalReturn / bought) * 100;
-	return [totalReturn, percentGrowth, volatility];
+	
+	return [totalReturn.toFixed(2), percentGrowth.toFixed(2), volatility.toFixed(2)];
 }
 
 const update = async function update(email) {
@@ -193,9 +201,9 @@ const update = async function update(email) {
 		{ $set: newMetric }
 	);
 
-	if (updatedInfo.modifiedCount === 0) {
-		throw "Could not update metrics";
-	}
+	// if (.modifiedCount === 0) {
+	// 	throw "Could not update metrics";
+	// }
 
 	newMetric = await get(email);
 	newMetric._id = newMetric._id.toString();

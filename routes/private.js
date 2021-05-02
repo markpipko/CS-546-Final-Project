@@ -28,7 +28,11 @@ router.get("/home", async (req, res) => {
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
-			recList: recList /*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility, stocks: user.stocksPurchased .*/,
+			recList: recList , 
+			totalReturn: metrics.totalReturn,
+			percentGrowth: metrics.percentGrowth, 
+			volatility: metrics.volatility, 
+			stocks: user.stocksPurchased ,
 		});
 	} catch (e) {
 		res.render("login", { hasErrors: true, error: e });
