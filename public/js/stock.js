@@ -10,8 +10,6 @@ const stockError = document.getElementById("error_container2");
 const refreshForm = document.getElementById("refresh");
 const temp = document.getElementById("temp_ticker");
 
-// const yahooStockPrices = require("yahoo-stock-prices");
-
 // if (myForm) {
 // 	myForm.addEventListener("submit", (event) => {
 // 		event.preventDefault();
@@ -239,41 +237,33 @@ if (transForm) {
 	});
 }
 
-// $('#1w, #1m, #1y, #5y').click( function(event) {
-// 	event.preventDefault();
-// 	var num;
-// 	if($(event.target).attr('id')=='1w'){
-// 		num = 7
-// 	} else if($(event.target).attr('id')=='1m'){
-// 		num = 30
-// 	}else if($(event.target).attr('id')=='1y'){
-// 		num = 365
-// 	}else if($(event.target).attr('id')=='5y'){
-// 		num = 365*5
-// 	}
-// 	var prices = [] //y-axis
-// 	var dates = [] //x-axis
-// 	var today = new Date()
-// 	var monthAgo
-// 	monthAgo.setDate(today.getDate() - num)
-// 	const stocksData = await yahooStockPrices.getHistoricalPrices(
-// 		monthAgo.getMonth(),
-// 		monthAgo.getDate(),
-// 		monthAgo.getFullYear(),
-// 		today.getMonth(),
-// 		today.getDate(),
-// 		today.getFullYear(),
-// 		input,
-// 		'1d');
-// 	for(var i = 0; i < stocksData.length; i++){
-// 		prices[i] = stocksData[i].adjclose
-// 		dates[i] = `${monthAgo.getMonth()+1}/${monthAgo.getDate()}/${monthAgo.getFullYear()}`
-// 	}
-// 	var trace = {
-// 		x: dates,
-// 		y: prices,
-// 		mode: 'lines'
-// 	}
+$("#1w, #1m, #1y, #5y").click(function (event) {
+	event.preventDefault();
+	let ticker = temp.value;
+	var num;
+	if ($(event.target).attr("id") == "1w") {
+		num = 7;
+	} else if ($(event.target).attr("id") == "1m") {
+		num = 30;
+	} else if ($(event.target).attr("id") == "1y") {
+		num = 365;
+	} else if ($(event.target).attr("id") == "5y") {
+		num = 365 * 5;
+	}
+	console.log(ticker, num);
+	var requestConfig = {
+		method: "POST",
+		url: `/private/graph`,
+		data: JSON.stringify({
+			ticker: ticker,
+			subtract: num,
+		}),
+	};
+
+	$.ajax(requestConfig).then(function (responseMessage) {
+		Ploty.newPlot("graph", responseMessage.chart);
+	});
+});
 
 // 	Ploty.newPlot('graph', trace)
 // })
