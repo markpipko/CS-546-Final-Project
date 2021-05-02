@@ -237,10 +237,12 @@ const exportedMethods = {
 		ticker = ticker.toUpperCase();
 
 		var today = new Date();
+		var tewntyDayPeriod = new Date();
+		tewntyDayPeriod.setDate(today.getDate() - 20)
 		const prices = await yahooStockPrices.getHistoricalPrices(
-			today.getMonth(),
-			today.getDate(),
-			today.getFullYear() - 1,
+			tewntyDayPeriod.getMonth(),
+			tewntyDayPeriod.getDate(),
+			tewntyDayPeriod.getFullYear(),
 			today.getMonth(),
 			today.getDate(),
 			today.getFullYear(),

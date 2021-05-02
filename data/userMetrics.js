@@ -76,8 +76,16 @@ const get = async function get(email) {
 	return metric;
 };
 
-function getDate(date) {
-	return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 1}`;
+function clean(arr){
+	var newArr = []
+	var k = 0
+	for(var i = 0; i < arr.length; i++){
+		if(arr[i].adjclose != undefined){
+			newArr[k] = arr[i]
+			k++
+		}
+	}
+	return newArr
 }
 
 async function getVolatility(stocksPurchased) {
@@ -88,19 +96,23 @@ async function getVolatility(stocksPurchased) {
 	var totalVolatility = 0;
 	for (var i = 0; i < stocksPurchased.length; i++) {
 		let ticker = stocksPurchased[i].ticker;
-		let date = stocksPurchased[i].datePurchased;
 		stocksOwned += stocksPurchased[i].amount;
+		
 		let today = new Date();
-		const prices = await yahooStockPrices.getHistoricalPrices(
-			date.getMonth(),
-			date.getDate(),
-			date.getFullYear(),
+		var yearAgo = new Date();
+		yearAgo.setDate(yearAgo.getDate() - 365)
+
+		var prices = await yahooStockPrices.getHistoricalPrices(
+			yearAgo.getMonth(),
+			yearAgo.getDate(),
+			yearAgo.getFullYear(),
 			today.getMonth(),
 			today.getDate(),
 			today.getFullYear(),
 			ticker,
 			"1d"
 		);
+		prices = clean(prices)
 
 		var dailyReturns = [];
 		var j = 0
@@ -111,7 +123,7 @@ async function getVolatility(stocksPurchased) {
 				j++
 			}
 		}
-
+		console.log(dailyReturns, ticker)
 		var mean = 0;
 		for (var k = 0; k < dailyReturns.length; k++) {
 			mean += dailyReturns[k];
