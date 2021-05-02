@@ -219,38 +219,52 @@ if (transForm) {
 					quantity: quantity,
 				}),
 			}).then(function (x) {
+				let result = document.createElement("p");
+				result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
+				$("#dialog-message").append(result);
+				$("#dialog-message").dialog({
+					modal: true,
+					buttons: {
+						Ok: function () {
+							$(this).dialog("close");
+						},
+					},
+				});
 				transForm.reset();
-				console.log("sucess???");
 				$.unblockUI();
 			});
 		}
 	});
 }
 
-$('#1w, #1m, #1y, #5y').click(function(event) {
+$("#1w, #1m, #1y, #5y").click(function (event) {
 	event.preventDefault();
-	let ticker = temp.value
-	var num
-	if($(event.target).attr('id')=='1w'){
-		num = 7
-	} else if($(event.target).attr('id')=='1m'){
-		num = 30
-	}else if($(event.target).attr('id')=='1y'){
-		num = 365
-	}else if($(event.target).attr('id')=='5y'){
-		num = 365*5
+	let ticker = temp.value;
+	var num;
+	if ($(event.target).attr("id") == "1w") {
+		num = 7;
+	} else if ($(event.target).attr("id") == "1m") {
+		num = 30;
+	} else if ($(event.target).attr("id") == "1y") {
+		num = 365;
+	} else if ($(event.target).attr("id") == "5y") {
+		num = 365 * 5;
 	}
-	console.log(ticker, num)
+	console.log(ticker, num);
 	var requestConfig = {
 		method: "POST",
 		url: `/private/graph`,
+		contentType: "application/json",
 		data: JSON.stringify({
 			ticker: ticker,
-			subtract: num })
+			subtract: num,
+		}),
 	};
-	
-	$.ajax(requestConfig).then(function (responseMessage) {
-		Ploty.newPlot('graph', responseMessage.chart)
-	})
-})
 
+	$.ajax(requestConfig).then(function (responseMessage) {
+		Plotly.newPlot("graph", responseMessage.chart);
+	});
+});
+
+// 	Ploty.newPlot('graph', trace)
+// })

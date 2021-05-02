@@ -1,4 +1,6 @@
 <link rel="stylesheet" href="/public/css/stocks.css">
+<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+
 <main>
 	<form action="/private/stocks" method="POST" id="search_stock">
 		<label for="stock_ticker">Look for a stock ticker: </label>
@@ -8,11 +10,7 @@
 	</form>
 	<div id="error_container"></div>
 
-	<div id="graph"> </div>
-	<button id="1w"> 1w </button>
-	<button id="1m"> 1m </button>
-	<button id="1y"> 1y </button>
-	<button id="5y"> 5y </button>
+
 
 	<div id="stock_info">
 		<h1>{{stock.name}} ({{stock.ticker}})</h1>
@@ -25,11 +23,17 @@
 		<h2 id="price">${{stock.price}}</h2>
 		{{/ifEquals}}
 		{{/ifEquals}}
+
 		<form id="refresh">
 			<label for="temp_ticker"></label>
 			<input type="text" name="temp_ticker" id="temp_ticker" value={{stock.ticker}} hidden />
 			<button type="submit" id="refresh_button">Refresh</button>
 		</form>
+		<button id="1w"> 1w </button>
+		<button id="1m"> 1m </button>
+		<button id="1y"> 1y </button>
+		<button id="5y"> 5y </button>
+		<div id="graph"> </div>
 		<p>Exchange: {{stock.exchange}}</p>
 		<p>Industry: {{stock.industry}}</p>
 		{{#ifEquals stock.range52W.high "N/A"}}
@@ -64,7 +68,11 @@
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 	<script src="/public/js/jquery.blockUI.js"></script>
-	<script src='https://cdn.plot.ly/plotly-latest.min.js'></script>
+	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 	<script src="/public/js/stock.js"></script>
+
+	<div id="dialog-message" title="Download complete" hidden>
+	</div>
 
 </main>
