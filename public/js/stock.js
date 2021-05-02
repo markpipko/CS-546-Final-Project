@@ -100,7 +100,7 @@ const temp = document.getElementById("temp_ticker");
 // 		}
 // 	});
 // }
-
+(function($) {
 if (refreshForm) {
 	refreshForm.addEventListener("submit", (event) => {
 		event.preventDefault();
@@ -240,17 +240,17 @@ $('#1w, #1m, #1y, #5y').click(function(event) {
 	}else if($(event.target).attr('id')=='5y'){
 		num = 365*5
 	}
-	console.log(ticker, num)
+
 	var requestConfig = {
 		method: "POST",
 		url: `/private/graph`,
-		data: JSON.stringify({
+		data: {
 			ticker: ticker,
-			subtract: num })
+			subtract: num }
 	};
 	
 	$.ajax(requestConfig).then(function (responseMessage) {
-		Ploty.newPlot('graph', responseMessage.chart)
+		$.newPlot($('#graph'), responseMessage.chart)
 	})
 })
-
+})(window.jQuery);

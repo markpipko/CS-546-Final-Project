@@ -44,8 +44,7 @@ router.post("/update", async (req, res) => {
 });
 
 router.post("/graph", async(req, res) => {
-	console.log(req.data)
-	const data = await stocksData.getGraphData(req.data.ticker, req.data.subtract)
+	const data = await stocksData.getGraphData(req.body.ticker, req.body.num)
 	res.json({chart: data})
 })
 

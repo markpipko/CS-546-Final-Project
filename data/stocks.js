@@ -19,6 +19,7 @@ function getMean(arr) {
 	for (var i = 0; i < arr.length; i++) {
 		sum += arr[i];
 	}
+	//console.log(sum/arr.length, arr)
 	return sum / arr.length;
 }
 
@@ -225,16 +226,20 @@ const exportedMethods = {
 			throw "Error with fetching data";
 		}
 
-		var closingPrices = new Array(prices.length);
-		var movingAverage = new Array(prices.length);
+		var closingPrices = [];
+		var movingAverage = [];
+		let k = 0
 		for (var i = 0; i < prices.length; i++) {
-			closingPrices[i] = prices[i].adjclose;
-			movingAverage[i] = getMean(closingPrices);
+			if(prices[i].adjclose != undefined){
+				closingPrices[k] = prices[i].adjclose;
+				movingAverage[k] = getMean(closingPrices);
+				k++
+			}
 		}
 		var sd = getSD(closingPrices);
 
-		var upperBand = new Array(movingAverage.length);
-		var lowerBand = new Array(movingAverage.length);
+		var upperBand = [];
+		var lowerBand = [];
 		for (var i = 0; i < movingAverage.length; i++) {
 			upperBand[i] = movingAverage[i] + sd * 2;
 			lowerBand[i] = movingAverage[i] - sd * 2;
@@ -267,6 +272,7 @@ const exportedMethods = {
 		) {
 			return "Buy";
 		}
+		//console.log(sd, upperBand[upperBand.length - 1], lowerBand[lowerBand.length - 1], rsi, yahoo_data)
 		return "Hold";
 	},
 
@@ -330,9 +336,14 @@ const exportedMethods = {
 			today.getFullYear(), 
 			ticker, 
 			'1d');
+		let k = 0
 		for(var i = 0; i < stocksData.length; i++){
-			prices[i] = stocksData[i].adjclose
-			dates[i] = `${monthAgo.getMonth()+1}/${monthAgo.getDate()}/${monthAgo.getFullYear()}`
+			if(stocksData[i].adjclose != undefined){
+				prices[k] = stocksData[i].adjclose
+				let day = stocksData[i].date
+				dates[k] = `${day.getMonth()+1}/${day.getDate()}/${day.getFullYear()}`
+				k++
+			}
 		}
 		var trace = {
 			x: dates,

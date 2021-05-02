@@ -100,9 +100,13 @@ async function getVolatility(stocksPurchased) {
 		);
 
 		var dailyReturns;
+		var j = 0
 		for (var k = 1; k < prices.length; k++) {
-			dailyReturns[k - 1] =
-				(prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose;
+			if(prices[k].adjclose != undefined){
+				dailyReturns[j] =
+					(prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose;
+				j++
+			}
 		}
 
 		var mean = 0;
