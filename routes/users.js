@@ -6,6 +6,7 @@ const data = require("../data");
 //const { userMetrics } = require('../config/mongoCollections'); Do we need this?
 const users = data.users;
 const userMetrics = data.userMetrics;
+const buySell = data.buySellHistory
 
 router.get("/", async (req, res) => {
 	res.render("login", { title: "Login" });
@@ -34,6 +35,7 @@ router.post("/signup", async (req, res) => {
 			[]
 		);
 		let userMetricsCreate = await userMetrics.create(email, 0, 0, 0);
+    let historyCreate = await buySell.create(email, [])
 		req.session.user = { email: email, firstName: firstName };
 		res.redirect("/private");
 	} catch (e) {
@@ -107,6 +109,8 @@ router.post("/deleteAccount", async (req, res) => {
 	if (req.body.deleteUser == "yes") {
 		let user = await users.getUserByEmail(req.session.user.email);
 		let deleted = await users.removeUser(user._id);
+    deleted = await userMetrics.remove(email)
+    deleted = await buySell.remove(email)
 		req.session.destroy();
 		res.redirect("/");
 	}

@@ -1,8 +1,8 @@
 const mongoCollections = require("../config/mongoCollections");
 const UserMetrics = mongoCollections.userMetrics;
-const users = mongoCollections.users;
-const buySell = mongoCollections.buySellHistory;
-const stocks = mongoCollections.stocks;
+const users = require('./users');
+const buySell = require('./buySellHistory');
+//const stocks = mongoCollections.stocks;
 var yahooStockPrices = require("yahoo-stock-prices");
 var finviz = require("finvizor");
 //let { ObjectId } = require('mongodb');
@@ -81,6 +81,9 @@ function getDate(date) {
 }
 
 async function getVolatility(stocksPurchased) {
+	if(stocksPurchased.length == 0){
+		return 0
+	}
 	var stocksOwned = 0;
 	var totalVolatility = 0;
 	for (var i = 0; i < stocksPurchased.length; i++) {
@@ -99,10 +102,14 @@ async function getVolatility(stocksPurchased) {
 			"1d"
 		);
 
-		var dailyReturns;
+		var dailyReturns = [];
+		var j = 0
 		for (var k = 1; k < prices.length; k++) {
-			dailyReturns[k - 1] =
-				(prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose;
+			if(prices[k].adjclose != undefined){
+				dailyReturns[j] =
+					(prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose;
+				j++
+			}
 		}
 
 		var mean = 0;
@@ -124,51 +131,52 @@ async function getVolatility(stocksPurchased) {
 }
 
 async function getReturns(email) {
-	const userList = await users();
-	const buySellHistory = await buySell();
-	const stockList = await stocks();
+	const user = await users.getUserByEmail(email);
+	const person = await buySell.getHistoryByEmail(email);
+	//const stockList = await stocks();
 
-	let bshData = await buySellHistory.find({}).toArray();
+	//let bshData = await buySellHistory.find({}).toArray();
 
-	let person;
-	for (var i = 0; i < bshData.length; i++) {
-		if (email == bshData[i].email) {
-			person = bshData[i];
-		}
-	}
+	// let person;
+	// for (var i = 0; i < bshData.length; i++) {
+	// 	if (email == bshData[i].email) {
+	// 		person = bshData[i];
+	// 	}
+	// }
 
 	//TODO: Delete this later
-	person = {}; //For testing
-	person.history = []; //For testing
+	// person = {}; //For testing
+	// person.history = []; //For testing
 
 	let bought = 0;
 	let sold = 0;
 	let owned = 0;
+
 	for (var i = 0; i < person.history.length; i++) {
-		if (person.history.transaction == "BUY") {
-			bought += person.history.value * person.history.amount;
+		if (person.history[i].transaction == "BUY") {
+			bought += person.history[i].value * person.history[i].amount;
 		}
-		if (history.transaction == "SOLD") {
-			sold += history.value * history.amount;
-		}
-	}
-
-	for (var i = 0; i < userList.length; i++) {
-		if (userList[i].email == email) {
-			person = userList[i];
-			for (var j = 0; j < person.stocksPurchased.length; j++) {
-				let ticker = person.stocksPurchased[j].ticker;
-				const data = await yahooStockPrices.getCurrentPrice(ticker);
-				owned += data * person.stocksPurchased[j].amount;
-			}
+		if (person.history[i].transaction == "SOLD") {
+			sold += person.history[i].value * person.history[i].amount;
 		}
 	}
 
-	let volatility = getVolatility(person.stocksPurchased);
+	for (var i = 0; i < user.stocksPurchased.length; i++) {
+		let ticker = user.stocksPurchased[i].ticker;
+		const data = await yahooStockPrices.getCurrentPrice(ticker);
+		owned += data * user.stocksPurchased[i].amount;
+	}
+
+	if(bought == 0 && sold == 0){
+		return [0,0,0]
+	}
+
+	let volatility = await getVolatility(user.stocksPurchased);
 
 	let totalReturn = sold + owned - bought;
 	let percentGrowth = (totalReturn / bought) * 100;
-	return [totalReturn, percentGrowth, volatility];
+	
+	return [totalReturn.toFixed(2), percentGrowth.toFixed(2), volatility.toFixed(2)];
 }
 
 const update = async function update(email) {
@@ -193,9 +201,9 @@ const update = async function update(email) {
 		{ $set: newMetric }
 	);
 
-	if (updatedInfo.modifiedCount === 0) {
-		throw "Could not update metrics";
-	}
+	// if (.modifiedCount === 0) {
+	// 	throw "Could not update metrics";
+	// }
 
 	newMetric = await get(email);
 	newMetric._id = newMetric._id.toString();

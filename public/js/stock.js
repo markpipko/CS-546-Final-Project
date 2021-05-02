@@ -250,7 +250,8 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 	} else if ($(event.target).attr("id") == "5y") {
 		num = 365 * 5;
 	}
-	console.log(ticker, num);
+
+	//console.log(ticker, num);
 	var requestConfig = {
 		method: "POST",
 		url: `/private/graph`,
@@ -262,9 +263,11 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 	};
 
 	$.ajax(requestConfig).then(function (responseMessage) {
+
 		Plotly.newPlot("graph", responseMessage.chart);
 	});
 });
 
 // 	Ploty.newPlot('graph', trace)
 // })
+

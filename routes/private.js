@@ -13,9 +13,9 @@ router.get("/", async (req, res) => {
 
 router.get("/home", async (req, res) => {
 	//TODO: uncomment later
-	//const metrics = await userMetrics.update(req.session.user.email)
 	try {
-		const user = await users.getUserByEmail(req.session.user.email); //should be getUserByEmail
+		const metrics = await userMetrics.update(req.session.user.email)
+		const user = await users.getUserByEmail(req.session.user.email); 
 		let userStocks = req.session.user.stocksPurchased;
 		let recList = [];
 
@@ -28,7 +28,11 @@ router.get("/home", async (req, res) => {
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
-			recList: recList /*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility, stocks: user.stocksPurchased .*/,
+			recList: recList , 
+			totalReturn: metrics.totalReturn,
+			percentGrowth: metrics.percentGrowth, 
+			volatility: metrics.volatility, 
+			stocks: user.stocksPurchased ,
 		});
 	} catch (e) {
 		res.render("login", { hasErrors: true, error: e });
