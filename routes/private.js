@@ -13,9 +13,9 @@ router.get("/", async (req, res) => {
 
 router.get("/home", async (req, res) => {
 	//TODO: uncomment later
-	//const metrics = await userMetrics.update(req.session.user.email)
 	try {
-		const user = await users.getUserByEmail(req.session.user.email); //should be getUserByEmail
+		const metrics = await userMetrics.update(req.session.user.email)
+		const user = await users.getUserByEmail(req.session.user.email); 
 		let userStocks = req.session.user.stocksPurchased;
 		let recList = [];
 		// if (userStocks.length != 0) {

@@ -1,8 +1,8 @@
 const mongoCollections = require("../config/mongoCollections");
 const UserMetrics = mongoCollections.userMetrics;
-const users = mongoCollections.users;
-const buySell = mongoCollections.buySellHistory;
-const stocks = mongoCollections.stocks;
+const users = require('./users');
+const buySell = require('./buySellHistory');
+//const stocks = mongoCollections.stocks;
 var yahooStockPrices = require("yahoo-stock-prices");
 var finviz = require("finvizor");
 //let { ObjectId } = require('mongodb');
@@ -128,26 +128,27 @@ async function getVolatility(stocksPurchased) {
 }
 
 async function getReturns(email) {
-	const userList = await users();
-	const buySellHistory = await buySell();
-	const stockList = await stocks();
+	const user = await users.getUserByEmail(email);
+	const person = await buySell.getHistoryByEmail(email);
+	//const stockList = await stocks();
 
-	let bshData = await buySellHistory.find({}).toArray();
+	//let bshData = await buySellHistory.find({}).toArray();
 
-	let person;
-	for (var i = 0; i < bshData.length; i++) {
-		if (email == bshData[i].email) {
-			person = bshData[i];
-		}
-	}
+	// let person;
+	// for (var i = 0; i < bshData.length; i++) {
+	// 	if (email == bshData[i].email) {
+	// 		person = bshData[i];
+	// 	}
+	// }
 
 	//TODO: Delete this later
-	person = {}; //For testing
-	person.history = []; //For testing
+	// person = {}; //For testing
+	// person.history = []; //For testing
 
 	let bought = 0;
 	let sold = 0;
 	let owned = 0;
+
 	for (var i = 0; i < person.history.length; i++) {
 		if (person.history.transaction == "BUY") {
 			bought += person.history.value * person.history.amount;
@@ -157,18 +158,13 @@ async function getReturns(email) {
 		}
 	}
 
-	for (var i = 0; i < userList.length; i++) {
-		if (userList[i].email == email) {
-			person = userList[i];
-			for (var j = 0; j < person.stocksPurchased.length; j++) {
-				let ticker = person.stocksPurchased[j].ticker;
-				const data = await yahooStockPrices.getCurrentPrice(ticker);
-				owned += data * person.stocksPurchased[j].amount;
-			}
-		}
+	for (var i = 0; i < user.stocksPurchased.length; i++) {
+		let ticker = user.stocksPurchased[i].ticker;
+		const data = await yahooStockPrices.getCurrentPrice(ticker);
+		owned += data * user.stocksPurchased[i].amount;
 	}
 
-	let volatility = getVolatility(person.stocksPurchased);
+	let volatility = getVolatility(user.stocksPurchased);
 
 	let totalReturn = sold + owned - bought;
 	let percentGrowth = (totalReturn / bought) * 100;
