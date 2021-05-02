@@ -254,6 +254,7 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 	var requestConfig = {
 		method: "POST",
 		url: `/private/graph`,
+		contentType: "application/json",
 		data: JSON.stringify({
 			ticker: ticker,
 			subtract: num,
@@ -261,7 +262,7 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 	};
 
 	$.ajax(requestConfig).then(function (responseMessage) {
-		Ploty.newPlot("graph", responseMessage.chart);
+		Plotly.newPlot("graph", responseMessage.chart);
 	});
 });
 
