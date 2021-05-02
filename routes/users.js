@@ -34,7 +34,7 @@ router.post("/signup", async (req, res) => {
 			[]
 		);
 		let userMetricsCreate = await userMetrics.create(email, 0, 0, 0);
-		req.session.user = { email: email };
+		req.session.user = { email: email, firstName: firstName };
 		res.redirect("/private");
 	} catch (e) {
 		console.log(e);
@@ -70,9 +70,49 @@ router.post("/login", async (req, res) => {
 	}
 });
 
+router.get("/updateUser", async (req, res) => {
+	res.render("updateUser", { title: "Edit Account" });
+});
+
+router.post("/updateUser", async (req, res) => {
+	const { firstName, lastName, email, password, age, cash } = req.body;
+
+	const hash = await bcrypt.hash(password, saltRounds);
+
+	let updatedUser = {
+		firstName: firstName,
+		lastName: lastName,
+		email: email,
+		password: hash,
+		age: age,
+		cash: cash
+	};
+
+	let user = await users.getUserByEmail(req.session.user.email);
+	let updatedReturnUser = await users.updateUser(user._id, updatedUser);
+
+	res.redirect("/private");
+});
+
 router.get("/logout", async (req, res) => {
 	req.session.destroy();
-	res.send("Logged out");
+	res.redirect("/");
+});
+
+router.get("/deleteAccount", async (req, res) => {
+	res.render("deleteAccount", { title: "Delete Account" });
+});
+
+router.post("/deleteAccount", async (req, res) => {
+	if (req.body.deleteUser == "yes") {
+		let user = await users.getUserByEmail(req.session.user.email);
+		let deleted = await users.removeUser(user._id);
+		req.session.destroy();
+		res.redirect("/");
+	}
+	else {
+		res.redirect("/private");
+	}
 });
 
 module.exports = router;

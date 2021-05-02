@@ -18,7 +18,8 @@ router.get("/home", async (req, res) => {
 		const user = await users.getUserByEmail(req.session.user.email); 
 		let userStocks = req.session.user.stocksPurchased;
 		let recList = [];
-		// if (userStocks.length != 0) {
+
+		//if (userStocks.length != 0) {
 		// 	recList = await stocksData.giveRecommendation(userStocks);
 		// } else {
 		// 	recList.push("AAPL");

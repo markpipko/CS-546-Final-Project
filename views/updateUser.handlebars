@@ -1,0 +1,28 @@
+<h1>Update Account Information</h1>
+<form action="/updateUser" method="POST" id="updateForm">
+    <label id="firstNameLabelUpdate">
+        First Name:
+        <input type="text" id="firstName_input_update" name="firstName" />
+    </label><br />
+    <label id="lastNameLabelUpdate">
+        Last Name:
+        <input type="text" id="lastName_input_update" name="lastName" />
+    </label><br />
+    <label id="emailLabelUpdate">
+        Email:
+        <input type="text" id="email_input_update" name="email" />
+    </label><br />
+    <label id="passwordLabelUpdate">
+        Password:
+        <input type="text" id="password_input_update" name="password" />
+    </label><br />
+    <label id="ageLabelUpdate">
+        Age:
+        <input type="number" id="age_input_update" name="age" min="0" step="1" />
+    </label><br />
+    <label id="cashLabelUpdate">
+        Starting Cash:
+        <input type="number" id="cash_input_update" name="cash" min="0" />
+    </label><br />
+    <button type="submit">Submit</button>
+</form>

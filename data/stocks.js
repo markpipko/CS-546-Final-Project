@@ -42,6 +42,17 @@ function getSD(arr) {
 	return sd;
 }
 
+function shuffle(a) {
+    var j, x, i;
+    for (i = a.length - 1; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = a[i];
+        a[i] = a[j];
+        a[j] = x;
+    }
+    return a;
+}
+
 const exportedMethods = {
 	async getStock(ticker) {
 		if (!ticker) {
@@ -281,38 +292,27 @@ const exportedMethods = {
 			"https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/8caaa9cecf5b6d60a147e15c20eee688/constituents_json.json"
 		);
 
-		//TODO: make this for multiple stocks rather than just the first
-		let myStockData = await finvizor.stock(myStocks[0]);
-
-		//let myStockPrice = await yahooStockPrices.getCurrentPrice(myStock);
+		let myStockData = [];
+		let stockRecsNum = 0;
+		while (stockRecsNum < 5 && myStocks.length != 0) {
+			let randomIndex = Math.floor(Math.random() * myStocks.length);
+			myStockData.push(await finvizor.stock(myStocks[randomIndex]));
+			stockRecsNum++;
+			myStocks.splice(randomIndex, 1);
+		}
 
 		let recommendationList = [];
-		for (let i = 0; i < sp500.data.length; i++) {
-			if (
-				!myStocks.includes(sp500.data[i].Symbol) &&
-				(sp500.data[i].Sector.includes(myStockData.sector) ||
-					myStockData.sector.includes(sp500.data[i].Sector))
-			) {
-				recommendationList.push(sp500.data[i].Symbol);
+		for (let i = 0; i < myStockData.length; i++) {
+			for (let j = 0; j < sp500.data.length; j++) {
+				if (!myStocks.includes(sp500.data[j].Symbol) && !recommendationList.includes(sp500.data[j].Symbol) &&
+						(myStockData[i].sector.includes(sp500.data[j].Sector) || sp500.data[j].Sector.includes(myStockData[i].sector))) {
+
+					recommendationList.push(sp500.data[j].Symbol);
+				}
 			}
 		}
 
-		//TODO: implement a faster solution for comparing prices as well
-
-		/*for (let i = recommendationList.length - 1; i >= 0; i--) {
-			let recStockPrice = await yahooStockPrices.getCurrentPrice(recommendationList[i]);
-			if (Math.abs(myStockPrice - recStockPrice) > 50) {
-				recommendationList.splice(i, 1);
-			}
-		}
-
-		let fullRecList = [];
-		for (let i = 0; i < recommendationList.length; i++) {
-			fullRecList.push(await finvizor.stock(recommendationList[i]));
-		}
-
-		//Sort recommendation list by roi or some other ratio/factor?
-		fullRecList.sort((a, b) => (a.roi > b.roi) ? -1 : 1);*/
+		recommendationList = shuffle(recommendationList);
 
 		//Select first 3-5 (or less) to return
 		if (recommendationList.length >= 3) return recommendationList.slice(0, 3);
