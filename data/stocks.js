@@ -418,16 +418,23 @@ const exportedMethods = {
 		return "Hold";
 	},
 
-	async giveRecommendation(myStocks) {
+	async giveRecommendation(userStocks) {
 		let sp500 = await axios.get(
 			"https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/8caaa9cecf5b6d60a147e15c20eee688/constituents_json.json"
 		);
+
+		let myStocks = userStocks.slice();
+
+		myStockTickers = [];
+		for (let i = 0; i < myStocks.length; i++) {
+			myStockTickers.push(myStocks[i].ticker);
+		}
 
 		let myStockData = [];
 		let stockRecsNum = 0;
 		while (stockRecsNum < 5 && myStocks.length != 0) {
 			let randomIndex = Math.floor(Math.random() * myStocks.length);
-			myStockData.push(await finvizor.stock(myStocks[randomIndex]));
+			myStockData.push(await finvizor.stock(myStocks[randomIndex].ticker));
 			stockRecsNum++;
 			myStocks.splice(randomIndex, 1);
 		}

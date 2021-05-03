@@ -12,19 +12,21 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/home", async (req, res) => {
-	//TODO: uncomment later
+
 	try {
 		const metrics = await userMetrics.update(req.session.user.email);
 		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = req.session.user.stocksPurchased;
+
 		let recList = [];
 
-		//if (userStocks.length != 0) {
-		// 	recList = await stocksData.giveRecommendation(userStocks);
-		// } else {
-		// 	recList.push("AAPL");
-		// 	recList.push("T");
-		// }
+		if (userStocks.length != 0) {
+		 	recList = await stocksData.giveRecommendation(userStocks);
+		} else {
+		 	recList.push("AAPL");
+		 	recList.push("T");
+		}
+
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
