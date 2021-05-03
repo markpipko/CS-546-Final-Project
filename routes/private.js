@@ -6,6 +6,7 @@ const stocksData = data.stocks;
 const userMetrics = data.userMetrics;
 const users = data.users;
 const historyData = data.buySellHistory;
+const yahooStockPrices = require("yahoo-stock-prices");
 
 router.get("/", async (req, res) => {
 	res.redirect("/private/home");
@@ -16,7 +17,8 @@ router.get("/home", async (req, res) => {
 	try {
 		const metrics = await userMetrics.update(req.session.user.email);
 		const user = await users.getUserByEmail(req.session.user.email);
-		let userStocks = req.session.user.stocksPurchased;
+		//let userStocks = req.session.user.stocksPurchased;
+		let userStocks = user.stocksPurchased
 
 		let recList = [];
 
@@ -27,6 +29,12 @@ router.get("/home", async (req, res) => {
 		 	recList.push("T");
 		}
 
+		var totalValue = await stocksData.getTotalValue(userStocks)
+		var cash = await user.cash
+		for(var i = 0; i < userStocks.length; i++){
+			userStocks[i].value = await yahooStockPrices.getCurrentPrice(userStocks[i].ticker)
+		}
+
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
@@ -34,8 +42,10 @@ router.get("/home", async (req, res) => {
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth, 
 			volatility: metrics.volatility, 
-			stocks: user.stocksPurchased,
-			isEmpty: user.stocksPurchased.length == 0 ? true : false
+			stocks: userStocks,
+			isEmpty: user.stocksPurchased.length == 0 ? true : false,
+			pValue: totalValue.toFixed(2),
+			cash: cash.toFixed(2)
 		});
 	} catch (e) {
 		res.render("login", { hasErrors: true, error: e });
@@ -88,6 +98,54 @@ router.post("/find", async (req, res) => {
 		res.json({ stock: stockInfo, recommendation: rec, status: status });
 	} catch (e) {
 		return res.json({ error: "Ticker not found" });
+	}
+});
+
+router.post("/stocks/:id", async (req, res) => {
+	console.log(req.params.id)
+	let ticker = req.body[`${req.params.id}`];
+	console.log(ticker)
+	if (!ticker) {
+		return res.render("home", {
+			title: "Home",
+			hasErrors: true,
+			error: "Please input a ticker",
+		});
+	}
+	ticker = ticker.trim();
+	if (!ticker) {
+		return res.render("home", {
+			title: "Home",
+			hasErrors: true,
+			error: "Please input a ticker",
+		});
+	}
+
+	try {
+		const stockInfo = await stocksData.getStock(ticker);
+		const rec = await stocksData.buyOrSell(ticker);
+		let status = 0;
+
+		if (stockInfo.price > stockInfo.prevClose) {
+			status = 1;
+		} else if (stockInfo.price < stockInfo.prevClose) {
+			status = -1;
+		} else {
+			status = 0;
+		}
+		res.render("stock", {
+			title: ticker.toUpperCase(),
+			stock: stockInfo,
+			recommendation: rec,
+			status: status,
+		});
+	} catch (e) {
+		console.log(e);
+		return res.render("home", {
+			title: "Home",
+			hasErrors: true,
+			error: "Ticker not found",
+		});
 	}
 });
 

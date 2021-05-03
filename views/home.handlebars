@@ -17,13 +17,20 @@
 	<p id="volatility">Volatility of Current Portfolio: {{{volatility}}} </p>
 
 	<h3> Portfolio </h3>
+		<p> Cash: ${{cash}}</p>
 		{{#if isEmpty}}
 			<p>Portfolio is empty</p>
 		{{else}}
+			<p> Portfolio Value: ${{pValue}} </p>
+			<br />
 			{{#each stocks}}
-			<p> Stock: {{this.ticker}} </p>
+			<form action="/private/stocks/{{this.ticker}}" method="POST">
+				<input value="{{this.ticker}}" id="{{this.ticker}}" type="hidden"/>
+				<p> Stock: <button type="submit" value="search"> {{this.ticker}} </button> </p>
+			</form>
 			<p> Amount: {{this.amount}} </p>
-			<p> Average Cost: {{this.purchaseValue}} </p>
+			<p> Average Cost: ${{this.purchaseValue}} </p>
+			<p> Present Value: ${{this.value}} </p>
 			<br />
 			{{/each}}
 		{{/if}}
