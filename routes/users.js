@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const saltRounds = 16;
 const data = require("../data");
+const { buySellHistory } = require("../data");
 //const { userMetrics } = require('../config/mongoCollections'); Do we need this?
 const users = data.users;
 const userMetrics = data.userMetrics;
@@ -92,6 +93,24 @@ router.post("/updateUser", async (req, res) => {
 
 	let user = await users.getUserByEmail(req.session.user.email);
 	let updatedReturnUser = await users.updateUser(user._id, updatedUser);
+
+	if (email != user.email) {
+		let updatedUserMetrics = {
+			email: email
+		};
+		let userMetricsReturn = await userMetrics.get(req.session.user.email);
+		let updatedReturnUserMetrics = await userMetrics.updateEmail(userMetricsReturn._id.toString(), updatedUserMetrics);
+
+		let updatedBSH = {
+			email: email
+		};
+		let bshReturn = await userBSH.getHistoryByEmail(req.session.user.email);
+		let updatedReturnBSH = await userBSH.updateEmail(bshReturn._id.toString(), updatedBSH);
+
+		req.session.user.email = email;
+	}
+
+	
 
 	res.redirect("/private");
 });
