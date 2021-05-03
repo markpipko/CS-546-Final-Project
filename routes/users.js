@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require("bcryptjs");
 const saltRounds = 16;
 const data = require("../data");
+const { buySellHistory } = require("../data");
 //const { userMetrics } = require('../config/mongoCollections'); Do we need this?
 const users = data.users;
 const userMetrics = data.userMetrics;
@@ -35,8 +36,8 @@ router.post("/signup", async (req, res) => {
 			[]
 		);
 		let userMetricsCreate = await userMetrics.create(email, 0, 0, 0);
-    let historyCreate = await buySell.create(email, [])
-		req.session.user = { email: email, firstName: firstName };
+    	let historyCreate = await buySell.create(email, [])
+		req.session.user = { email: email, firstName: firstName, stocksPurchased: [] };
 		res.redirect("/private");
 	} catch (e) {
 		console.log(e);
@@ -93,6 +94,24 @@ router.post("/updateUser", async (req, res) => {
 	let user = await users.getUserByEmail(req.session.user.email);
 	let updatedReturnUser = await users.updateUser(user._id, updatedUser);
 
+	if (email != user.email) {
+		let updatedUserMetrics = {
+			email: email
+		};
+		let userMetricsReturn = await userMetrics.get(req.session.user.email);
+		let updatedReturnUserMetrics = await userMetrics.updateEmail(userMetricsReturn._id.toString(), updatedUserMetrics);
+
+		let updatedBSH = {
+			email: email
+		};
+		let bshReturn = await userBSH.getHistoryByEmail(req.session.user.email);
+		let updatedReturnBSH = await userBSH.updateEmail(bshReturn._id.toString(), updatedBSH);
+
+		req.session.user.email = email;
+	}
+
+	
+
 	res.redirect("/private");
 });
 
@@ -109,8 +128,8 @@ router.post("/deleteAccount", async (req, res) => {
 	if (req.body.deleteUser == "yes") {
 		let user = await users.getUserByEmail(req.session.user.email);
 		let deleted = await users.removeUser(user._id);
-    deleted = await userMetrics.remove(email)
-    deleted = await buySell.remove(email)
+    	deleted = await userMetrics.remove(user.email)
+    	deleted = await buySell.remove(user.email)
 		req.session.destroy();
 		res.redirect("/");
 	}

@@ -12,27 +12,30 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/home", async (req, res) => {
-	//TODO: uncomment later
+
 	try {
-		const metrics = await userMetrics.update(req.session.user.email)
-		const user = await users.getUserByEmail(req.session.user.email); 
+		const metrics = await userMetrics.update(req.session.user.email);
+		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = req.session.user.stocksPurchased;
+
 		let recList = [];
 
-		//if (userStocks.length != 0) {
-		// 	recList = await stocksData.giveRecommendation(userStocks);
-		// } else {
-		// 	recList.push("AAPL");
-		// 	recList.push("T");
-		// }
+		if (userStocks.length != 0) {
+		 	recList = await stocksData.giveRecommendation(userStocks);
+		} else {
+		 	recList.push("AAPL");
+		 	recList.push("T");
+		}
+
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
-			recList: recList , 
+			recList: recList,
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth, 
 			volatility: metrics.volatility, 
-			stocks: user.stocksPurchased ,
+			stocks: user.stocksPurchased,
+			isEmpty: user.stocksPurchased.length == 0 ? true : false
 		});
 	} catch (e) {
 		res.render("login", { hasErrors: true, error: e });
@@ -161,6 +164,12 @@ router.post("/transaction", async (req, res) => {
 			return res.json({ error: e });
 		}
 	} else {
+		try {
+			let status = await stocksData.sell(user.email, ticker, quantity);
+			return res.json({ success: true, ticker: ticker, quantity: quantity });
+		} catch (e) {
+			return res.json({ error: e });
+		}
 	}
 });
 

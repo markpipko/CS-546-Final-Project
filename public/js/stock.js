@@ -219,25 +219,50 @@ if (transForm) {
 					quantity: quantity,
 				}),
 			}).then(function (x) {
-				let result = document.createElement("p");
-				result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
-				$("#dialog-message").append(result);
-				$("#dialog-message").dialog({
-					modal: true,
-					buttons: {
-						Ok: function () {
-							$(this).dialog("close");
+				if (x.error) {
+					// stockError.hidden = false;
+					// stockError.innerHTML = x.error;
+					let errorStatus = document.createElement("p");
+					$("#dialog-message2").html("");
+					errorStatus.innerHTML = x.error;
+
+					$("#dialog-message2").append(errorStatus);
+					$("#dialog-message2").dialog({
+						modal: true,
+						buttons: {
+							Ok: function () {
+								$(this).dialog("close");
+							},
 						},
-					},
-				});
-				transForm.reset();
+					});
+				} else {
+					let result = document.createElement("p");
+					$("#dialog-message").html("");
+					if (quantity == 1) {
+						result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
+					} else {
+						result.innerHTML = `Your order to ${transaction} ${quantity} shares of ${temp.value.toUpperCase()} was successful.`;
+					}
+
+					$("#dialog-message").append(result);
+					$("#dialog-message").dialog({
+						modal: true,
+						buttons: {
+							Ok: function () {
+								$(this).dialog("close");
+							},
+						},
+					});
+					transForm.reset();
+				}
+
 				$.unblockUI();
 			});
 		}
 	});
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
 	let ticker = temp.value;
 	var requestConfig = {
 		method: "POST",
@@ -250,10 +275,9 @@ $(document).ready(function() {
 	};
 
 	$.ajax(requestConfig).then(function (responseMessage) {
-
 		Plotly.newPlot("graph", responseMessage.chart);
 	});
-})
+});
 
 $("#1w, #1m, #1y, #5y").click(function (event) {
 	event.preventDefault();
@@ -281,11 +305,9 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 	};
 
 	$.ajax(requestConfig).then(function (responseMessage) {
-
 		Plotly.newPlot("graph", responseMessage.chart);
 	});
 });
 
 // 	Ploty.newPlot('graph', trace)
 // })
-

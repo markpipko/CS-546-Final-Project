@@ -5,7 +5,7 @@ const buySell = require('./buySellHistory');
 //const stocks = mongoCollections.stocks;
 var yahooStockPrices = require("yahoo-stock-prices");
 var finviz = require("finvizor");
-//let { ObjectId } = require('mongodb');
+let { ObjectId } = require('mongodb');
 
 function checkStr(str) {
 	if (str == undefined) {
@@ -89,13 +89,18 @@ function clean(arr){
 }
 
 async function getVolatility(stocksPurchased) {
-	if(stocksPurchased.length == 0){
-		return 0
+
+	if (stocksPurchased.length == 0) {
+		return 0;
 	}
+
 	var stocksOwned = 0;
 	var totalVolatility = 0;
 	for (var i = 0; i < stocksPurchased.length; i++) {
 		let ticker = stocksPurchased[i].ticker;
+
+		let date = new Date(stocksPurchased[i].datePurchased);
+
 		stocksOwned += stocksPurchased[i].amount;
 		
 		let today = new Date();
@@ -115,28 +120,28 @@ async function getVolatility(stocksPurchased) {
 		prices = clean(prices)
 
 		var dailyReturns = [];
-		var j = 0
+
 		for (var k = 1; k < prices.length; k++) {
-			if(prices[k].adjclose != undefined){
-				dailyReturns[j] =
-					(prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose;
-				j++
-			}
+			dailyReturns.push((prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose);
 		}
 
 		var mean = 0;
-		for (var k = 0; k < dailyReturns.length; k++) {
-			mean += dailyReturns[k];
+		if (dailyReturns.length != 0) {
+			for (var k = 0; k < dailyReturns.length; k++) {
+				mean += dailyReturns[k];
+			}
+			mean = mean / dailyReturns.length;
 		}
-		mean = mean / dailyReturns.length;
 
 		var sd = 0;
-		for (var k = 0; k < dailyReturns.length; k++) {
-			sd += Math.pow(dailyReturns[k] - mean, 2);
+		if (dailyReturns.length != 0) {
+			for (var k = 0; k < dailyReturns.length; k++) {
+				sd += Math.pow(dailyReturns[k] - mean, 2);
+			}
+			sd = Math.sqrt(sd / dailyReturns.length);
+			sd = sd * Math.sqrt(dailyReturns.length);
 		}
-		sd = Math.sqrt(sd / dailyReturns.length);
-		sd = sd * Math.sqrt(dailyReturns.length);
-
+		
 		totalVolatility += sd * stocksPurchased[i].amount;
 	}
 	return totalVolatility / stocksOwned;
@@ -145,20 +150,6 @@ async function getVolatility(stocksPurchased) {
 async function getReturns(email) {
 	const user = await users.getUserByEmail(email);
 	const person = await buySell.getHistoryByEmail(email);
-	//const stockList = await stocks();
-
-	//let bshData = await buySellHistory.find({}).toArray();
-
-	// let person;
-	// for (var i = 0; i < bshData.length; i++) {
-	// 	if (email == bshData[i].email) {
-	// 		person = bshData[i];
-	// 	}
-	// }
-
-	//TODO: Delete this later
-	// person = {}; //For testing
-	// person.history = []; //For testing
 
 	let bought = 0;
 	let sold = 0;
@@ -201,26 +192,54 @@ const update = async function update(email) {
 	let volatility = returns[2];
 
 	let metric = await get(email);
-	let newMetric = {
-		email: metric.email,
-		totalReturn: totalReturn,
-		percentGrowth: percentGrowth,
-		volatility: volatility,
-	};
+
+	if (metric.totalReturn != totalReturn || metric.percentGrowth != percentGrowth || metric.volatility != volatility) {
+		let newMetric = {
+			email: metric.email,
+			totalReturn: totalReturn,
+			percentGrowth: percentGrowth,
+			volatility: volatility,
+		};
+	
+		const updatedInfo = await metricsCollection.updateOne(
+			{ email: email },
+			{ $set: newMetric }
+		);
+	
+		if (updatedInfo.modifiedCount === 0) {
+			throw "Could not update metrics";
+		}
+	
+		newMetric = await get(email);
+		newMetric._id = newMetric._id.toString();
+		return newMetric;
+	}
+	else {
+		return metric;
+	}	
+};
+
+const updateEmail = async function updateEmail(id, email) {
+	if (!id || typeof id !== "string") throw "Invalid ID Parameter";
+	if (!email || typeof email !== "object" || !email.email || typeof email.email !== "string" || email.email.trim() == "")
+        throw "Invalid email";
+
+	const metricsCollection = await UserMetrics();
 
 	const updatedInfo = await metricsCollection.updateOne(
-		{ email: email },
-		{ $set: newMetric }
+		{ _id: ObjectId(id) },
+		{ $set: email }
 	);
 
-	// if (.modifiedCount === 0) {
-	// 	throw "Could not update metrics";
-	// }
+	if (updatedInfo.modifiedCount === 0) {
+		throw "Could not update email";
+	}
 
-	newMetric = await get(email);
+
+	let newMetric = await get(email.email);
 	newMetric._id = newMetric._id.toString();
 	return newMetric;
-};
+}
 
 const remove = async function remove(email) {
 	checkStr(email);
@@ -238,5 +257,6 @@ module.exports = {
 	create,
 	get,
 	update,
+	updateEmail,
 	remove,
 };
