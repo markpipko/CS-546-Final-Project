@@ -159,7 +159,7 @@ async function getReturns(email) {
 		if (person.history[i].transaction == "BUY") {
 			bought += person.history[i].value * person.history[i].amount;
 		}
-		if (person.history[i].transaction == "SOLD") {
+		if (person.history[i].transaction == "SELL") {
 			sold += person.history[i].value * person.history[i].amount;
 		}
 	}

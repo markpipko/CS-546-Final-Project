@@ -498,6 +498,16 @@ const exportedMethods = {
 		var data = [trace];
 		return data;
 	},
+
+	async getTotalValue(stocksOwned){
+		var totalValue = 0
+		for(var i = 0; i< stocksOwned.length; i++){
+			let ticker = stocksOwned[i].ticker;
+			const data = await yahooStockPrices.getCurrentPrice(ticker);
+			totalValue += data * stocksOwned[i].amount;
+		}
+		return totalValue
+	}
 };
 
 module.exports = exportedMethods;
