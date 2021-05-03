@@ -127,7 +127,7 @@ const exportedMethods = {
 		}
 		quantity = quantity.trim();
 		if (!quantity) {
-			throw "Email is empty";
+			throw "Quantity is empty";
 		}
 		const userCollection = await users();
 		const user = await userCollection.findOne({ email: email });
@@ -188,7 +188,7 @@ const exportedMethods = {
 				"BUY",
 				ticker,
 				parseFloat(transactionDetails.purchaseValue),
-				parseFloat(transactionDetails.amount),
+				parseInt(transactionDetails.amount),
 				new Date()
 			);
 
@@ -212,21 +212,132 @@ const exportedMethods = {
 				{ $set: newUser }
 			);
 
-			let updateHistory = await historyData.addHistory(
-				email,
-				"BUY",
-				ticker,
-				parseFloat(price.toFixed(2)),
-				parseInt(quantity),
-				new Date()
-			);
-
 			if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
-				throw "Transaction could not be processed";
+				throw "User information could not be updated";
 			}
+
+			try {
+				let updateHistory = await historyData.addHistory(
+					email,
+					"BUY",
+					ticker,
+					parseFloat(price.toFixed(2)),
+					parseInt(quantity),
+					new Date()
+				);
+			} catch (e) {
+				throw "Transaction could not be added to user history";
+			}
+
 			return 1;
 		}
 	},
+
+	async sell(email, ticker, quantity) {
+		if (!email) {
+			throw "Email not provided";
+		}
+		if (typeof email !== "string") {
+			throw "Email not of type string";
+		}
+		email = email.trim();
+		if (!email) {
+			throw "Email is empty";
+		}
+
+		if (!ticker) {
+			throw "Ticker not provided";
+		}
+		if (typeof ticker != "string") {
+			throw "Ticker not of type string";
+		}
+		ticker = ticker.trim();
+		if (!ticker) {
+			throw "Ticker is just spaces";
+		}
+		ticker = ticker.toUpperCase();
+
+		if (!quantity) {
+			throw "Quantity not provided";
+		}
+		if (typeof quantity != "string") {
+			throw "Quantity not of type string";
+		}
+		quantity = quantity.trim();
+		if (!quantity) {
+			throw "Email is empty";
+		}
+		const userCollection = await users();
+		const user = await userCollection.findOne({ email: email });
+
+		if (!user) {
+			throw "User not found";
+		}
+
+		let stocksPurchased = user.stocksPurchased;
+		let index = -1;
+		for (let i = 0; i < stocksPurchased.length; i++) {
+			if (stocksPurchased[i]["ticker"] == ticker) {
+				index = i;
+				transactionDetails = stocksPurchased[i];
+			}
+		}
+		if (index == -1) {
+			throw `You do not own any shares of ${ticker}`;
+		}
+		if (quantity > transactionDetails.amount) {
+			throw `The quantity you have specified exceeds the amount of ${ticker} you currently own.`;
+		} else {
+			const price = await yahooStockPrices.getCurrentPrice(ticker);
+			if (!price) {
+				throw "Ticker not found";
+			}
+			let sum = price * parseInt(quantity);
+			let updatedAmount = transactionDetails.amount - parseInt(quantity);
+			let updatedTransaction = {};
+			let newUser = user;
+			newUser.cash += sum;
+			if (updatedAmount == 0) {
+				stocksPurchased.splice(index, 1);
+			} else {
+				let updatedValue = transactionDetails.purchaseValue;
+
+				updatedTransaction = {
+					_id: transactionDetails._id,
+					ticker: ticker,
+					amount: updatedAmount,
+					purchaseValue: updatedValue,
+					datePurchased: transactionDetails.datePurchased,
+				};
+				newUser.stocksPurchased[index] = updatedTransaction;
+			}
+
+			let updateInfo = await userCollection.updateOne(
+				{ email: email },
+				{ $set: newUser }
+			);
+
+			if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
+				throw "User information could not be updated";
+			}
+
+			try {
+				let updateHistory = await historyData.addHistory(
+					email,
+					"SELL",
+					ticker,
+					parseFloat(price.toFixed(2)),
+					parseInt(quantity),
+					new Date()
+				);
+			} catch (e) {
+				throw "Transaction could not be added to user history";
+			}
+
+			return 1;
+		}
+	},
+
 	async buyOrSell(ticker) {
 		if (!ticker) {
 			throw "Ticker not provided";
