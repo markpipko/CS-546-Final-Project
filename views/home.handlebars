@@ -17,11 +17,11 @@
 	<p id="volatility">Volatility: {{{volatility}}} </p>
 
 	<h3> Portfolio </h3>
-		{{#each stock}}
+		{{#each stocks}}
 		<p> Stock: {{this.ticker}} </p>
 		<p> Amount: {{this.amount}} </p>
 		<p> Average Cost: {{this.purchaseValue}} </p>
-		<br>
+		<br />
 		{{/each}}
 
 	<h3>Recommendations</h3>

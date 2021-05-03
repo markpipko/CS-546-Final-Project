@@ -7,7 +7,7 @@ async function getHistoryByEmail(email) {
      if (!email || typeof email !== "string") throw "Invalid Email parameter";
 
      const historyCollection = await BuySellHistory();
-     const userHistory = await historyCollection.find({ email: email });
+     const userHistory = await historyCollection.findOne({ email: email });
 
      if (!userHistory) throw "User History not found";
      return userHistory;
@@ -65,6 +65,27 @@ async function addHistory(email, transaction, ticker, value, amount, date){
     return user
 }
 
+const updateEmail = async function updateEmail(id, email) {
+    if (!id || typeof id !== "string") throw "Invalid ID Parameter";
+	if (!email || typeof email !== "object" || !email.email || typeof email.email !== "string" || email.email.trim() == "")
+        throw "Invalid email";
+	
+	const bshCollection = await BuySellHistory();
+
+	const updatedInfo = await bshCollection.updateOne(
+		{ _id: ObjectId(id) },
+		{ $set: email }
+	);
+
+	if (updatedInfo.modifiedCount === 0) {
+		throw "Could not update email";
+	}
+
+	let newBSH = await getHistoryByEmail(email.email);
+	newBSH._id = newBSH._id.toString();
+	return newBSH;
+}
+
 const remove = async function remove(email) {
 	const historyCollection = await BuySellHistory()
 	const deletionInfo = await historyCollection.deleteOne({ email: email });
@@ -82,5 +103,6 @@ module.exports = {
     getHistoryByEmail,
     create,
     addHistory,
+    updateEmail,
     remove
 };

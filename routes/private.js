@@ -12,23 +12,27 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/home", async (req, res) => {
-	//TODO: uncomment later
-	//const metrics = await userMetrics.update(req.session.user.email)
+	const metrics = await userMetrics.update(req.session.user.email)
 	try {
-		const user = await users.getUserByEmail(req.session.user.email); //should be getUserByEmail
-		let userStocks = req.session.user.stocksPurchased;
+		const user = await users.getUserByEmail(req.session.user.email);
+		let userStocks = user.stocksPurchased;
 		let recList = [];
 
-		//if (userStocks.length != 0) {
-		// 	recList = await stocksData.giveRecommendation(userStocks);
-		// } else {
-		// 	recList.push("AAPL");
-		// 	recList.push("T");
-		// }
+		if (userStocks.length != 0) {
+		 	recList = await stocksData.giveRecommendation(userStocks);
+		} else {
+		 	recList.push("AAPL");
+		 	recList.push("T");
+		}
+
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
-			recList: recList /*, totalReturn: metrics.totalReturn, percentGrowth: metrics.percentGrowth, volatility: metrics.volatility, stocks: user.stocksPurchased .*/,
+			recList: recList, 
+			totalReturn: metrics.totalReturn, 
+			percentGrowth: metrics.percentGrowth, 
+			volatility: metrics.volatility, 
+			stocks: userStocks
 		});
 	} catch (e) {
 		res.render("login", { hasErrors: true, error: e });
