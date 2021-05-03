@@ -58,7 +58,7 @@ router.post("/graph", async (req, res) => {
 
 router.get("/stockHistory", async (req, res) => {
 	const trade = await historyData.getHistoryByEmail(req.session.user.email);
-	res.render("stockHistory", { title: "History", trade: trade.history });
+	res.render("stockHistory", { title: "History", trades: trade.history });
 });
 
 router.post("/find", async (req, res) => {

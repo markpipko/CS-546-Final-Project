@@ -123,7 +123,7 @@ async function getVolatility(stocksPurchased) {
 				j++
 			}
 		}
-		console.log(dailyReturns, ticker)
+
 		var mean = 0;
 		for (var k = 0; k < dailyReturns.length; k++) {
 			mean += dailyReturns[k];
