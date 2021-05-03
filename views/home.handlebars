@@ -17,12 +17,16 @@
 	<p id="volatility">Volatility of Current Portfolio: {{{volatility}}} </p>
 
 	<h3> Portfolio </h3>
-		{{#each stocks}}
-		<p> Stock: {{this.ticker}} </p>
-		<p> Amount: {{this.amount}} </p>
-		<p> Average Cost: {{this.purchaseValue}} </p>
-		<br />
-		{{/each}}
+		{{#if isEmpty}}
+			<p>Portfolio is empty</p>
+		{{else}}
+			{{#each stocks}}
+			<p> Stock: {{this.ticker}} </p>
+			<p> Amount: {{this.amount}} </p>
+			<p> Average Cost: {{this.purchaseValue}} </p>
+			<br />
+			{{/each}}
+		{{/if}}
 
 	<h3>Recommendations</h3>
 	<ul>
@@ -39,8 +43,6 @@
 		<a href = "/deleteAccount">Delete Account</a>
 		<a href ="/private/stockHistory">History</a>
 	</div>
-
-
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
