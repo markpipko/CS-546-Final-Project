@@ -220,7 +220,11 @@ if (transForm) {
 				}),
 			}).then(function (x) {
 				let result = document.createElement("p");
-				result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
+				if (quantity == 1) {
+					result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
+				} else {
+					result.innerHTML = `Your order to ${transaction} ${quantity} shares of ${temp.value.toUpperCase()} was successful.`;
+				}
 				$("#dialog-message").append(result);
 				$("#dialog-message").dialog({
 					modal: true,
@@ -237,7 +241,7 @@ if (transForm) {
 	});
 }
 
-$(document).ready(function() {
+$(document).ready(function () {
 	let ticker = temp.value;
 	var requestConfig = {
 		method: "POST",
@@ -250,10 +254,9 @@ $(document).ready(function() {
 	};
 
 	$.ajax(requestConfig).then(function (responseMessage) {
-
 		Plotly.newPlot("graph", responseMessage.chart);
 	});
-})
+});
 
 $("#1w, #1m, #1y, #5y").click(function (event) {
 	event.preventDefault();
@@ -281,11 +284,9 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 	};
 
 	$.ajax(requestConfig).then(function (responseMessage) {
-
 		Plotly.newPlot("graph", responseMessage.chart);
 	});
 });
 
 // 	Ploty.newPlot('graph', trace)
 // })
-

@@ -4,7 +4,7 @@ const axios = require("axios");
 const mongoCollections = require("../config/mongoCollections");
 const users = mongoCollections.users;
 let { ObjectId } = require("mongodb");
-const historyData = require('./buySellHistory');
+const historyData = require("./buySellHistory");
 
 function getMean(arr) {
 	if (!arr) {
@@ -44,14 +44,14 @@ function getSD(arr) {
 }
 
 function shuffle(a) {
-    var j, x, i;
-    for (i = a.length - 1; i > 0; i--) {
-        j = Math.floor(Math.random() * (i + 1));
-        x = a[i];
-        a[i] = a[j];
-        a[j] = x;
-    }
-    return a;
+	var j, x, i;
+	for (i = a.length - 1; i > 0; i--) {
+		j = Math.floor(Math.random() * (i + 1));
+		x = a[i];
+		a[i] = a[j];
+		a[j] = x;
+	}
+	return a;
 }
 
 const exportedMethods = {
@@ -183,12 +183,14 @@ const exportedMethods = {
 				{ $set: newUser }
 			);
 
-			let updateHistory = await historyData.addHistory(email, 
-				'BUY', 
-				ticker, 
-				parseInt(transactionDetails.purchaseValue), 
-				parseInt(transactionDetails.amount), 
-				new Date())
+			let updateHistory = await historyData.addHistory(
+				email,
+				"BUY",
+				ticker,
+				parseFloat(transactionDetails.purchaseValue),
+				parseFloat(transactionDetails.amount),
+				new Date()
+			);
 
 			if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
 				throw "Transaction could not be processed";
@@ -210,12 +212,14 @@ const exportedMethods = {
 				{ $set: newUser }
 			);
 
-			let updateHistory = await historyData.addHistory(email, 
-				'BUY', 
-				ticker, 
-				parseFloat(price.toFixed(2)), 
-				parseInt(quantity), 
-				new Date())
+			let updateHistory = await historyData.addHistory(
+				email,
+				"BUY",
+				ticker,
+				parseFloat(price.toFixed(2)),
+				parseInt(quantity),
+				new Date()
+			);
 
 			if (!updateInfo.matchedCount && !updateInfo.modifiedCount) {
 				throw "Transaction could not be processed";
@@ -238,7 +242,7 @@ const exportedMethods = {
 
 		var today = new Date();
 		var tewntyDayPeriod = new Date();
-		tewntyDayPeriod.setDate(today.getDate() - 20)
+		tewntyDayPeriod.setDate(today.getDate() - 20);
 		const prices = await yahooStockPrices.getHistoricalPrices(
 			tewntyDayPeriod.getMonth(),
 			tewntyDayPeriod.getDate(),
@@ -255,12 +259,12 @@ const exportedMethods = {
 
 		var closingPrices = [];
 		var movingAverage = [];
-		let k = 0
+		let k = 0;
 		for (var i = 0; i < prices.length; i++) {
-			if(prices[i].adjclose != undefined){
+			if (prices[i].adjclose != undefined) {
 				closingPrices[k] = prices[i].adjclose;
 				movingAverage[k] = getMean(closingPrices);
-				k++
+				k++;
 			}
 		}
 		var sd = getSD(closingPrices);
@@ -327,9 +331,12 @@ const exportedMethods = {
 		let recommendationList = [];
 		for (let i = 0; i < myStockData.length; i++) {
 			for (let j = 0; j < sp500.data.length; j++) {
-				if (!myStockTickers.includes(sp500.data[j].Symbol) && !recommendationList.includes(sp500.data[j].Symbol) &&
-						(myStockData[i].sector.includes(sp500.data[j].Sector) || sp500.data[j].Sector.includes(myStockData[i].sector))) {
-
+				if (
+					!myStocks.includes(sp500.data[j].Symbol) &&
+					!recommendationList.includes(sp500.data[j].Symbol) &&
+					(myStockData[i].sector.includes(sp500.data[j].Sector) ||
+						sp500.data[j].Sector.includes(myStockData[i].sector))
+				) {
 					recommendationList.push(sp500.data[j].Symbol);
 				}
 			}
@@ -356,19 +363,20 @@ const exportedMethods = {
 			monthAgo.getFullYear(),
 			today.getMonth(),
 			today.getDate(),
-			today.getFullYear(), 
-			ticker, 
-			'1d');
-		let k = 0
+			today.getFullYear(),
+			ticker,
+			"1d"
+		);
+		let k = 0;
 		let reversedData = stocksData.reverse();
-		for(var i = 0; i < stocksData.length; i++){
-			if(stocksData[i].adjclose != undefined){
-				prices[k] = stocksData[i].adjclose
+		for (var i = 0; i < stocksData.length; i++) {
+			if (stocksData[i].adjclose != undefined) {
+				prices[k] = stocksData[i].adjclose;
 				let utcseconds = reversedData[i].date;
 				let d = new Date(0);
 				d.setUTCSeconds(utcseconds);
 				dates[i] = `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear()}`;
-				k++
+				k++;
 			}
 		}
 		var trace = {
