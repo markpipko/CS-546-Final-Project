@@ -32,9 +32,10 @@ router.get("/home", async (req, res) => {
 			name: req.session.user.firstName,
 			recList: recList,
 			totalReturn: metrics.totalReturn,
-			percentGrowth: metrics.percentGrowth,
-			volatility: metrics.volatility,
+			percentGrowth: metrics.percentGrowth, 
+			volatility: metrics.volatility, 
 			stocks: user.stocksPurchased,
+			isEmpty: user.stocksPurchased.length == 0 ? true : false
 		});
 	} catch (e) {
 		res.render("login", { hasErrors: true, error: e });

@@ -36,8 +36,8 @@ router.post("/signup", async (req, res) => {
 			[]
 		);
 		let userMetricsCreate = await userMetrics.create(email, 0, 0, 0);
-    let historyCreate = await buySell.create(email, [])
-		req.session.user = { email: email, firstName: firstName };
+    	let historyCreate = await buySell.create(email, [])
+		req.session.user = { email: email, firstName: firstName, stocksPurchased: [] };
 		res.redirect("/private");
 	} catch (e) {
 		console.log(e);
@@ -128,8 +128,8 @@ router.post("/deleteAccount", async (req, res) => {
 	if (req.body.deleteUser == "yes") {
 		let user = await users.getUserByEmail(req.session.user.email);
 		let deleted = await users.removeUser(user._id);
-    deleted = await userMetrics.remove(email)
-    deleted = await buySell.remove(email)
+    	deleted = await userMetrics.remove(user.email)
+    	deleted = await buySell.remove(user.email)
 		req.session.destroy();
 		res.redirect("/");
 	}
