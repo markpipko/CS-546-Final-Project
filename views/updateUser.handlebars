@@ -10,11 +10,15 @@
     </label><br />
     <label id="emailLabelUpdate">
         Email:
-        <input type="text" id="email_input_update" name="email" />
+        <input type="email" id="email_input_update" name="email" />
     </label><br />
     <label id="passwordLabelUpdate">
         Password:
-        <input type="text" id="password_input_update" name="password" />
+        <input type="password" id="password_input_update" name="password" />
+    </label><br />
+    <label id="passwordLabelUpdate">
+        Confirm Password:
+        <input type="password" id="password_input_confirm" name="passwordConfirm" />
     </label><br />
     <label id="ageLabelUpdate">
         Age:
@@ -26,5 +30,9 @@
     </label><br />
     <button type="submit">Submit</button>
 </form>
+
+{{#if hasErrors}}
+    <p>{{error}}</p>
+{{/if}}
 
 <a href="/private" id="homeLink">Back to home page</a>

@@ -10,11 +10,11 @@
     </label><br />
     <label id="emailLabelSignup">
         Email:
-        <input type="text" id="email_input_signup" name="email" />
+        <input type="email" id="email_input_signup" name="email" />
     </label><br />
     <label id="passwordLabelSignup">
         Password:
-        <input type="text" id="password_input_signup" name="password" />
+        <input type="password" id="password_input_signup" name="password" />
     </label><br />
     <label id="ageLabelSignup">
         Age:
@@ -26,5 +26,9 @@
     </label><br />
     <button type="submit">Submit</button>
 </form>
+
+{{#if hasErrors}}
+    <p>{{error}}</p>
+{{/if}}
 
 <a href="/">Back to Login</a>
