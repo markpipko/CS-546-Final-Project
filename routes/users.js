@@ -24,6 +24,14 @@ router.get("/signup", async (req, res) => {
 router.post("/signup", async (req, res) => {
 	const { firstName, lastName, email, password, age, cash } = req.body;
 
+	const allUsers = await users.getAllUsers();
+	for (let i = 0; i < allUsers.length; i++) {
+		if (allUsers[i].email == email) {
+			res.render("signup", { title: "Sign Up", hasErrors: true, error: "Email already in use" });
+			return;
+		}
+	}
+
 	const hash = await bcrypt.hash(password, saltRounds);
 	try {
 		let user = await users.addUser(
@@ -78,7 +86,12 @@ router.get("/updateUser", async (req, res) => {
 });
 
 router.post("/updateUser", async (req, res) => {
-	const { firstName, lastName, email, password, age, cash } = req.body;
+	const { firstName, lastName, email, password, passwordConfirm, age, cash } = req.body;
+
+	if (password != passwordConfirm) {
+		res.render("updateUser", { title: "Edit Account", hasErrors: true, error: "Passwords do not match" });
+		return;
+	}
 
 	const hash = await bcrypt.hash(password, saltRounds);
 

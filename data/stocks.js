@@ -68,7 +68,7 @@ const exportedMethods = {
 		}
 		ticker = ticker.toUpperCase();
 		const data = await finvizor.stock(ticker);
-		if (!data) {
+		if (data.error) {
 			throw "Ticker not found";
 		}
 		let yahoo_data = await yahooStockPrices.getCurrentPrice(ticker);
