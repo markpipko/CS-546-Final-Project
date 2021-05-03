@@ -14,8 +14,8 @@ router.get("/", async (req, res) => {
 router.get("/home", async (req, res) => {
 
 	try {
-		const metrics = await userMetrics.update(req.session.user.email)
-		const user = await users.getUserByEmail(req.session.user.email); 
+		const metrics = await userMetrics.update(req.session.user.email);
+		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = req.session.user.stocksPurchased;
 
 		let recList = [];
@@ -30,11 +30,11 @@ router.get("/home", async (req, res) => {
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
-			recList: recList , 
+			recList: recList,
 			totalReturn: metrics.totalReturn,
-			percentGrowth: metrics.percentGrowth, 
-			volatility: metrics.volatility, 
-			stocks: user.stocksPurchased ,
+			percentGrowth: metrics.percentGrowth,
+			volatility: metrics.volatility,
+			stocks: user.stocksPurchased,
 		});
 	} catch (e) {
 		res.render("login", { hasErrors: true, error: e });
@@ -163,6 +163,12 @@ router.post("/transaction", async (req, res) => {
 			return res.json({ error: e });
 		}
 	} else {
+		try {
+			let status = await stocksData.sell(user.email, ticker, quantity);
+			return res.json({ success: true, ticker: ticker, quantity: quantity });
+		} catch (e) {
+			return res.json({ error: e });
+		}
 	}
 });
 
