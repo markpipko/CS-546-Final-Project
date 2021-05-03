@@ -7,7 +7,7 @@ const { buySellHistory } = require("../data");
 //const { userMetrics } = require('../config/mongoCollections'); Do we need this?
 const users = data.users;
 const userMetrics = data.userMetrics;
-const userBSH = data.buySellHistory;
+const buySell = data.buySellHistory
 
 router.get("/", async (req, res) => {
 	res.render("login", { title: "Login" });
@@ -36,7 +36,7 @@ router.post("/signup", async (req, res) => {
 			[]
 		);
 		let userMetricsCreate = await userMetrics.create(email, 0, 0, 0);
-		let userBSHCreate = await userBSH.create(email, []);
+    let historyCreate = await buySell.create(email, [])
 		req.session.user = { email: email, firstName: firstName };
 		res.redirect("/private");
 	} catch (e) {
@@ -127,9 +127,9 @@ router.get("/deleteAccount", async (req, res) => {
 router.post("/deleteAccount", async (req, res) => {
 	if (req.body.deleteUser == "yes") {
 		let user = await users.getUserByEmail(req.session.user.email);
-		let deletedUser = await users.removeUser(user._id);
-		let deletedUserMetrics = await userMetrics.remove(user.email);
-		let deletedBSH = await userBSH.remove(user.email);
+		let deleted = await users.removeUser(user._id);
+    deleted = await userMetrics.remove(email)
+    deleted = await buySell.remove(email)
 		req.session.destroy();
 		res.redirect("/");
 	}

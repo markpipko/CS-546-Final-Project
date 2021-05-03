@@ -35,13 +35,12 @@ async function addHistory(email, transaction, ticker, value, amount, date){
     if (!email || typeof email !== "string") throw "Invalid Email parameter";
     if (!transaction) throw "Invalid transaction parameter";
     if (!ticker) throw "Invalid ticker parameter";
-    if (!type) throw "Enter the type of transaction (buy/sell)";
+    if (!value) throw "Enter value of shares of transaction";
     if (!amount) throw "Enter number of shares of transaction";
     if (!date) throw "Enter date of Transaction"; // should this be some date object
 
     const historyCollection = await BuySellHistory()
     let user = await getHistoryByEmail(email)
-    let parsedId = ObjectId(user._id);
 
     let newTransaction = {
         _id: ObjectId(),
@@ -53,8 +52,8 @@ async function addHistory(email, transaction, ticker, value, amount, date){
     }
 
     const updateInfo = await historyCollection.updateOne(
-        { _id: parsedId },
-        { $addToSet: { history: newTransaction } }
+        { _id: user._id },
+        { $addToSet: {history: newTransaction} }
       );
   
       if (!updateInfo.matchedCount && !updateInfo.modifiedCount)

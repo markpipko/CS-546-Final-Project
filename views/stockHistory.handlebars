@@ -1,11 +1,11 @@
 <h1>View Buy/Sell History</h1>
 <main>
-	{{#each trade}}
-        {{trade.transaction}}
-        {{trade.ticker}}
-        {{trade.value}}
-        {{trade.amount}}
-        {{trade.date}}
+	{{#each trades}}
+        <p>Transaction Type: {{this.transaction}}</p>
+        <p>Stock: {{this.ticker}}</p>
+        <p>Value: {{this.value}}</p>
+        <p>Amount: {{this.amount}}</p>
+        <p>Date: {{this.date}}</p>
         <br>
       {{/each}}
 </main> 

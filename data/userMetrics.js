@@ -1,8 +1,8 @@
 const mongoCollections = require("../config/mongoCollections");
 const UserMetrics = mongoCollections.userMetrics;
-const users = mongoCollections.users;
-const buySell = mongoCollections.buySellHistory;
-const stocks = mongoCollections.stocks;
+const users = require('./users');
+const buySell = require('./buySellHistory');
+//const stocks = mongoCollections.stocks;
 var yahooStockPrices = require("yahoo-stock-prices");
 var finviz = require("finvizor");
 let { ObjectId } = require('mongodb');
@@ -76,11 +76,20 @@ const get = async function get(email) {
 	return metric;
 };
 
-function getDate(date) {
-	return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate() + 1}`;
+function clean(arr){
+	var newArr = []
+	var k = 0
+	for(var i = 0; i < arr.length; i++){
+		if(arr[i].adjclose != undefined){
+			newArr[k] = arr[i]
+			k++
+		}
+	}
+	return newArr
 }
 
 async function getVolatility(stocksPurchased) {
+
 	if (stocksPurchased.length == 0) {
 		return 0;
 	}
@@ -89,21 +98,29 @@ async function getVolatility(stocksPurchased) {
 	var totalVolatility = 0;
 	for (var i = 0; i < stocksPurchased.length; i++) {
 		let ticker = stocksPurchased[i].ticker;
+
 		let date = new Date(stocksPurchased[i].datePurchased);
+
 		stocksOwned += stocksPurchased[i].amount;
+		
 		let today = new Date();
-		const prices = await yahooStockPrices.getHistoricalPrices(
-			date.getMonth(),
-			date.getDate(),
-			date.getFullYear(),
+		var yearAgo = new Date();
+		yearAgo.setDate(yearAgo.getDate() - 365)
+
+		var prices = await yahooStockPrices.getHistoricalPrices(
+			yearAgo.getMonth(),
+			yearAgo.getDate(),
+			yearAgo.getFullYear(),
 			today.getMonth(),
 			today.getDate(),
 			today.getFullYear(),
 			ticker,
 			"1d"
 		);
+		prices = clean(prices)
 
 		var dailyReturns = [];
+
 		for (var k = 1; k < prices.length; k++) {
 			dailyReturns.push((prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose);
 		}
@@ -131,57 +148,38 @@ async function getVolatility(stocksPurchased) {
 }
 
 async function getReturns(email) {
-	const userCollection = await users();
-	let userList = await userCollection.find({}).toArray();
-
-	const buySellHistory = await buySell();
-	const stockList = await stocks();
-
-	let bshData = await buySellHistory.find({}).toArray();
-
-	let person;
-	for (var i = 0; i < bshData.length; i++) {
-		if (email == bshData[i].email) {
-			person = bshData[i];
-		}
-	}
+	const user = await users.getUserByEmail(email);
+	const person = await buySell.getHistoryByEmail(email);
 
 	let bought = 0;
 	let sold = 0;
 	let owned = 0;
+
 	for (var i = 0; i < person.history.length; i++) {
-		if (person.history.transaction == "BUY") {
-			bought += person.history.value * person.history.amount;
+		if (person.history[i].transaction == "BUY") {
+			bought += person.history[i].value * person.history[i].amount;
 		}
-		if (history.transaction == "SOLD") {
-			sold += history.value * history.amount;
-		}
-	}
-
-	for (var i = 0; i < userList.length; i++) {
-		if (userList[i].email == email) {
-			person = userList[i];
-			for (var j = 0; j < person.stocksPurchased.length; j++) {
-				let ticker = person.stocksPurchased[j].ticker;
-				const data = await yahooStockPrices.getCurrentPrice(ticker);
-				owned += data * person.stocksPurchased[j].amount;
-			}
+		if (person.history[i].transaction == "SOLD") {
+			sold += person.history[i].value * person.history[i].amount;
 		}
 	}
 
-	let volatility = await getVolatility(person.stocksPurchased);
+	for (var i = 0; i < user.stocksPurchased.length; i++) {
+		let ticker = user.stocksPurchased[i].ticker;
+		const data = await yahooStockPrices.getCurrentPrice(ticker);
+		owned += data * user.stocksPurchased[i].amount;
+	}
+
+	if(bought == 0 && sold == 0){
+		return [0,0,0]
+	}
+
+	let volatility = await getVolatility(user.stocksPurchased);
 
 	let totalReturn = sold + owned - bought;
-
-	let percentGrowth;
-	if (bought == 0) {
-		percentGrowth = 0;
-	}
-	else {
-		percentGrowth = (totalReturn / bought) * 100;
-	}
+	let percentGrowth = (totalReturn / bought) * 100;
 	
-	return [totalReturn, percentGrowth, volatility];
+	return [totalReturn.toFixed(2), percentGrowth.toFixed(2), volatility.toFixed(2)];
 }
 
 const update = async function update(email) {
@@ -236,6 +234,7 @@ const updateEmail = async function updateEmail(id, email) {
 	if (updatedInfo.modifiedCount === 0) {
 		throw "Could not update email";
 	}
+
 
 	let newMetric = await get(email.email);
 	newMetric._id = newMetric._id.toString();

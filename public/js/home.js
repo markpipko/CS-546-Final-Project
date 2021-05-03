@@ -4,6 +4,7 @@ const percentGrowth = document.getElementById("percentGrowth");
 const volatility = document.getElementById("volatility");
 const refresh = document.getElementById("refresh");
 
+(function($) {
 refresh.click(function (event) {
 	event.preventDefault();
 	var requestConfig = {
@@ -17,3 +18,4 @@ refresh.click(function (event) {
 		volatility.innerHTML = "Volatility: " + responseMessage.volatility;
 	});
 });
+})(window.jQuery);

@@ -12,10 +12,12 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/home", async (req, res) => {
-	const metrics = await userMetrics.update(req.session.user.email)
+
 	try {
-		const user = await users.getUserByEmail(req.session.user.email);
-		let userStocks = user.stocksPurchased;
+		const metrics = await userMetrics.update(req.session.user.email)
+		const user = await users.getUserByEmail(req.session.user.email); 
+		let userStocks = req.session.user.stocksPurchased;
+
 		let recList = [];
 
 		if (userStocks.length != 0) {
@@ -28,11 +30,11 @@ router.get("/home", async (req, res) => {
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
-			recList: recList, 
-			totalReturn: metrics.totalReturn, 
+			recList: recList , 
+			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth, 
 			volatility: metrics.volatility, 
-			stocks: userStocks
+			stocks: user.stocksPurchased ,
 		});
 	} catch (e) {
 		res.render("login", { hasErrors: true, error: e });
@@ -58,7 +60,7 @@ router.post("/graph", async (req, res) => {
 
 router.get("/stockHistory", async (req, res) => {
 	const trade = await historyData.getHistoryByEmail(req.session.user.email);
-	res.render("stockHistory", { title: "History", trade: trade.history });
+	res.render("stockHistory", { title: "History", trades: trade.history });
 });
 
 router.post("/find", async (req, res) => {
