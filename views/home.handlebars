@@ -10,6 +10,7 @@
 	{{#if hasErrors}}
 	<p>{{error}}</p>
 	{{/if}}
+	<a href="/private/stockListings">SP 500</a>
 
 	<h3> Metrics </h3>
 	<p id="totalReturn">Total Return: ${{{totalReturn}}} </p>
@@ -17,36 +18,35 @@
 	<p id="volatility">Volatility of Current Portfolio: {{{volatility}}} </p>
 
 	<h3> Portfolio </h3>
-		<div id="userGraph"> </div>
-		<p> Cash: ${{cash}}</p>
-		{{#if isEmpty}}
-			<p>Portfolio is empty</p>
-		{{else}}
-			<p> Portfolio Value: ${{pValue}} </p>
-			<br />
-			{{#each stocks}}
-			<p> Stock: <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </p>
-			<p> Amount: {{this.amount}} </p>
-			<p> Average Cost: ${{this.purchaseValue}} </p>
-			<p> Present Value: ${{this.value}} </p>
-			<br />
-			{{/each}}
-		{{/if}}
+	<div id="userGraph"> </div>
+	<p> Cash: ${{cash}}</p>
+	{{#if isEmpty}}
+	<p>Portfolio is empty</p>
+	{{else}}
+	<p> Portfolio Value: ${{pValue}} </p>
+	<br />
+	{{#each stocks}}
+	<p> Stock: <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </p>
+	<p> Amount: {{this.amount}} </p>
+	<p> Average Cost: ${{this.purchaseValue}} </p>
+	<p> Present Value: ${{this.value}} </p>
+	<br />
+	{{/each}}
+	{{/if}}
 
 	<h3>Recommendations</h3>
 	<ul>
 		{{#each recList}}
-		<li>{{this}}</li>
+		<li>{{this.recommendation}} {{this.ticker}}</li>
 		{{/each}}
 	</ul>
 
 	<button id="refresh"> Refresh </button>
-
 	<div>
 		<a href="/updateUser">Edit Account Info</a>
 		<a href="/logout">Logout</a>
-		<a href = "/deleteAccount">Delete Account</a>
-		<a href ="/private/stockHistory">History</a>
+		<a href="/deleteAccount">Delete Account</a>
+		<a href="/private/stockHistory">History</a>
 	</div>
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"

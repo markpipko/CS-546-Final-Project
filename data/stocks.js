@@ -68,7 +68,7 @@ const exportedMethods = {
 		}
 		ticker = ticker.toUpperCase();
 		const data = await finvizor.stock(ticker);
-		if (!data) {
+		if (data.error) {
 			throw "Ticker not found";
 		}
 		let yahoo_data = await yahooStockPrices.getCurrentPrice(ticker);
@@ -439,21 +439,36 @@ const exportedMethods = {
 			myStocks.splice(randomIndex, 1);
 		}
 
-		let recommendationList = [];
+		let potentialRecommendationList = [];
 		for (let i = 0; i < myStockData.length; i++) {
 			for (let j = 0; j < sp500.data.length; j++) {
 				if (
 					!myStocks.includes(sp500.data[j].Symbol) &&
-					!recommendationList.includes(sp500.data[j].Symbol) &&
+					!potentialRecommendationList.includes(sp500.data[j].Symbol) &&
 					(myStockData[i].sector.includes(sp500.data[j].Sector) ||
 						sp500.data[j].Sector.includes(myStockData[i].sector))
 				) {
-					recommendationList.push(sp500.data[j].Symbol);
+					potentialRecommendationList.push(sp500.data[j].Symbol);
 				}
 			}
 		}
 
-		recommendationList = shuffle(recommendationList);
+		potentialRecommendationList = shuffle(potentialRecommendationList);
+		let recommendationList = [];
+		for (let i = 0; i < potentialRecommendationList.length; i++) {
+			let rec = await this.buyOrSell(potentialRecommendationList[i]);
+			if (rec == "Buy" || rec == "Strong Buy") {
+				recommendationList.push({ ticker: potentialRecommendationList[i], recommendation: rec });
+			}
+			else if (i >= 10) {
+				recommendationList.push({ ticker: potentialRecommendationList[i], recommendation: rec });
+			}
+
+			if (recommendationList.length >= 3) {
+				break;
+			}
+		}
+
 
 		//Select first 3-5 (or less) to return
 		if (recommendationList.length >= 3) return recommendationList.slice(0, 3);
