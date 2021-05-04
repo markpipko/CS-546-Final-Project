@@ -62,6 +62,15 @@ router.post("/update", async (req, res) => {
 	});
 });
 
+router.post("/userGraph", async (req, res) => {
+	const user = await users.getUserByEmail(req.session.user.email);
+	var data = await stocksData.getTotalValue(user.stocksPurchased)
+	var cash = await user.cash
+	res.json({
+		value: (data + cash).toFixed(2)
+	});
+});
+
 router.post("/graph", async (req, res) => {
 	let ticker = req.body["ticker"];
 	let subtract = req.body["subtract"];
