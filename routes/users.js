@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const saltRounds = 16;
 const data = require("../data");
 const { buySellHistory } = require("../data");
-//const { userMetrics } = require('../config/mongoCollections'); Do we need this?
 const users = data.users;
 const userMetrics = data.userMetrics;
 const buySell = data.buySellHistory
@@ -23,6 +22,24 @@ router.get("/signup", async (req, res) => {
 
 router.post("/signup", async (req, res) => {
 	const { firstName, lastName, email, password, age, cash } = req.body;
+
+	if (!firstName || !lastName || !email || !password || !age || !cash) {
+		res.render("signup", { title: "Sign Up", hasErrors: true, error: "Parameters cannot be blank" });
+		return;
+	}
+	if (typeof firstName !== "string" || typeof lastName !== "string" || typeof email !== "string" || typeof password !== "string") {
+		res.render("signup", { title: "Sign Up", hasErrors: true, error: "Invalid string parameters" });
+		return;
+	}
+	if (firstName.trim() == "" || lastName.trim() == "" || email.trim() == "" || password.trim() == "") {
+		res.render("signup", { title: "Sign Up", hasErrors: true, error: "Parameters cannot be empty" });
+		return;
+	}
+	if (typeof age !== "number" || age % 1 != 0 || typeof cash !== "number") {
+		res.render("signup", { title: "Sign Up", hasErrors: true, error: "Invalid number parameters" });
+		return;
+	}
+	
 
 	const allUsers = await users.getAllUsers();
 	for (let i = 0; i < allUsers.length; i++) {
@@ -54,6 +71,16 @@ router.post("/signup", async (req, res) => {
 
 router.post("/login", async (req, res) => {
 	const { email, password } = req.body;
+
+	if (!email || typeof email !== "string" || email.trim() == "") {
+		res.render("login", { title: "Login", hasErrors: true, error: "Invalid email" });
+		return;
+	}
+	if (!password || typeof password !== "string" || password.trim() == "") {
+		res.render("login", { title: "Login", hasErrors: true, error: "Invalid password" });
+		return;
+	}
+
 	let allUsers = await users.getAllUsers();
 	let match = false;
 
@@ -87,6 +114,23 @@ router.get("/updateUser", async (req, res) => {
 
 router.post("/updateUser", async (req, res) => {
 	const { firstName, lastName, email, password, passwordConfirm, age, cash } = req.body;
+
+	if (!firstName || !lastName || !email || !password || !passwordConfirm || !age || !cash) {
+		res.render("updateUser", { title: "Edit Account", hasErrors: true, error: "Parameters cannot be blank" });
+		return;
+	}
+	if (typeof firstName !== "string" || typeof lastName !== "string" || typeof email !== "string" || typeof password !== "string" || typeof passwordConfirm !== "string") {
+		res.render("updateUser", { title: "Edit Account", hasErrors: true, error: "Invalid string parameters" });
+		return;
+	}
+	if (firstName.trim() == "" || lastName.trim() == "" || email.trim() == "" || password.trim() == "" || passwordConfirm.trim() == "") {
+		res.render("updateUser", { title: "Edit Account", hasErrors: true, error: "Parameters cannot be empty" });
+		return;
+	}
+	if (typeof age !== "number" || age % 1 != 0 || typeof cash !== "number") {
+		res.render("updateUser", { title: "Edit Account", hasErrors: true, error: "Invalid number parameters" });
+		return;
+	}
 
 	if (password != passwordConfirm) {
 		res.render("updateUser", { title: "Edit Account", hasErrors: true, error: "Passwords do not match" });
@@ -122,8 +166,6 @@ router.post("/updateUser", async (req, res) => {
 
 		req.session.user.email = email;
 	}
-
-	
 
 	res.redirect("/private");
 });
