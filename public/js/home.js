@@ -4,7 +4,10 @@ const percentGrowth = document.getElementById("percentGrowth");
 const volatility = document.getElementById("volatility");
 const refresh = document.getElementById("refresh");
 
-(function($) {
+var pValue = []
+var dates = []
+
+
 refresh.click(function (event) {
 	event.preventDefault();
 	var requestConfig = {
@@ -18,4 +21,32 @@ refresh.click(function (event) {
 		volatility.innerHTML = "Volatility: " + responseMessage.volatility;
 	});
 });
-})(window.jQuery);
+
+$(document).ready(function() {
+	var myTime = setInterval(graph, 5000) //calls every 5 seconds
+	graph()
+})
+
+function graph(){
+	var requestConfig = {
+		method: "POST",
+		url: `/private/userGraph`,
+	};
+
+	$.ajax(requestConfig).then(function (responseMessage) {
+		pValue.push(responseMessage.value)
+		var today = new Date()
+		dates.push(today)
+
+		var trace = {
+			x: dates,
+			y: pValue,
+			mode: "lines+markers",
+		};
+
+		var data = [trace];
+		Plotly.newPlot("userGraph", data)
+	})
+}
+
+
