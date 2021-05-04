@@ -15,24 +15,31 @@
 	<div id="stock_info">
 		<h1>{{stock.name}} ({{stock.ticker}})</h1>
 		{{#ifEquals status 1}}
-		<h2 id="price" class="up">${{stock.price}}</h2>
-		{{else}}
-		{{#ifEquals status -1}}
-		<h2 id="price" class="down">${{stock.price}}</h2>
-		{{else}}
-		<h2 id="price">${{stock.price}}</h2>
-		{{/ifEquals}}
-		{{/ifEquals}}
+		<div id="refreshprice">
+			<h2 id="price" class="up">${{stock.price}}</h2>
+			{{else}}
+			{{#ifEquals status -1}}
+			<h2 id="price" class="down">${{stock.price}}</h2>
+			{{else}}
+			<h2 id="price">${{stock.price}}</h2>
+			{{/ifEquals}}
+			{{/ifEquals}}
 
-		<form id="refresh">
-			<label for="temp_ticker"></label>
-			<input type="text" name="temp_ticker" id="temp_ticker" value={{stock.ticker}} hidden />
-			<button type="submit" id="refresh_button">Refresh</button>
-		</form>
-		<button id="1w"> 1w </button>
-		<button id="1m"> 1m </button>
-		<button id="1y"> 1y </button>
-		<button id="5y"> 5y </button>
+			<form id="refresh">
+				<label for="temp_ticker"></label>
+				<input type="text" name="temp_ticker" id="temp_ticker" value={{stock.ticker}} hidden />
+				<button type="submit" id="refresh_button">Refresh</button>
+			</form>
+			<a id="refreshbutton"></a>
+		</div>
+
+		<div id="buttons">
+			<button id="1w"> 1w </button>
+			<button id="1m"> 1m </button>
+			<button id="1y"> 1y </button>
+			<button id="5y"> 5y </button>
+		</div>
+
 		<div id="graph"> </div>
 		<p>Exchange: {{stock.exchange}}</p>
 		<p>Industry: {{stock.industry}}</p>
@@ -66,7 +73,7 @@
 	<div id="error_container2" hidden></div>
 
 	<a href="/private" id="homeLink">Back to home page</a>
-	
+
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 	<script src="/public/js/jquery.blockUI.js"></script>
