@@ -184,12 +184,12 @@ $("#refresh_button").click(function () {
 	});
 });
 
-$("#transaction_submit").click(function () {
+function blockTransaction() {
 	$.blockUI({
 		message: "Please wait...",
 		overlayCSS: { backgroundColor: "#0f0" },
 	});
-});
+}
 
 if (transForm) {
 	transForm.addEventListener("submit", (event) => {
@@ -200,15 +200,22 @@ if (transForm) {
 			stockError.hidden = false;
 			stockError.innerHTML = "Transaction was not specified";
 		}
+
 		let quantity = $("#amount").val();
 		if (!quantity) {
 			$.unblockUI();
 			stockError.hidden = false;
 			stockError.innerHTML = "Stock quantity was not specified";
 		}
+		if (quantity < 1) {
+			$.unblockUI();
+			stockError.hidden = false;
+			stockError.innerHTML = "Stock quantity cannot be less than 1";
+		}
 
 		if (temp.value.trim() && transaction && quantity) {
 			temp.value = temp.value.trim();
+			blockTransaction();
 			$.ajax({
 				method: "POST",
 				url: "/private/transaction",
