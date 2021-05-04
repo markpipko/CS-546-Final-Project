@@ -25,8 +25,8 @@ router.get("/home", async (req, res) => {
 		if (userStocks.length != 0) {
 		 	recList = await stocksData.giveRecommendation(userStocks);
 		} else {
-		 	recList.push("AAPL");
-		 	recList.push("T");
+		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
+		 	recList.push({ ticker: "T", recommendation: "Buy" });
 		}
 
 		var totalValue = await stocksData.getTotalValue(userStocks)
@@ -38,7 +38,7 @@ router.get("/home", async (req, res) => {
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
-			recList: recList,
+			recList: recList, 
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth, 
 			volatility: metrics.volatility, 
@@ -151,19 +151,31 @@ router.get("/stocks/:id", async (req, res) => {
 //TODO: routes/stocks.js can be deleted
 router.post("/stocks", async (req, res) => {
 	let ticker = req.body["stock_ticker"];
-	if (!ticker) {
+	if (!ticker.trim()) {
+		const metrics = await userMetrics.update(req.session.user.email)
+		const user = await users.getUserByEmail(req.session.user.email); 
+		let userStocks = req.session.user.stocksPurchased;
+
+		let recList = [];
+
+		if (userStocks.length != 0) {
+		 	recList = await stocksData.giveRecommendation(userStocks);
+		} else {
+		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
+		 	recList.push({ ticker: "T", recommendation: "Buy" });
+		}
+
 		return res.render("home", {
 			title: "Home",
 			hasErrors: true,
 			error: "Please input a ticker",
-		});
-	}
-	ticker = ticker.trim();
-	if (!ticker) {
-		return res.render("home", {
-			title: "Home",
-			hasErrors: true,
-			error: "Please input a ticker",
+			name: req.session.user.firstName,
+			recList: recList, 
+			totalReturn: metrics.totalReturn,
+			percentGrowth: metrics.percentGrowth, 
+			volatility: metrics.volatility, 
+			stocks: user.stocksPurchased,
+			isEmpty: user.stocksPurchased.length == 0 ? true : false
 		});
 	}
 
@@ -187,10 +199,31 @@ router.post("/stocks", async (req, res) => {
 		});
 	} catch (e) {
 		console.log(e);
+
+		const metrics = await userMetrics.update(req.session.user.email)
+		const user = await users.getUserByEmail(req.session.user.email); 
+		let userStocks = req.session.user.stocksPurchased;
+
+		let recList = [];
+
+		if (userStocks.length != 0) {
+		 	recList = await stocksData.giveRecommendation(userStocks);
+		} else {
+		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
+		 	recList.push({ ticker: "T", recommendation: "Buy" });
+		}
+
 		return res.render("home", {
 			title: "Home",
 			hasErrors: true,
 			error: "Ticker not found",
+			name: req.session.user.firstName,
+			recList: recList, 
+			totalReturn: metrics.totalReturn,
+			percentGrowth: metrics.percentGrowth, 
+			volatility: metrics.volatility, 
+			stocks: user.stocksPurchased,
+			isEmpty: user.stocksPurchased.length == 0 ? true : false
 		});
 	}
 });

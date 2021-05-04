@@ -84,10 +84,6 @@ async function addUser(
 	return getUserById(newInsertInformation.insertedId);
 }
 
-function isValidEmail(email) {
-	//TODO: check if email is valid
-}
-
 async function removeUser(id) {
 	if (!id || typeof id !== "object") throw "Invalid ID parameter";
 
