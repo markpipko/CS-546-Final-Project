@@ -13,39 +13,40 @@ router.get("/", async (req, res) => {
 });
 
 router.get("/home", async (req, res) => {
-
 	try {
 		const metrics = await userMetrics.update(req.session.user.email);
 		const user = await users.getUserByEmail(req.session.user.email);
 		//let userStocks = req.session.user.stocksPurchased;
-		let userStocks = user.stocksPurchased
+		let userStocks = user.stocksPurchased;
 
 		let recList = [];
 
 		if (userStocks.length != 0) {
-		 	recList = await stocksData.giveRecommendation(userStocks);
+			recList = await stocksData.giveRecommendation(userStocks);
 		} else {
 		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
 		 	recList.push({ ticker: "T", recommendation: "Buy" });
 		}
 
-		var totalValue = await stocksData.getTotalValue(userStocks)
-		var cash = await user.cash
-		for(var i = 0; i < userStocks.length; i++){
-			userStocks[i].value = await yahooStockPrices.getCurrentPrice(userStocks[i].ticker)
+		var totalValue = await stocksData.getTotalValue(userStocks);
+		var cash = await user.cash;
+		for (var i = 0; i < userStocks.length; i++) {
+			userStocks[i].value = await yahooStockPrices.getCurrentPrice(
+				userStocks[i].ticker
+			);
 		}
 
 		res.render("home", {
 			title: "Home",
 			name: req.session.user.firstName,
-			recList: recList, 
+			recList: recList,
 			totalReturn: metrics.totalReturn,
-			percentGrowth: metrics.percentGrowth, 
-			volatility: metrics.volatility, 
+			percentGrowth: metrics.percentGrowth,
+			volatility: metrics.volatility,
 			stocks: userStocks,
 			isEmpty: user.stocksPurchased.length == 0 ? true : false,
 			pValue: totalValue.toFixed(2),
-			cash: cash.toFixed(2)
+			cash: cash.toFixed(2),
 		});
 	} catch (e) {
 		res.render("login", { hasErrors: true, error: e });
@@ -102,7 +103,7 @@ router.post("/find", async (req, res) => {
 });
 
 router.get("/stocks/:id", async (req, res) => {
-	let ticker = req.params.id
+	let ticker = req.params.id;
 	if (!ticker) {
 		return res.render("home", {
 			title: "Home",
@@ -152,14 +153,14 @@ router.get("/stocks/:id", async (req, res) => {
 router.post("/stocks", async (req, res) => {
 	let ticker = req.body["stock_ticker"];
 	if (!ticker.trim()) {
-		const metrics = await userMetrics.update(req.session.user.email)
-		const user = await users.getUserByEmail(req.session.user.email); 
+		const metrics = await userMetrics.update(req.session.user.email);
+		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = req.session.user.stocksPurchased;
 
 		let recList = [];
 
 		if (userStocks.length != 0) {
-		 	recList = await stocksData.giveRecommendation(userStocks);
+			recList = await stocksData.giveRecommendation(userStocks);
 		} else {
 		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
 		 	recList.push({ ticker: "T", recommendation: "Buy" });
@@ -170,12 +171,12 @@ router.post("/stocks", async (req, res) => {
 			hasErrors: true,
 			error: "Please input a ticker",
 			name: req.session.user.firstName,
-			recList: recList, 
+			recList: recList,
 			totalReturn: metrics.totalReturn,
-			percentGrowth: metrics.percentGrowth, 
-			volatility: metrics.volatility, 
+			percentGrowth: metrics.percentGrowth,
+			volatility: metrics.volatility,
 			stocks: user.stocksPurchased,
-			isEmpty: user.stocksPurchased.length == 0 ? true : false
+			isEmpty: user.stocksPurchased.length == 0 ? true : false,
 		});
 	}
 
@@ -200,14 +201,14 @@ router.post("/stocks", async (req, res) => {
 	} catch (e) {
 		console.log(e);
 
-		const metrics = await userMetrics.update(req.session.user.email)
-		const user = await users.getUserByEmail(req.session.user.email); 
+		const metrics = await userMetrics.update(req.session.user.email);
+		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = req.session.user.stocksPurchased;
 
 		let recList = [];
 
 		if (userStocks.length != 0) {
-		 	recList = await stocksData.giveRecommendation(userStocks);
+			recList = await stocksData.giveRecommendation(userStocks);
 		} else {
 		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
 		 	recList.push({ ticker: "T", recommendation: "Buy" });
@@ -218,14 +219,18 @@ router.post("/stocks", async (req, res) => {
 			hasErrors: true,
 			error: "Ticker not found",
 			name: req.session.user.firstName,
-			recList: recList, 
+			recList: recList,
 			totalReturn: metrics.totalReturn,
-			percentGrowth: metrics.percentGrowth, 
-			volatility: metrics.volatility, 
+			percentGrowth: metrics.percentGrowth,
+			volatility: metrics.volatility,
 			stocks: user.stocksPurchased,
-			isEmpty: user.stocksPurchased.length == 0 ? true : false
+			isEmpty: user.stocksPurchased.length == 0 ? true : false,
 		});
 	}
+});
+
+router.get("/stockListings", async (req, res) => {
+	return res.render("stockListings");
 });
 
 router.post("/transaction", async (req, res) => {
