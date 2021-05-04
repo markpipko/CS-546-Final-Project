@@ -101,10 +101,8 @@ router.post("/find", async (req, res) => {
 	}
 });
 
-router.post("/stocks/:id", async (req, res) => {
-	console.log(req.params.id)
-	let ticker = req.body[`${req.params.id}`];
-	console.log(ticker)
+router.get("/stocks/:id", async (req, res) => {
+	let ticker = req.params.id
 	if (!ticker) {
 		return res.render("home", {
 			title: "Home",

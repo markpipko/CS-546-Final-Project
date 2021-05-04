@@ -24,10 +24,7 @@
 			<p> Portfolio Value: ${{pValue}} </p>
 			<br />
 			{{#each stocks}}
-			<form action="/private/stocks/{{this.ticker}}" method="POST">
-				<input value="{{this.ticker}}" id="{{this.ticker}}" type="hidden"/>
-				<p> Stock: <button type="submit" value="search"> {{this.ticker}} </button> </p>
-			</form>
+			<p> Stock: <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </p>
 			<p> Amount: {{this.amount}} </p>
 			<p> Average Cost: ${{this.purchaseValue}} </p>
 			<p> Present Value: ${{this.value}} </p>
