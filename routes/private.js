@@ -24,8 +24,8 @@ router.get("/home", async (req, res) => {
 		if (userStocks.length != 0) {
 			recList = await stocksData.giveRecommendation(userStocks);
 		} else {
-			recList.push("AAPL");
-			recList.push("T");
+		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
+		 	recList.push({ ticker: "T", recommendation: "Buy" });
 		}
 
 		var totalValue = await stocksData.getTotalValue(userStocks);
@@ -162,8 +162,8 @@ router.post("/stocks", async (req, res) => {
 		if (userStocks.length != 0) {
 			recList = await stocksData.giveRecommendation(userStocks);
 		} else {
-			recList.push("AAPL");
-			recList.push("T");
+		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
+		 	recList.push({ ticker: "T", recommendation: "Buy" });
 		}
 
 		return res.render("home", {
@@ -210,8 +210,8 @@ router.post("/stocks", async (req, res) => {
 		if (userStocks.length != 0) {
 			recList = await stocksData.giveRecommendation(userStocks);
 		} else {
-			recList.push("AAPL");
-			recList.push("T");
+		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
+		 	recList.push({ ticker: "T", recommendation: "Buy" });
 		}
 
 		return res.render("home", {
