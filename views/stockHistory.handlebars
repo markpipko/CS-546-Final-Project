@@ -1,5 +1,12 @@
 <h1>View Buy/Sell History</h1>
 <main>
+  <h3> Metrics </h3>
+  <p id="totalReturn">Total Return: ${{{totalReturn}}} </p>
+  <p id="percentGrowth">Total Growth: {{{percentGrowth}}}% </p>
+  <p id="volatility">Volatility of Current Portfolio: {{{volatility}}} </p>
+
+  <br>
+
 	{{#each trades}}
         <p>Transaction Type: {{this.transaction}}</p>
         <p>Stock: {{this.ticker}}</p>
@@ -8,6 +15,10 @@
         <p>Date: {{this.date}}</p>
         <br />
   {{/each}}
+
+  <button id="refresh"> Refresh </button>
+
+  <br>
 
   <a href="/private" id="homeLink">Back to home page</a>
 </main> 
