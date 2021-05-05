@@ -12,11 +12,6 @@
 	{{/if}}
 	<a href="/private/stockListings">SP 500</a>
 
-	<h3> Metrics </h3>
-	<p id="totalReturn">Total Return: ${{{totalReturn}}} </p>
-	<p id="percentGrowth">Total Growth: {{{percentGrowth}}}% </p>
-	<p id="volatility">Volatility of Current Portfolio: {{{volatility}}} </p>
-
 	<h3> Portfolio </h3>
 	<div id="userGraph"> </div>
 	<p> Cash: ${{cash}}</p>
@@ -41,7 +36,6 @@
 		{{/each}}
 	</ul>
 
-	<button id="refresh"> Refresh </button>
 	<div>
 		<a href="/updateUser">Edit Account Info</a>
 		<a href="/logout">Logout</a>
