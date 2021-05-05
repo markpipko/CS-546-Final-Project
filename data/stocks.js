@@ -140,7 +140,7 @@ const exportedMethods = {
 		if (!price) {
 			throw "Ticker not found";
 		}
-		let total_amount = parseFloat(price.toFixed(2)) * parseInt(quantity);
+		let total_amount = parseFloat(price.toFixed(2)) * parseFloat(quantity);
 		if (user.cash < total_amount) {
 			throw "Not enough cash available";
 		}
@@ -159,13 +159,13 @@ const exportedMethods = {
 		if (Object.keys(transactionDetails) != 0) {
 			let sum =
 				parseFloat(transactionDetails.purchaseValue) *
-					parseInt(transactionDetails.amount) +
+				parseFloat(transactionDetails.amount) +
 				total_amount;
 			let updatedValue =
-				sum / (transactionDetails.amount + parseInt(quantity)).toFixed(2);
-
+				(sum / (transactionDetails.amount + parseFloat(quantity))).toFixed(2);
+			
 			let updatedAmount =
-				parseInt(quantity) + parseInt(transactionDetails.amount);
+				parseFloat(quantity) + parseFloat(transactionDetails.amount);
 
 			let updatedTransaction = {
 				_id: transactionDetails._id,
@@ -187,8 +187,8 @@ const exportedMethods = {
 				email,
 				"BUY",
 				ticker,
-				parseFloat(transactionDetails.purchaseValue),
-				parseInt(transactionDetails.amount),
+				parseFloat(price.toFixed(2)),
+				parseFloat(quantity),
 				new Date()
 			);
 
@@ -200,7 +200,7 @@ const exportedMethods = {
 			transactionDetails = {
 				_id: new ObjectId(),
 				ticker: ticker,
-				amount: parseInt(quantity),
+				amount: parseFloat(quantity),
 				purchaseValue: parseFloat(price.toFixed(2)),
 				datePurchased: new Date(),
 			};
@@ -222,7 +222,7 @@ const exportedMethods = {
 					"BUY",
 					ticker,
 					parseFloat(price.toFixed(2)),
-					parseInt(quantity),
+					parseFloat(quantity),
 					new Date()
 				);
 			} catch (e) {
@@ -292,8 +292,8 @@ const exportedMethods = {
 			if (!price) {
 				throw "Ticker not found";
 			}
-			let sum = price * parseInt(quantity);
-			let updatedAmount = transactionDetails.amount - parseInt(quantity);
+			let sum = price * parseFloat(quantity);
+			let updatedAmount = transactionDetails.amount - parseFloat(quantity);
 			let updatedTransaction = {};
 			let newUser = user;
 			newUser.cash += sum;
@@ -327,7 +327,7 @@ const exportedMethods = {
 					"SELL",
 					ticker,
 					parseFloat(price.toFixed(2)),
-					parseInt(quantity),
+					parseFloat(quantity),
 					new Date()
 				);
 			} catch (e) {

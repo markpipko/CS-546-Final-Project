@@ -1,26 +1,8 @@
 // const userMetrics = data.userMetrics;
-const totalReturn = document.getElementById("totalReturn");
-const percentGrowth = document.getElementById("percentGrowth");
-const volatility = document.getElementById("volatility");
-const refresh = document.getElementById("refresh");
 
 var pValue = []
 var dates = []
 var repititions = 0;
-
-refresh.click(function (event) {
-	event.preventDefault();
-	var requestConfig = {
-		method: "POST",
-		url: `/private/update`,
-	};
-
-	$.ajax(requestConfig).then(function (responseMessage) {
-		totalReturn.innerHTML = "Total Return: " + responseMessage.totalReturn;
-		percentGrowth.innerHTML = "Total Growth: " + responseMessage.percentGrowth;
-		volatility.innerHTML = "Volatility: " + responseMessage.volatility;
-	});
-});
 
 $(document).ready(function() {
 	var myTime = setInterval(graph, 5000); //calls every 5 seconds

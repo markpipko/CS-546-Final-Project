@@ -62,8 +62,12 @@
 		<label for="sell">Sell</label>
 		<input type="radio" id="sell" name="transaction" value="sell">
 
-		<label for="amount">Shares: </label>
-		<input type="number" min="1" id="amount" />
+		<label for="choice">Invest In:</label>
+		<select id="choice"> 
+			<option value="shares">Shares</option>
+			<option value="dollars">Dollars</option>
+		</select>
+		<input type="number" step=".01" id="amount"/>
 		<button type="submit" id="transaction_submit">Submit</button>
 	</form>
 	<p id="disclaimer">Due to periods of market volatility, the current displayed price may not reflect the price that

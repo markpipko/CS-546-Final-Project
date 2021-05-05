@@ -14,7 +14,6 @@ router.get("/", async (req, res) => {
 
 router.get("/home", async (req, res) => {
 	try {
-		const metrics = await userMetrics.update(req.session.user.email);
 		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = user.stocksPurchased;
 
@@ -39,9 +38,7 @@ router.get("/home", async (req, res) => {
 			title: "Home",
 			name: req.session.user.firstName,
 			recList: recList,
-			totalReturn: metrics.totalReturn,
-			percentGrowth: metrics.percentGrowth,
-			volatility: metrics.volatility,
+			
 			stocks: userStocks,
 			isEmpty: user.stocksPurchased.length == 0 ? true : false,
 			pValue: totalValue.toFixed(2),
@@ -78,8 +75,13 @@ router.post("/graph", async (req, res) => {
 });
 
 router.get("/stockHistory", async (req, res) => {
+	const metrics = await userMetrics.update(req.session.user.email);
 	const trade = await historyData.getHistoryByEmail(req.session.user.email);
-	res.render("stockHistory", { title: "History", trades: trade.history });
+	res.render("stockHistory", { title: "History", 
+		trades: trade.history,
+		totalReturn: metrics.totalReturn,
+		percentGrowth: metrics.percentGrowth,
+		volatility: metrics.volatility, });
 });
 
 router.post("/find", async (req, res) => {
@@ -297,15 +299,25 @@ router.post("/transaction", async (req, res) => {
 	let transaction = req.body["transaction"];
 	let quantity = req.body["quantity"];
 	let ticker = req.body["stock_ticker"];
+	let choice = req.body["investOption"]
 
-	if (!transaction || !quantity || !ticker) {
+	if(choice == "dollars"){
+		quantity = parseFloat(quantity)
+		const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker)
+		quantity = quantity / yahoo_data
+		quantity = quantity.toString()
+	}
+	else{
+		quantity = quantity.trim();
+	}
+
+	if (!transaction || !quantity || !ticker || !choice) {
 		return res.json({ error: "One or more inputs were not provided" });
 	}
 	transaction = transaction.trim();
-	quantity = quantity.trim();
 	ticker = ticker.trim();
 
-	if (!transaction || !quantity || !ticker) {
+	if (!transaction || !quantity || !ticker || !choice) {
 		return res.json({ error: "One or more inputs were not provided" });
 	}
 
