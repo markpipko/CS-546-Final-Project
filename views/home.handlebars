@@ -23,7 +23,7 @@
 	{{#if isEmpty}}
 	<p>Portfolio is empty</p>
 	{{else}}
-	<p> Portfolio Value: ${{pValue}} </p>
+	<p id="pValue"> Portfolio Value: ${{pValue}} </p>
 	<br />
 	{{#each stocks}}
 	<p> Stock: <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </p>

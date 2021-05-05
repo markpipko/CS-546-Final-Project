@@ -424,32 +424,39 @@ const exportedMethods = {
 		);
 
 		let myStocks = userStocks.slice();
-
-		myStockTickers = [];
-		for (let i = 0; i < myStocks.length; i++) {
-			myStockTickers.push(myStocks[i].ticker);
-		}
-
-		let myStockData = [];
-		let stockRecsNum = 0;
-		while (stockRecsNum < 5 && myStocks.length != 0) {
-			let randomIndex = Math.floor(Math.random() * myStocks.length);
-			myStockData.push(await finvizor.stock(myStocks[randomIndex].ticker));
-			stockRecsNum++;
-			myStocks.splice(randomIndex, 1);
-		}
-
+		let myStockTickers = [];
 		let potentialRecommendationList = [];
-		for (let i = 0; i < myStockData.length; i++) {
-			for (let j = 0; j < sp500.data.length; j++) {
-				if (
-					!myStocks.includes(sp500.data[j].Symbol) &&
-					!potentialRecommendationList.includes(sp500.data[j].Symbol) &&
-					(myStockData[i].sector.includes(sp500.data[j].Sector) ||
-						sp500.data[j].Sector.includes(myStockData[i].sector))
-				) {
-					potentialRecommendationList.push(sp500.data[j].Symbol);
+
+		if (myStocks.length != 0) {
+			for (let i = 0; i < myStocks.length; i++) {
+				myStockTickers.push(myStocks[i].ticker);
+			}
+
+			let myStockData = [];
+			let stockRecsNum = 0;
+			while (stockRecsNum < 5 && myStocks.length != 0) {
+				let randomIndex = Math.floor(Math.random() * myStocks.length);
+				myStockData.push(await finvizor.stock(myStocks[randomIndex].ticker));
+				stockRecsNum++;
+				myStocks.splice(randomIndex, 1);
+			}
+		
+			for (let i = 0; i < myStockData.length; i++) {
+				for (let j = 0; j < sp500.data.length; j++) {
+					if (
+						!myStocks.includes(sp500.data[j].Symbol) &&
+						!potentialRecommendationList.includes(sp500.data[j].Symbol) &&
+						(myStockData[i].sector.includes(sp500.data[j].Sector) ||
+							sp500.data[j].Sector.includes(myStockData[i].sector))
+					) {
+						potentialRecommendationList.push(sp500.data[j].Symbol);
+					}
 				}
+			}
+		}
+		else {
+			for (let i = 0; i < sp500.data.length; i++) {
+				potentialRecommendationList.push(sp500.data[i].Symbol);
 			}
 		}
 

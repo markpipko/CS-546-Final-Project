@@ -18,14 +18,7 @@ router.get("/home", async (req, res) => {
 		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = user.stocksPurchased;
 
-		let recList = [];
-
-		if (userStocks.length != 0) {
-			recList = await stocksData.giveRecommendation(userStocks);
-		} else {
-		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
-		 	recList.push({ ticker: "T", recommendation: "Buy" });
-		}
+		let recList = await stocksData.giveRecommendation(userStocks);
 
 		var totalValue = await stocksData.getTotalValue(userStocks);
 		var cash = await user.cash;
@@ -63,10 +56,11 @@ router.post("/update", async (req, res) => {
 
 router.post("/userGraph", async (req, res) => {
 	const user = await users.getUserByEmail(req.session.user.email);
-	var data = await stocksData.getTotalValue(user.stocksPurchased)
-	var cash = await user.cash
+	var data = await stocksData.getTotalValue(user.stocksPurchased);
+	var cash = await user.cash;
 	res.json({
-		value: (data + cash).toFixed(2)
+		totalValue: (data + cash).toFixed(2),
+		pValue: data.toFixed(2)
 	});
 });
 
@@ -116,14 +110,7 @@ router.get("/stocks/:id", async (req, res) => {
 		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = user.stocksPurchased;
 
-		let recList = [];
-
-		if (userStocks.length != 0) {
-			recList = await stocksData.giveRecommendation(userStocks);
-		} else {
-		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
-		 	recList.push({ ticker: "T", recommendation: "Buy" });
-		}
+		let recList = await stocksData.giveRecommendation(userStocks);
 
 		var totalValue = await stocksData.getTotalValue(userStocks);
 		var cash = await user.cash;
@@ -174,14 +161,7 @@ router.get("/stocks/:id", async (req, res) => {
 		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = user.stocksPurchased;
 
-		let recList = [];
-
-		if (userStocks.length != 0) {
-			recList = await stocksData.giveRecommendation(userStocks);
-		} else {
-		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
-		 	recList.push({ ticker: "T", recommendation: "Buy" });
-		}
+		let recList = await stocksData.giveRecommendation(userStocks);
 
 		var totalValue = await stocksData.getTotalValue(userStocks);
 		var cash = await user.cash;
@@ -217,14 +197,7 @@ router.post("/stocks", async (req, res) => {
 		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = req.session.user.stocksPurchased;
 
-		let recList = [];
-
-		if (userStocks.length != 0) {
-			recList = await stocksData.giveRecommendation(userStocks);
-		} else {
-		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
-		 	recList.push({ ticker: "T", recommendation: "Buy" });
-		}
+		let recList = await stocksData.giveRecommendation(userStocks);
 
 		return res.render("home", {
 			title: "Home",
@@ -265,14 +238,7 @@ router.post("/stocks", async (req, res) => {
 		const user = await users.getUserByEmail(req.session.user.email);
 		let userStocks = req.session.user.stocksPurchased;
 
-		let recList = [];
-
-		if (userStocks.length != 0) {
-			recList = await stocksData.giveRecommendation(userStocks);
-		} else {
-		 	recList.push({ ticker: "AAPL", recommendation: "Buy" });
-		 	recList.push({ ticker: "T", recommendation: "Buy" });
-		}
+		let recList = await stocksData.giveRecommendation(userStocks);
 
 		return res.render("home", {
 			title: "Home",
