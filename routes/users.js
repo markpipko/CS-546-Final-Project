@@ -35,7 +35,7 @@ router.post("/signup", async (req, res) => {
 		res.render("signup", { title: "Sign Up", hasErrors: true, error: "Parameters cannot be empty" });
 		return;
 	}
-	if (typeof age !== "number" || age % 1 != 0 || typeof cash !== "number") {
+	if (isNaN(age) || Number(age) % 1 != 0 || isNaN(cash)) {
 		res.render("signup", { title: "Sign Up", hasErrors: true, error: "Invalid number parameters" });
 		return;
 	}
@@ -127,7 +127,7 @@ router.post("/updateUser", async (req, res) => {
 		res.render("updateUser", { title: "Edit Account", hasErrors: true, error: "Parameters cannot be empty" });
 		return;
 	}
-	if (typeof age !== "number" || age % 1 != 0 || typeof cash !== "number") {
+	if (isNaN(age) || Number(age) % 1 != 0 || isNaN(cash)) {
 		res.render("updateUser", { title: "Edit Account", hasErrors: true, error: "Invalid number parameters" });
 		return;
 	}
@@ -144,8 +144,8 @@ router.post("/updateUser", async (req, res) => {
 		lastName: lastName,
 		email: email,
 		password: hash,
-		age: age,
-		cash: cash
+		age: parseInt(age),
+		cash: Number(cash)
 	};
 
 	let user = await users.getUserByEmail(req.session.user.email);
