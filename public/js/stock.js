@@ -115,12 +115,15 @@ if (refreshForm) {
 				}),
 			}).then(function (x) {
 				if (x.error) {
+					$("#modal-body").html("");
+					$("#modalTitle").html("Error");
+					let errorStatus = document.createElement("p");
+					errorStatus.innerHTML = "Error refreshing data";
+					$("#transaction_modal").modal("show");
+					$("#modal-body").append(errorStatus);
 					$.unblockUI();
-					errorContainer.hidden = false;
-					errorContainer.innerHTML = x.error;
 					return;
 				}
-				errorContainer.hidden = true;
 				const price = document.getElementById("price");
 				if (price != x.stock.price) {
 					if (x.status == 1) {
@@ -164,8 +167,13 @@ if (refreshForm) {
 				refreshForm.reset();
 			});
 		} else {
-			errorContainer.hidden = false;
-			errorContainer.innerHTML = "Please input a ticker";
+			$("#modal-body").html("");
+			$("#modalTitle").html("Error");
+			let errorStatus = document.createElement("p");
+			errorStatus.innerHTML = "Error refreshing data";
+			$("#transaction_modal").modal("show");
+			$("#modal-body").append(errorStatus);
+			$.unblockUI();
 		}
 	});
 }
@@ -195,25 +203,45 @@ if (transForm) {
 	transForm.addEventListener("submit", (event) => {
 		event.preventDefault();
 		let transaction = $("input[name=transaction]:checked").val();
+		stockError.hidden = true;
+		stockError.innerHTML = "";
+		$("#modal-body").html("");
+
 		if (!transaction) {
+			$("#modalTitle").html("Transaction Incomplete");
+			let errorStatus = document.createElement("p");
+			errorStatus.innerHTML = "Transaction was not specified.";
+			$("#transaction_modal").modal("show");
+			$("#modal-body").append(errorStatus);
 			$.unblockUI();
-			stockError.hidden = false;
-			stockError.innerHTML = "Transaction was not specified";
+			return;
 		}
 
 		let quantity = $("#amount").val();
 		if (!quantity) {
+			$("#modalTitle").html("Transaction Incomplete");
+			let errorStatus = document.createElement("p");
+			errorStatus.innerHTML = "Quantity was not specified.";
+			$("#transaction_modal").modal("show");
+			$("#modal-body").append(errorStatus);
 			$.unblockUI();
-			stockError.hidden = false;
-			stockError.innerHTML = "Amount was not specified";
+			return;
 		}
-		// if (quantity < 1) {
-		// 	$.unblockUI();
-		// 	stockError.hidden = false;
-		// 	stockError.innerHTML = "Stock quantity cannot be less than 1";
-		// }
+		let investOption = $("#choice").val();
 
-		let investOption = $('#choice').val()
+		if (quantity <= 0) {
+			$("#modalTitle").html("Transaction Incomplete");
+			let errorStatus = document.createElement("p");
+			if (investOption == "shares") {
+				errorStatus.innerHTML = "Stock quantity must be greater than 0";
+			} else {
+				errorStatus.innerHTML = "Dollar amount must be greater than 0";
+			}
+			$("#transaction_modal").modal("show");
+			$("#modal-body").append(errorStatus);
+			$.unblockUI();
+			return;
+		}
 
 		if (temp.value.trim() && transaction && quantity) {
 			temp.value = temp.value.trim();
@@ -226,44 +254,27 @@ if (transForm) {
 					stock_ticker: temp.value.toUpperCase(),
 					transaction: transaction,
 					quantity: quantity,
-					investOption: investOption
+					investOption: investOption,
 				}),
 			}).then(function (x) {
 				if (x.error) {
-					// stockError.hidden = false;
-					// stockError.innerHTML = x.error;
+					$("#modalTitle").html("Transaction Incomplete");
 					let errorStatus = document.createElement("p");
-					$("#dialog-message2").html("");
 					errorStatus.innerHTML = x.error;
-
-					$("#dialog-message2").append(errorStatus);
-					$("#dialog-message2").dialog({
-						modal: true,
-						buttons: {
-							Ok: function () {
-								$(this).dialog("close");
-							},
-						},
-					});
+					$("#transaction_modal").modal("show");
+					$("#modal-body").append(errorStatus);
 				} else {
 					let result = document.createElement("p");
-					quantity = x.quantity
-					$("#dialog-message").html("");
+					quantity = x.quantity;
+					$("#modalTitle").html("Transaction Complete");
+					$("#transaction_modal").modal("show");
+
 					if (quantity == 1) {
 						result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
 					} else {
 						result.innerHTML = `Your order to ${transaction} ${quantity} shares of ${temp.value.toUpperCase()} was successful.`;
 					}
-
-					$("#dialog-message").append(result);
-					$("#dialog-message").dialog({
-						modal: true,
-						buttons: {
-							Ok: function () {
-								$(this).dialog("close");
-							},
-						},
-					});
+					$("#modal-body").append(result);
 					transForm.reset();
 				}
 

@@ -2,15 +2,15 @@
 <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 <main>
-	<nav class="navbar navbar-default"> 
+	<nav class="navbar navbar-default">
 		<div class="container-fluid">
 			<div class="navbar-header">
 				<a class="navbar-brand">Paper Trader</a>
 			</div>
 			<ul class="nav navbar-nav">
-				 <li><a href="/private/home">Home</a></li>
-				 <li><a href="/private/stockListings">SP 500</a></li>
-				 <li><a href="/private/stockHistory">History</a></li>
+				<li><a href="/private/home">Home</a></li>
+				<li><a href="/private/stockListings">SP 500</a></li>
+				<li><a href="/private/stockHistory">History</a></li>
 			</ul>
 			<ul class="nav navbar-nav navbar-right">
 				<li><a href="/updateUser"><span class="glyphicon glyphicon-edit"></span>Edit Account Info</a></li>
@@ -19,16 +19,15 @@
 			</ul>
 		</div>
 	</nav>
-	<form action="/private/stocks" method="POST" id="search_stock">
+	<form action="/private/stock" method="POST" id="search_stock">
 		<label for="stock_ticker">Look for a stock ticker: </label>
 		<input type="text" name="stock_ticker" id="stock_ticker" />
 
 		<button type="submit" value="search" id="search_button">Search</button>
 	</form>
-	<div id="error_container"></div>
-
-
-
+	{{#if hasErrors}}
+	<p>{{error}}</p>
+	{{else}}
 	<div id="stock_info">
 		<h1>{{stock.name}} ({{stock.ticker}})</h1>
 		{{#ifEquals status 1}}
@@ -80,11 +79,11 @@
 		<input type="radio" id="sell" name="transaction" value="sell">
 
 		<label for="choice">Invest In:</label>
-		<select id="choice"> 
+		<select id="choice">
 			<option value="shares">Shares</option>
 			<option value="dollars">Dollars</option>
 		</select>
-		<input type="number" step=".01" id="amount"/>
+		<input type="number" step=".01" id="amount" />
 		<button type="submit" id="transaction_submit">Submit</button>
 	</form>
 	<p id="disclaimer">Due to periods of market volatility, the current displayed price may not reflect the price that
@@ -95,15 +94,34 @@
 
 	<a href="/private" id="homeLink">Back to home page</a>
 
-	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
-		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+
 	<script src="/public/js/jquery.blockUI.js"></script>
-	<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+	{{!-- <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script> --}}
 
 	<script src="/public/js/stock.js"></script>
 
 	<div id="dialog-message" title="Transaction complete" hidden></div>
 	<div id="dialog-message2" title="Transaction incomplete" hidden></div>
+
+	<div class="modal fade" id="transaction_modal" tabindex="-1" role="dialog" aria-labelledby="modalTitle"
+		aria-hidden="true">
+		<div class="modal-dialog modal-dialog-centered" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="modalTitle">Modal title</h5>
+				</div>
+				<div class="modal-body" id="modal-body"></div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-primary" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	{{/if}}
+	{{!-- <div id="error_container"></div> --}}
+
+
 
 
 </main>
