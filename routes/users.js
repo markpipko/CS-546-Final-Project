@@ -7,6 +7,7 @@ const { buySellHistory } = require("../data");
 const users = data.users;
 const userMetrics = data.userMetrics;
 const buySell = data.buySellHistory
+const xss = require("xss");
 
 router.get("/", async (req, res) => {
 	res.render("login", { title: "Login" });
@@ -21,7 +22,12 @@ router.get("/signup", async (req, res) => {
 });
 
 router.post("/signup", async (req, res) => {
-	const { firstName, lastName, email, password, age, cash } = req.body;
+	const firstName = xss(req.body.firstName);
+	const lastName = xss(req.body.lastName);
+	const email = xss(req.body.email);
+	const password = xss(req.body.password);
+	const age = xss(req.body.age);
+	const cash = xss(req.body.cash);
 
 	if (!firstName || !lastName || !email || !password || !age || !cash) {
 		res.render("signup", { title: "Sign Up", hasErrors: true, error: "Parameters cannot be blank" });
@@ -70,7 +76,8 @@ router.post("/signup", async (req, res) => {
 });
 
 router.post("/login", async (req, res) => {
-	const { email, password } = req.body;
+	const email = xss(req.body.email);
+	const password = xss(req.body.password);
 
 	if (!email || typeof email !== "string" || email.trim() == "") {
 		res.render("login", { title: "Login", hasErrors: true, error: "Invalid email" });
@@ -89,7 +96,7 @@ router.post("/login", async (req, res) => {
 			match = await bcrypt.compare(password, allUsers[i].password);
 			if (match) {
 				req.session.user = {
-					email: req.body.email,
+					email: xss(req.body.email),
 					firstName: allUsers[i].firstName,
 					stocksPurchased: allUsers[i].stocksPurchased,
 				};
@@ -113,7 +120,13 @@ router.get("/updateUser", async (req, res) => {
 });
 
 router.post("/updateUser", async (req, res) => {
-	const { firstName, lastName, email, password, passwordConfirm, age, cash } = req.body;
+	const firstName = xss(req.body.firstName); 
+	const lastName = xss(req.body.lastName);
+	const email = xss(req.body.email);
+	const password = xss(req.body.password);
+	const passwordConfirm = xss(req.body.passwordConfirm); 
+	const age = xss(req.body.age);
+	const cash = xss(req.body.cash);
 
 	if (!firstName || !lastName || !email || !password || !passwordConfirm || !age || !cash) {
 		res.render("updateUser", { title: "Edit Account", hasErrors: true, error: "Parameters cannot be blank" });
@@ -148,21 +161,21 @@ router.post("/updateUser", async (req, res) => {
 		cash: Number(cash)
 	};
 
-	let user = await users.getUserByEmail(req.session.user.email);
+	let user = await users.getUserByEmail(xss(req.session.user.email));
 	let updatedReturnUser = await users.updateUser(user._id, updatedUser);
 
 	if (email != user.email) {
 		let updatedUserMetrics = {
 			email: email
 		};
-		let userMetricsReturn = await userMetrics.get(req.session.user.email);
+		let userMetricsReturn = await userMetrics.get(xss(req.session.user.email));
 		let updatedReturnUserMetrics = await userMetrics.updateEmail(userMetricsReturn._id.toString(), updatedUserMetrics);
 
 		let updatedBSH = {
 			email: email
 		};
-		let bshReturn = await userBSH.getHistoryByEmail(req.session.user.email);
-		let updatedReturnBSH = await userBSH.updateEmail(bshReturn._id.toString(), updatedBSH);
+		let bshReturn = await buySell.getHistoryByEmail(xss(req.session.user.email));
+		let updatedReturnBSH = await buySell.updateEmail(bshReturn._id.toString(), updatedBSH);
 
 		req.session.user.email = email;
 	}
@@ -180,8 +193,8 @@ router.get("/deleteAccount", async (req, res) => {
 });
 
 router.post("/deleteAccount", async (req, res) => {
-	if (req.body.deleteUser == "yes") {
-		let user = await users.getUserByEmail(req.session.user.email);
+	if (xss(req.body.deleteUser) == "yes") {
+		let user = await users.getUserByEmail(xss(req.session.user.email));
 		let deleted = await users.removeUser(user._id);
     	deleted = await userMetrics.remove(user.email)
     	deleted = await buySell.remove(user.email)
