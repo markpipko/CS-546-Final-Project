@@ -185,6 +185,124 @@ async function main() {
     const myUserMetrics3 = await userMetrics.create(userMetrics3.email, userMetrics3.totalReturn, userMetrics3.percentGrowth, userMetrics3.volatility);
     const myUserBSH3 = await userBSH.create(userBSH3.email, userBSH3.history);
 
+
+    const user4 = {
+        firstName: "Patrick",
+        lastname: "Hill",
+        email: "patrick@hill.com",
+        age: 30,
+        password: "$2a$16$kBnZyUUd1XfbtOMVv9SXNOwR2gDHCD7yMVSIdwEqPGABhf6EmG4Ti",
+        cash: 1500,
+        stocksPurchased: [
+            {
+                _id: new ObjectId(),
+                ticker: "EBAY",
+                amount: 4,
+                purchaseValue: 58.24,
+                datePurchased: new Date("2021-05-05")
+            },
+            {
+                _id: new ObjectId(),
+                ticker: "AMZN",
+                amount: 1,
+                purchaseValue: 3270.54,
+                datePurchased: new Date("2021-05-05")
+            }
+        ]
+    };
+
+    const userMetrics4 = {
+        email: "patrick@hill.com",
+        totalReturn: 0,
+        percentGrowth: 0,
+        volatility: 0
+    };
+
+    const userBSH4 = {
+        email: "patrick@hill.com",
+        history: [
+            {
+                _id: new ObjectId(),
+                transaction: "BUY",
+                ticker: "EBAY",
+                value: 58.24,
+                amount: 4,
+                date: new Date("2021-05-05")
+            },
+            {
+                _id: new ObjectId(),
+                transaction: "BUY",
+                ticker: "AMZN",
+                value: 3270.54,
+                amount: 1,
+                date: new Date("2021-05-05")
+            }
+        ]
+    }
+
+    const myUser4 = await users.addUser(user4.firstName, user4.lastname, user4.email, user4.age, user4.password, user4.cash, user4.stocksPurchased);
+    const myUserMetrics4 = await userMetrics.create(userMetrics4.email, userMetrics4.totalReturn, userMetrics4.percentGrowth, userMetrics4.volatility);
+    const myUserBSH4 = await userBSH.create(userBSH4.email, userBSH4.history);
+
+
+    const user5 = {
+        firstName: "Admin",
+        lastname: "Test",
+        email: "test@test.com",
+        age: 50,
+        password: "$2a$16$NzR6mjZBW1itCRXllO/pIO81iFIewzQYn/RHa8/TLsmSrLItfeZNm",
+        cash: 3000,
+        stocksPurchased: [
+            {
+                _id: new ObjectId(),
+                ticker: "GOOGL",
+                amount: 2,
+                purchaseValue: 2314.77,
+                datePurchased: new Date("2021-05-05")
+            },
+            {
+                _id: new ObjectId(),
+                ticker: "QCOM",
+                amount: 3,
+                purchaseValue: 134.65,
+                datePurchased: new Date("2021-05-05")
+            }
+        ]
+    };
+
+    const userMetrics5 = {
+        email: "test@test.com",
+        totalReturn: 0,
+        percentGrowth: 0,
+        volatility: 0
+    };
+
+    const userBSH5 = {
+        email: "test@test.com",
+        history: [
+            {
+                _id: new ObjectId(),
+                transaction: "BUY",
+                ticker: "GOOGL",
+                value: 2314.77,
+                amount: 2,
+                date: new Date("2021-05-05")
+            },
+            {
+                _id: new ObjectId(),
+                transaction: "BUY",
+                ticker: "QCOM",
+                value: 134.65,
+                amount: 3,
+                date: new Date("2021-05-05")
+            }
+        ]
+    }
+
+    const myUser5 = await users.addUser(user5.firstName, user5.lastname, user5.email, user5.age, user5.password, user5.cash, user5.stocksPurchased);
+    const myUserMetrics5 = await userMetrics.create(userMetrics5.email, userMetrics5.totalReturn, userMetrics5.percentGrowth, userMetrics5.volatility);
+    const myUserBSH5 = await userBSH.create(userBSH5.email, userBSH5.history);
+
     console.log('Done seeding database');
 
     await db.serverConfig.close();

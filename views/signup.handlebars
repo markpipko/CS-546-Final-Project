@@ -24,7 +24,7 @@
         Starting Cash:
         <input type="number" id="cash_input_signup" name="cash" min="0" />
     </label><br />
-    <button type="submit">Submit</button>
+    <button type="submit" id="sign_up_button">Submit</button>
 </form>
 
 {{#if hasErrors}}
@@ -32,3 +32,10 @@
 {{/if}}
 
 <a href="/">Back to Login</a>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+	integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="/public/js/jquery.blockUI.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="/public/js/user.js"></script>
