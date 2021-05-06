@@ -7,6 +7,7 @@ const userMetrics = data.userMetrics;
 const users = data.users;
 const historyData = data.buySellHistory;
 const yahooStockPrices = require("yahoo-stock-prices");
+const xss = require("xss");
 
 router.get("/", async (req, res) => {
 	res.redirect("/private/home");
@@ -14,7 +15,9 @@ router.get("/", async (req, res) => {
 
 router.get("/home", async (req, res) => {
 	try {
-		const user = await users.getUserByEmail(req.session.user.email);
+		const metrics = await userMetrics.update(xss(req.session.user.email));
+		const user = await users.getUserByEmail(xss(req.session.user.email));
+
 		let userStocks = user.stocksPurchased;
 
 		let recList = await stocksData.giveRecommendation(userStocks);
@@ -29,9 +32,9 @@ router.get("/home", async (req, res) => {
 
 		res.render("home", {
 			title: "Home",
-			name: req.session.user.firstName,
+			name: xss(req.session.user.firstName),
 			recList: recList,
-			
+
 			stocks: userStocks,
 			isEmpty: user.stocksPurchased.length == 0 ? true : false,
 			pValue: totalValue.toFixed(2),
@@ -43,7 +46,7 @@ router.get("/home", async (req, res) => {
 });
 
 router.post("/update", async (req, res) => {
-	const metrics = await userMetrics.update(req.session.user.email);
+	const metrics = await userMetrics.update(xss(req.session.user.email));
 	res.json({
 		totalReturn: metrics.totalReturn,
 		percentGrowth: metrics.percentGrowth,
@@ -52,34 +55,34 @@ router.post("/update", async (req, res) => {
 });
 
 router.post("/userGraph", async (req, res) => {
-	const user = await users.getUserByEmail(req.session.user.email);
+	const user = await users.getUserByEmail(xss(req.session.user.email));
 	var data = await stocksData.getTotalValue(user.stocksPurchased);
 	var cash = await user.cash;
 	res.json({
 		totalValue: (data + cash).toFixed(2),
-		pValue: data.toFixed(2)
+		pValue: data.toFixed(2),
 	});
 });
 
 router.post("/graph", async (req, res) => {
-	let ticker = req.body["ticker"];
-	let subtract = req.body["subtract"];
+	let ticker = xss(req.body["ticker"]);
+	let subtract = xss(req.body["subtract"]);
 	const data = await stocksData.getGraphData(ticker, subtract);
 	res.json({ chart: data });
 });
 
 router.get("/stockHistory", async (req, res) => {
-	const metrics = await userMetrics.update(req.session.user.email);
-	const trade = await historyData.getHistoryByEmail(req.session.user.email);
+	const metrics = await userMetrics.update(xss(req.session.user.email));
+	const trade = await historyData.getHistoryByEmail(xss(req.session.user.email));
 	res.render("stockHistory", { title: "History", 
 		trades: trade.history,
 		totalReturn: metrics.totalReturn,
 		percentGrowth: metrics.percentGrowth,
-		volatility: metrics.volatility, });
+		volatility: metrics.volatility });
 });
 
 router.post("/find", async (req, res) => {
-	let ticker = req.body["stock_ticker"];
+	let ticker = xss(req.body["stock_ticker"]);
 	if (!ticker) {
 		return res.json({ error: "Please input a ticker" });
 	}
@@ -106,10 +109,10 @@ router.post("/find", async (req, res) => {
 });
 
 router.get("/stocks/:id", async (req, res) => {
-	let ticker = req.params.id;
+	let ticker = xss(req.params.id);
 	if (!ticker || !ticker.trim()) {
-		const metrics = await userMetrics.update(req.session.user.email);
-		const user = await users.getUserByEmail(req.session.user.email);
+		const metrics = await userMetrics.update(xss(req.session.user.email));
+		const user = await users.getUserByEmail(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
 
 		let recList = await stocksData.giveRecommendation(userStocks);
@@ -126,7 +129,7 @@ router.get("/stocks/:id", async (req, res) => {
 			title: "Home",
 			hasErrors: true,
 			error: "Please input a ticker",
-			name: req.session.user.firstName,
+			name: xss(req.session.user.firstName),
 			recList: recList,
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth,
@@ -159,8 +162,8 @@ router.get("/stocks/:id", async (req, res) => {
 	} catch (e) {
 		console.log(e);
 
-		const metrics = await userMetrics.update(req.session.user.email);
-		const user = await users.getUserByEmail(req.session.user.email);
+		const metrics = await userMetrics.update(xss(req.session.user.email));
+		const user = await users.getUserByEmail(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
 
 		let recList = await stocksData.giveRecommendation(userStocks);
@@ -177,7 +180,7 @@ router.get("/stocks/:id", async (req, res) => {
 			title: "Home",
 			hasErrors: true,
 			error: "Ticker not found",
-			name: req.session.user.firstName,
+			name: xss(req.session.user.firstName),
 			recList: recList,
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth,
@@ -190,14 +193,52 @@ router.get("/stocks/:id", async (req, res) => {
 	}
 });
 
+router.post("/stock", async (req, res) => {
+	let ticker = req.body["stock_ticker"];
+	if (!ticker || !ticker.trim()) {
+		return res.render("stock", {
+			title: "Error",
+			hasErrors: true,
+			error: "Please input a ticker",
+		});
+	}
+	ticker = ticker.toUpperCase();
+	try {
+		const stockInfo = await stocksData.getStock(ticker);
+		const rec = await stocksData.buyOrSell(ticker);
+		let status = 0;
+
+		if (stockInfo.price > stockInfo.prevClose) {
+			status = 1;
+		} else if (stockInfo.price < stockInfo.prevClose) {
+			status = -1;
+		} else {
+			status = 0;
+		}
+		res.render("stock", {
+			title: ticker.toUpperCase(),
+			stock: stockInfo,
+			recommendation: rec,
+			status: status,
+		});
+	} catch (e) {
+		return res.render("stock", {
+			title: "Error",
+			hasErrors: true,
+			error: "Ticker not found",
+		});
+	}
+});
+
 //Taken from routes/stocks.js
 //TODO: routes/stocks.js can be deleted
+
 router.post("/stocks", async (req, res) => {
-	let ticker = req.body["stock_ticker"];
+	let ticker = xss(req.body["stock_ticker"]);
 	if (!ticker.trim()) {
-		const metrics = await userMetrics.update(req.session.user.email);
-		const user = await users.getUserByEmail(req.session.user.email);
-		let userStocks = req.session.user.stocksPurchased;
+		const metrics = await userMetrics.update(xss(req.session.user.email));
+		const user = await users.getUserByEmail(xss(req.session.user.email));
+		let userStocks = xss(req.session.user.stocksPurchased);
 
 		let recList = await stocksData.giveRecommendation(userStocks);
 
@@ -205,7 +246,7 @@ router.post("/stocks", async (req, res) => {
 			title: "Home",
 			hasErrors: true,
 			error: "Please input a ticker",
-			name: req.session.user.firstName,
+			name: xss(req.session.user.firstName),
 			recList: recList,
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth,
@@ -236,9 +277,9 @@ router.post("/stocks", async (req, res) => {
 	} catch (e) {
 		console.log(e);
 
-		const metrics = await userMetrics.update(req.session.user.email);
-		const user = await users.getUserByEmail(req.session.user.email);
-		let userStocks = req.session.user.stocksPurchased;
+		const metrics = await userMetrics.update(xss(req.session.user.email));
+		const user = await users.getUserByEmail(xss(req.session.user.email));
+		let userStocks = xss(req.session.user.stocksPurchased);
 
 		let recList = await stocksData.giveRecommendation(userStocks);
 
@@ -246,7 +287,7 @@ router.post("/stocks", async (req, res) => {
 			title: "Home",
 			hasErrors: true,
 			error: "Ticker not found",
-			name: req.session.user.firstName,
+			name: xss(req.session.user.firstName),
 			recList: recList,
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth,
@@ -262,18 +303,17 @@ router.get("/stockListings", async (req, res) => {
 });
 
 router.post("/transaction", async (req, res) => {
-	let transaction = req.body["transaction"];
-	let quantity = req.body["quantity"];
-	let ticker = req.body["stock_ticker"];
-	let choice = req.body["investOption"]
+	let transaction = xss(req.body["transaction"]);
+	let quantity = xss(req.body["quantity"]);
+	let ticker = xss(req.body["stock_ticker"]);
+	let choice = xss(req.body["investOption"]);
 
-	if(choice == "dollars"){
-		quantity = parseFloat(quantity)
-		const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker)
-		quantity = quantity / yahoo_data
-		quantity = quantity.toString()
-	}
-	else{
+	if (choice == "dollars") {
+		quantity = parseFloat(quantity);
+		const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker);
+		quantity = quantity / yahoo_data;
+		quantity = quantity.toString();
+	} else {
 		quantity = quantity.trim();
 	}
 
@@ -287,17 +327,17 @@ router.post("/transaction", async (req, res) => {
 		return res.json({ error: "One or more inputs were not provided" });
 	}
 
-	let user = req.session.user;
+	let email = xss(req.session.user.email);
 	if (transaction == "buy") {
 		try {
-			let status = await stocksData.buy(user.email, ticker, quantity);
+			let status = await stocksData.buy(email, ticker, quantity);
 			return res.json({ success: true, ticker: ticker, quantity: quantity });
 		} catch (e) {
 			return res.json({ error: e });
 		}
 	} else {
 		try {
-			let status = await stocksData.sell(user.email, ticker, quantity);
+			let status = await stocksData.sell(email, ticker, quantity);
 			return res.json({ success: true, ticker: ticker, quantity: quantity });
 		} catch (e) {
 			return res.json({ error: e });
