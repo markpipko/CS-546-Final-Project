@@ -142,7 +142,7 @@ const exportedMethods = {
 		}
 		let total_amount = parseFloat(price.toFixed(2)) * parseFloat(quantity);
 		if (user.cash < total_amount) {
-			throw "Not enough cash available";
+			throw "Not enough cash available.";
 		}
 		let stocksPurchased = user.stocksPurchased;
 		if (!stocksPurchased) {
@@ -159,11 +159,13 @@ const exportedMethods = {
 		if (Object.keys(transactionDetails) != 0) {
 			let sum =
 				parseFloat(transactionDetails.purchaseValue) *
-				parseFloat(transactionDetails.amount) +
+					parseFloat(transactionDetails.amount) +
 				total_amount;
-			let updatedValue =
-				(sum / (transactionDetails.amount + parseFloat(quantity))).toFixed(2);
-			
+			let updatedValue = (
+				sum /
+				(transactionDetails.amount + parseFloat(quantity))
+			).toFixed(2);
+
 			let updatedAmount =
 				parseFloat(quantity) + parseFloat(transactionDetails.amount);
 
@@ -283,7 +285,7 @@ const exportedMethods = {
 			}
 		}
 		if (index == -1) {
-			throw `You do not own any shares of ${ticker}`;
+			throw `You do not own any shares of ${ticker}.`;
 		}
 		if (quantity > transactionDetails.amount) {
 			throw `The quantity you have specified exceeds the amount of ${ticker} you currently own.`;
@@ -440,7 +442,7 @@ const exportedMethods = {
 				stockRecsNum++;
 				myStocks.splice(randomIndex, 1);
 			}
-		
+
 			for (let i = 0; i < myStockData.length; i++) {
 				for (let j = 0; j < sp500.data.length; j++) {
 					if (
@@ -453,8 +455,7 @@ const exportedMethods = {
 					}
 				}
 			}
-		}
-		else {
+		} else {
 			for (let i = 0; i < sp500.data.length; i++) {
 				potentialRecommendationList.push(sp500.data[i].Symbol);
 			}
@@ -465,17 +466,21 @@ const exportedMethods = {
 		for (let i = 0; i < potentialRecommendationList.length; i++) {
 			let rec = await this.buyOrSell(potentialRecommendationList[i]);
 			if (rec == "Buy" || rec == "Strong Buy") {
-				recommendationList.push({ ticker: potentialRecommendationList[i], recommendation: rec });
-			}
-			else if (i >= 10) {
-				recommendationList.push({ ticker: potentialRecommendationList[i], recommendation: rec });
+				recommendationList.push({
+					ticker: potentialRecommendationList[i],
+					recommendation: rec,
+				});
+			} else if (i >= 10) {
+				recommendationList.push({
+					ticker: potentialRecommendationList[i],
+					recommendation: rec,
+				});
 			}
 
 			if (recommendationList.length >= 3) {
 				break;
 			}
 		}
-
 
 		//Select first 3-5 (or less) to return
 		if (recommendationList.length >= 3) return recommendationList.slice(0, 3);
@@ -521,15 +526,15 @@ const exportedMethods = {
 		return data;
 	},
 
-	async getTotalValue(stocksOwned){
-		var totalValue = 0
-		for(var i = 0; i< stocksOwned.length; i++){
+	async getTotalValue(stocksOwned) {
+		var totalValue = 0;
+		for (var i = 0; i < stocksOwned.length; i++) {
 			let ticker = stocksOwned[i].ticker;
 			const data = await yahooStockPrices.getCurrentPrice(ticker);
 			totalValue += data * stocksOwned[i].amount;
 		}
-		return totalValue
-	}
+		return totalValue;
+	},
 };
 
 module.exports = exportedMethods;

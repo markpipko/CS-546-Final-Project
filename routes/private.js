@@ -31,7 +31,7 @@ router.get("/home", async (req, res) => {
 			title: "Home",
 			name: req.session.user.firstName,
 			recList: recList,
-			
+
 			stocks: userStocks,
 			isEmpty: user.stocksPurchased.length == 0 ? true : false,
 			pValue: totalValue.toFixed(2),
@@ -57,7 +57,7 @@ router.post("/userGraph", async (req, res) => {
 	var cash = await user.cash;
 	res.json({
 		totalValue: (data + cash).toFixed(2),
-		pValue: data.toFixed(2)
+		pValue: data.toFixed(2),
 	});
 });
 
@@ -71,11 +71,13 @@ router.post("/graph", async (req, res) => {
 router.get("/stockHistory", async (req, res) => {
 	const metrics = await userMetrics.update(req.session.user.email);
 	const trade = await historyData.getHistoryByEmail(req.session.user.email);
-	res.render("stockHistory", { title: "History", 
+	res.render("stockHistory", {
+		title: "History",
 		trades: trade.history,
 		totalReturn: metrics.totalReturn,
 		percentGrowth: metrics.percentGrowth,
-		volatility: metrics.volatility, });
+		volatility: metrics.volatility,
+	});
 });
 
 router.post("/find", async (req, res) => {
@@ -190,6 +192,43 @@ router.get("/stocks/:id", async (req, res) => {
 	}
 });
 
+router.post("/stock", async (req, res) => {
+	let ticker = req.body["stock_ticker"];
+	if (!ticker || !ticker.trim()) {
+		return res.render("stock", {
+			title: "Error",
+			hasErrors: true,
+			error: "Please input a ticker",
+		});
+	}
+	ticker = ticker.toUpperCase();
+	try {
+		const stockInfo = await stocksData.getStock(ticker);
+		const rec = await stocksData.buyOrSell(ticker);
+		let status = 0;
+
+		if (stockInfo.price > stockInfo.prevClose) {
+			status = 1;
+		} else if (stockInfo.price < stockInfo.prevClose) {
+			status = -1;
+		} else {
+			status = 0;
+		}
+		res.render("stock", {
+			title: ticker.toUpperCase(),
+			stock: stockInfo,
+			recommendation: rec,
+			status: status,
+		});
+	} catch (e) {
+		return res.render("stock", {
+			title: "Error",
+			hasErrors: true,
+			error: "Ticker not found",
+		});
+	}
+});
+
 //Taken from routes/stocks.js
 //TODO: routes/stocks.js can be deleted
 router.post("/stocks", async (req, res) => {
@@ -265,15 +304,14 @@ router.post("/transaction", async (req, res) => {
 	let transaction = req.body["transaction"];
 	let quantity = req.body["quantity"];
 	let ticker = req.body["stock_ticker"];
-	let choice = req.body["investOption"]
+	let choice = req.body["investOption"];
 
-	if(choice == "dollars"){
-		quantity = parseFloat(quantity)
-		const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker)
-		quantity = quantity / yahoo_data
-		quantity = quantity.toString()
-	}
-	else{
+	if (choice == "dollars") {
+		quantity = parseFloat(quantity);
+		const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker);
+		quantity = quantity / yahoo_data;
+		quantity = quantity.toString();
+	} else {
 		quantity = quantity.trim();
 	}
 
