@@ -1,6 +1,24 @@
 <h1>Paper Trading Stock Website</h1>
 <h2>Welcome, {{name}}</h2>
 <main>
+	<nav class="navbar navbar-default"> 
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand">Paper Trader</a>
+			</div>
+			<ul class="nav navbar-nav">
+				 <li class="active"><a href="/private/home">Home</a></li>
+				 <li><a href="/private/stockListings">SP 500</a></li>
+				 <li><a href="/private/stockHistory">History</a></li>
+			</ul>
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="/updateUser"><span class="glyphicon glyphicon-edit"></span>Edit Account Info</a></li>
+				<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+				<li><a href="/deleteAccount"><span class="glyphicon glyphicon-trash"></span>Delete Account</a> </li>
+			</ul>
+		</div>
+	</nav>
+
 	<form action="/private/stocks" method="POST">
 		<label for="stock_ticker">Look for a stock ticker: </label>
 		<input type="text" name="stock_ticker" id="stock_ticker" />
@@ -10,13 +28,7 @@
 	{{#if hasErrors}}
 	<p>{{error}}</p>
 	{{/if}}
-	<a href="/private/stockListings">SP 500</a>
-
-	<h3> Metrics </h3>
-	<p id="totalReturn">Total Return: ${{{totalReturn}}} </p>
-	<p id="percentGrowth">Total Growth: {{{percentGrowth}}}% </p>
-	<p id="volatility">Volatility of Current Portfolio: {{{volatility}}} </p>
-
+	
 	<h3> Portfolio </h3>
 	<div id="userGraph"> </div>
 	<p> Cash: ${{cash}}</p>
@@ -40,14 +52,6 @@
 		<li>{{this.recommendation}} <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </li>
 		{{/each}}
 	</ul>
-
-	<button id="refresh"> Refresh </button>
-	<div>
-		<a href="/updateUser">Edit Account Info</a>
-		<a href="/logout">Logout</a>
-		<a href="/deleteAccount">Delete Account</a>
-		<a href="/private/stockHistory">History</a>
-	</div>
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
 		integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>

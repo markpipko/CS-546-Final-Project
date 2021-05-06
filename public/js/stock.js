@@ -184,12 +184,12 @@ $("#refresh_button").click(function () {
 	});
 });
 
-$("#transaction_submit").click(function () {
+function blockTransaction() {
 	$.blockUI({
 		message: "Please wait...",
 		overlayCSS: { backgroundColor: "#0f0" },
 	});
-});
+}
 
 if (transForm) {
 	transForm.addEventListener("submit", (event) => {
@@ -200,15 +200,24 @@ if (transForm) {
 			stockError.hidden = false;
 			stockError.innerHTML = "Transaction was not specified";
 		}
+
 		let quantity = $("#amount").val();
 		if (!quantity) {
 			$.unblockUI();
 			stockError.hidden = false;
-			stockError.innerHTML = "Stock quantity was not specified";
+			stockError.innerHTML = "Amount was not specified";
 		}
+		// if (quantity < 1) {
+		// 	$.unblockUI();
+		// 	stockError.hidden = false;
+		// 	stockError.innerHTML = "Stock quantity cannot be less than 1";
+		// }
+
+		let investOption = $('#choice').val()
 
 		if (temp.value.trim() && transaction && quantity) {
 			temp.value = temp.value.trim();
+			blockTransaction();
 			$.ajax({
 				method: "POST",
 				url: "/private/transaction",
@@ -217,6 +226,7 @@ if (transForm) {
 					stock_ticker: temp.value.toUpperCase(),
 					transaction: transaction,
 					quantity: quantity,
+					investOption: investOption
 				}),
 			}).then(function (x) {
 				if (x.error) {
@@ -237,6 +247,7 @@ if (transForm) {
 					});
 				} else {
 					let result = document.createElement("p");
+					quantity = x.quantity
 					$("#dialog-message").html("");
 					if (quantity == 1) {
 						result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
