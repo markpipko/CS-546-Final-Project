@@ -20,8 +20,6 @@ router.get("/home", async (req, res) => {
 
 		let userStocks = user.stocksPurchased;
 
-		let recList = await stocksData.giveRecommendation(userStocks);
-
 		var totalValue = await stocksData.getTotalValue(userStocks);
 		var cash = await user.cash;
 		for (var i = 0; i < userStocks.length; i++) {
@@ -33,8 +31,6 @@ router.get("/home", async (req, res) => {
 		res.render("home", {
 			title: "Home",
 			name: xss(req.session.user.firstName),
-			recList: recList,
-
 			stocks: userStocks,
 			isEmpty: user.stocksPurchased.length == 0 ? true : false,
 			pValue: totalValue.toFixed(2),
@@ -81,6 +77,18 @@ router.get("/stockHistory", async (req, res) => {
 		volatility: metrics.volatility });
 });
 
+router.get("/recommendations", async (req, res) => {
+	const user = await users.getUserByEmail(xss(req.session.user.email));
+	let userStocks = user.stocksPurchased;
+	let recList = await stocksData.giveRecommendation(userStocks);
+	res.render("recommendations", 
+		{ 
+			title: "Recommendations",
+			recList: recList
+		}
+	);
+});
+
 router.post("/find", async (req, res) => {
 	let ticker = xss(req.body["stock_ticker"]);
 	if (!ticker) {
@@ -115,8 +123,6 @@ router.get("/stocks/:id", async (req, res) => {
 		const user = await users.getUserByEmail(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
 
-		let recList = await stocksData.giveRecommendation(userStocks);
-
 		var totalValue = await stocksData.getTotalValue(userStocks);
 		var cash = await user.cash;
 		for (var i = 0; i < userStocks.length; i++) {
@@ -130,7 +136,6 @@ router.get("/stocks/:id", async (req, res) => {
 			hasErrors: true,
 			error: "Please input a ticker",
 			name: xss(req.session.user.firstName),
-			recList: recList,
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth,
 			volatility: metrics.volatility,
@@ -166,8 +171,6 @@ router.get("/stocks/:id", async (req, res) => {
 		const user = await users.getUserByEmail(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
 
-		let recList = await stocksData.giveRecommendation(userStocks);
-
 		var totalValue = await stocksData.getTotalValue(userStocks);
 		var cash = await user.cash;
 		for (var i = 0; i < userStocks.length; i++) {
@@ -181,7 +184,6 @@ router.get("/stocks/:id", async (req, res) => {
 			hasErrors: true,
 			error: "Ticker not found",
 			name: xss(req.session.user.firstName),
-			recList: recList,
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth,
 			volatility: metrics.volatility,
@@ -230,24 +232,23 @@ router.post("/stock", async (req, res) => {
 	}
 });
 
-//Taken from routes/stocks.js
-//TODO: routes/stocks.js can be deleted
-
 router.post("/stocks", async (req, res) => {
 	let ticker = xss(req.body["stock_ticker"]);
 	if (!ticker.trim()) {
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
+<<<<<<< HEAD
 		let userStocks = req.session.user.stocksPurchased;
 
 		let recList = await stocksData.giveRecommendation(userStocks);
+=======
+>>>>>>> e4cdc7dd843e39b91047a95d762008f2c00d7e19
 
 		return res.render("home", {
 			title: "Home",
 			hasErrors: true,
 			error: "Please input a ticker",
 			name: xss(req.session.user.firstName),
-			recList: recList,
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth,
 			volatility: metrics.volatility,
@@ -279,16 +280,18 @@ router.post("/stocks", async (req, res) => {
 
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
+<<<<<<< HEAD
 		let userStocks = req.session.user.stocksPurchased;
 
 		let recList = await stocksData.giveRecommendation(userStocks);
+=======
+>>>>>>> e4cdc7dd843e39b91047a95d762008f2c00d7e19
 
 		return res.render("home", {
 			title: "Home",
 			hasErrors: true,
 			error: "Ticker not found",
 			name: xss(req.session.user.firstName),
-			recList: recList,
 			totalReturn: metrics.totalReturn,
 			percentGrowth: metrics.percentGrowth,
 			volatility: metrics.volatility,
