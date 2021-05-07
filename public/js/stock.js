@@ -268,12 +268,38 @@ if (transForm) {
 					quantity = x.quantity;
 					$("#modalTitle").html("Transaction Complete");
 					$("#transaction_modal").modal("show");
-
+					let shares = "";
 					if (quantity == 1) {
+						shares = "share";
 						result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
 					} else {
+						shares = "shares";
 						result.innerHTML = `Your order to ${transaction} ${quantity} shares of ${temp.value.toUpperCase()} was successful.`;
 					}
+					if (transaction == "buy") {
+						$("#twitter_share").attr(
+							"href",
+							"https://twitter.com/intent/tweet?text=I just bought " +
+								quantity +
+								" " +
+								shares +
+								" of " +
+								temp.value.toUpperCase() +
+								" on Paper Trader! Go check them out!"
+						);
+					} else {
+						$("#twitter_share").attr(
+							"href",
+							"https://twitter.com/intent/tweet?text=I just sold " +
+								quantity +
+								" " +
+								shares +
+								" of " +
+								temp.value.toUpperCase() +
+								" on Paper Trader! Go check them out!"
+						);
+					}
+
 					$("#modal-body").append(result);
 					transForm.reset();
 				}
