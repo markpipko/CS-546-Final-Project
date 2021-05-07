@@ -6,7 +6,7 @@ User 1:
 email - ed@yar.com
 password - epass
 
-User2:
+User 2:
 email - mark@pipko.com
 password - mpass
 
