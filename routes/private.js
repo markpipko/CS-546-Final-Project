@@ -71,7 +71,7 @@ router.get("/stockHistory", async (req, res) => {
 	const metrics = await userMetrics.update(xss(req.session.user.email));
 	const trade = await historyData.getHistoryByEmail(xss(req.session.user.email));
 	res.render("stockHistory", { title: "History", 
-		trades: trade.history,
+		trades: trade.history.reverse(),
 		totalReturn: metrics.totalReturn,
 		percentGrowth: metrics.percentGrowth,
 		volatility: metrics.volatility });

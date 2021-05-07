@@ -1,5 +1,4 @@
-<h1>Recommendations</h1>
-<main>
+<link rel="stylesheet" href="/public/css/home.css">
     <nav class="navbar navbar-default"> 
 		<div class="container-fluid">
 			<div class="navbar-header">
@@ -19,11 +18,12 @@
 			</ul>
 		</div>
 	</nav>
-
+<main>
+	<h1>Recommendations</h1>
     <ul>
 		{{#each recList}}
 		<li>{{this.recommendation}} <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </li>
 		{{/each}}
 	</ul>
-
 </main>
+<script src="/public/js/recommendations.js"></script>
