@@ -237,12 +237,6 @@ router.post("/stocks", async (req, res) => {
 	if (!ticker.trim()) {
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
-<<<<<<< HEAD
-		let userStocks = req.session.user.stocksPurchased;
-
-		let recList = await stocksData.giveRecommendation(userStocks);
-=======
->>>>>>> e4cdc7dd843e39b91047a95d762008f2c00d7e19
 
 		return res.render("home", {
 			title: "Home",
@@ -280,12 +274,6 @@ router.post("/stocks", async (req, res) => {
 
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
-<<<<<<< HEAD
-		let userStocks = req.session.user.stocksPurchased;
-
-		let recList = await stocksData.giveRecommendation(userStocks);
-=======
->>>>>>> e4cdc7dd843e39b91047a95d762008f2c00d7e19
 
 		return res.render("home", {
 			title: "Home",

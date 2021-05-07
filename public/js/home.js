@@ -4,30 +4,41 @@ const percentGrowth = document.getElementById("percentGrowth");
 const volatility = document.getElementById("volatility");
 const refresh = document.getElementById("refresh");
 const pValueTag = document.getElementById("pValue");
+var nav = document.querySelector("nav")
+var main = document.querySelector("main")
 
 var pValue = []
 var dates = []
 var repititions = 0;
 
-$(document).ready(function() {
+start()
+function start() {
+	var currTime = new Date();
+	var currHour = currTime.getHours();
+	var currMin = currTime.getMinutes();
+
+	if (currHour < 9 || currHour > 16 || (currHour == 9 && currMin < 30)) {
+		nav.className = "navbar navbar-inverse"
+		main.className = "night"
+		document.body.style.backgroundColor = "black";
+	}else{
+		nav.className = "navbar navbar-default"
+		main.className = "day"
+		document.body.style.backgroundColor = "white";
+	}
+
 	var myTime = setInterval(graph, 5000); //calls every 5 seconds
 	graph();
-})
+}
 
 function graph(){
-	if (repititions >= 5) {
-		var currTime = new Date();
-		var currHour = currTime.getHours();
-		var currMin = currTime.getMinutes();
+	// if (repititions >= 5) {
+	// 	var currTime = new Date();
 
-		if (currHour < 9 || currHour > 16 || (currHour == 9 && currMin < 30)) {
-			//TODO: Can set Dark Mode for closed hours here
-			return;
-		}
 
-		repititions = 0;
-	}
-	repititions++;
+	// 	repititions = 0;
+	// }
+	// repititions++;
 
 	var requestConfig = {
 		method: "POST",
