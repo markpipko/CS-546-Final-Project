@@ -10,8 +10,6 @@ const stockError = document.getElementById("error_container2");
 const refreshForm = document.getElementById("refresh");
 const temp = document.getElementById("temp_ticker");
 
-const favButton = document.getElementById("favorites_button");
-
 // if (myForm) {
 // 	myForm.addEventListener("submit", (event) => {
 // 		event.preventDefault();
@@ -117,12 +115,15 @@ if (refreshForm) {
 				}),
 			}).then(function (x) {
 				if (x.error) {
+					$("#modal-body").html("");
+					$("#modalTitle").html("Error");
+					let errorStatus = document.createElement("p");
+					errorStatus.innerHTML = "Error refreshing data";
+					$("#transaction_modal").modal("show");
+					$("#modal-body").append(errorStatus);
 					$.unblockUI();
-					errorContainer.hidden = false;
-					errorContainer.innerHTML = x.error;
 					return;
 				}
-				errorContainer.hidden = true;
 				const price = document.getElementById("price");
 				if (price != x.stock.price) {
 					if (x.status == 1) {
@@ -166,8 +167,13 @@ if (refreshForm) {
 				refreshForm.reset();
 			});
 		} else {
-			errorContainer.hidden = false;
-			errorContainer.innerHTML = "Please input a ticker";
+			$("#modal-body").html("");
+			$("#modalTitle").html("Error");
+			let errorStatus = document.createElement("p");
+			errorStatus.innerHTML = "Error refreshing data";
+			$("#transaction_modal").modal("show");
+			$("#modal-body").append(errorStatus);
+			$.unblockUI();
 		}
 	});
 }
@@ -182,13 +188,6 @@ $("#search_button").click(function () {
 $("#refresh_button").click(function () {
 	$.blockUI({
 		message: "Loading...",
-		overlayCSS: { backgroundColor: "#0f0" },
-	});
-});
-
-$("#transaction_submit").click(function () {
-	$.blockUI({
-		message: "Please wait...",
 		overlayCSS: { backgroundColor: "#0f0" },
 	});
 });
@@ -218,24 +217,60 @@ $("#favorites_remove_button").click(function() {
 	location.reload();
 });
 
+function blockTransaction() {
+	$.blockUI({
+		message: "Please wait...",
+		overlayCSS: { backgroundColor: "#0f0" },
+	});
+}
+
 if (transForm) {
 	transForm.addEventListener("submit", (event) => {
 		event.preventDefault();
 		let transaction = $("input[name=transaction]:checked").val();
+		stockError.hidden = true;
+		stockError.innerHTML = "";
+		$("#modal-body").html("");
+
 		if (!transaction) {
+			$("#modalTitle").html("Transaction Incomplete");
+			let errorStatus = document.createElement("p");
+			errorStatus.innerHTML = "Transaction was not specified.";
+			$("#transaction_modal").modal("show");
+			$("#modal-body").append(errorStatus);
 			$.unblockUI();
-			stockError.hidden = false;
-			stockError.innerHTML = "Transaction was not specified";
+			return;
 		}
+
 		let quantity = $("#amount").val();
 		if (!quantity) {
+			$("#modalTitle").html("Transaction Incomplete");
+			let errorStatus = document.createElement("p");
+			errorStatus.innerHTML = "Quantity was not specified.";
+			$("#transaction_modal").modal("show");
+			$("#modal-body").append(errorStatus);
 			$.unblockUI();
-			stockError.hidden = false;
-			stockError.innerHTML = "Stock quantity was not specified";
+			return;
+		}
+		let investOption = $("#choice").val();
+
+		if (quantity <= 0) {
+			$("#modalTitle").html("Transaction Incomplete");
+			let errorStatus = document.createElement("p");
+			if (investOption == "shares") {
+				errorStatus.innerHTML = "Stock quantity must be greater than 0";
+			} else {
+				errorStatus.innerHTML = "Dollar amount must be greater than 0";
+			}
+			$("#transaction_modal").modal("show");
+			$("#modal-body").append(errorStatus);
+			$.unblockUI();
+			return;
 		}
 
 		if (temp.value.trim() && transaction && quantity) {
 			temp.value = temp.value.trim();
+			blockTransaction();
 			$.ajax({
 				method: "POST",
 				url: "/private/transaction",
@@ -244,40 +279,27 @@ if (transForm) {
 					stock_ticker: temp.value.toUpperCase(),
 					transaction: transaction,
 					quantity: quantity,
+					investOption: investOption,
 				}),
 			}).then(function (x) {
 				if (x.error) {
+					$("#modalTitle").html("Transaction Incomplete");
 					let errorStatus = document.createElement("p");
-					$("#dialog-message2").html("");
 					errorStatus.innerHTML = x.error;
-
-					$("#dialog-message2").append(errorStatus);
-					$("#dialog-message2").dialog({
-						modal: true,
-						buttons: {
-							Ok: function () {
-								$(this).dialog("close");
-							},
-						},
-					});
+					$("#transaction_modal").modal("show");
+					$("#modal-body").append(errorStatus);
 				} else {
 					let result = document.createElement("p");
-					$("#dialog-message").html("");
+					quantity = x.quantity;
+					$("#modalTitle").html("Transaction Complete");
+					$("#transaction_modal").modal("show");
+
 					if (quantity == 1) {
 						result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
 					} else {
 						result.innerHTML = `Your order to ${transaction} ${quantity} shares of ${temp.value.toUpperCase()} was successful.`;
 					}
-
-					$("#dialog-message").append(result);
-					$("#dialog-message").dialog({
-						modal: true,
-						buttons: {
-							Ok: function () {
-								$(this).dialog("close");
-							},
-						},
-					});
+					$("#modal-body").append(result);
 					transForm.reset();
 				}
 
@@ -288,22 +310,20 @@ if (transForm) {
 }
 
 $(document).ready(function () {
-	if (temp && temp.value) {
-		let ticker = temp.value;
-		var requestConfig = {
-			method: "POST",
-			url: `/private/graph`,
-			contentType: "application/json",
-			data: JSON.stringify({
-				ticker: ticker,
-				subtract: 7,
-			}),
-		};
+	let ticker = temp.value;
+	var requestConfig = {
+		method: "POST",
+		url: `/private/graph`,
+		contentType: "application/json",
+		data: JSON.stringify({
+			ticker: ticker,
+			subtract: 7,
+		}),
+	};
 
-		$.ajax(requestConfig).then(function (responseMessage) {
-			Plotly.newPlot("graph", responseMessage.chart);
-		});
-	}
+	$.ajax(requestConfig).then(function (responseMessage) {
+		Plotly.newPlot("graph", responseMessage.chart);
+	});
 });
 
 $("#1w, #1m, #1y, #5y").click(function (event) {
@@ -320,6 +340,7 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 		num = 365 * 5;
 	}
 
+	//console.log(ticker, num);
 	var requestConfig = {
 		method: "POST",
 		url: `/private/graph`,
@@ -335,3 +356,5 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 	});
 });
 
+// 	Ploty.newPlot('graph', trace)
+// })
