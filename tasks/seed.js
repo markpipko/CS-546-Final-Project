@@ -31,7 +31,8 @@ async function main() {
                 purchaseValue: 32.02,
                 datePurchased: new Date("2021-05-04")
             }
-        ]
+        ],
+        favorites: []
     };
 
     const userMetrics1 = {
@@ -63,7 +64,7 @@ async function main() {
         ]
     }
 
-    const myUser1 = await users.addUser(user1.firstName, user1.lastname, user1.email, user1.age, user1.password, user1.cash, user1.stocksPurchased);
+    const myUser1 = await users.addUser(user1.firstName, user1.lastname, user1.email, user1.age, user1.password, user1.cash, user1.stocksPurchased, user1.favorites);
     const myUserMetrics1 = await userMetrics.create(userMetrics1.email, userMetrics1.totalReturn, userMetrics1.percentGrowth, userMetrics1.volatility);
     const myUserBSH1 = await userBSH.create(userBSH1.email, userBSH1.history);
 
@@ -90,7 +91,8 @@ async function main() {
                 purchaseValue: 44.66,
                 datePurchased: new Date("2021-05-04")
             }
-        ]
+        ],
+        favorites: []
     };
 
     const userMetrics2 = {
@@ -122,7 +124,7 @@ async function main() {
         ]
     }
 
-    const myUser2 = await users.addUser(user2.firstName, user2.lastname, user2.email, user2.age, user2.password, user2.cash, user2.stocksPurchased);
+    const myUser2 = await users.addUser(user2.firstName, user2.lastname, user2.email, user2.age, user2.password, user2.cash, user2.stocksPurchased, user2.favorites);
     const myUserMetrics2 = await userMetrics.create(userMetrics2.email, userMetrics2.totalReturn, userMetrics2.percentGrowth, userMetrics2.volatility);
     const myUserBSH2 = await userBSH.create(userBSH2.email, userBSH2.history);
 
@@ -149,7 +151,8 @@ async function main() {
                 purchaseValue: 503.18,
                 datePurchased: new Date("2021-05-04")
             }
-        ]
+        ],
+        favorites: []
     };
 
     const userMetrics3 = {
@@ -181,7 +184,7 @@ async function main() {
         ]
     }
 
-    const myUser3 = await users.addUser(user3.firstName, user3.lastname, user3.email, user3.age, user3.password, user3.cash, user3.stocksPurchased);
+    const myUser3 = await users.addUser(user3.firstName, user3.lastname, user3.email, user3.age, user3.password, user3.cash, user3.stocksPurchased, user3.favorites);
     const myUserMetrics3 = await userMetrics.create(userMetrics3.email, userMetrics3.totalReturn, userMetrics3.percentGrowth, userMetrics3.volatility);
     const myUserBSH3 = await userBSH.create(userBSH3.email, userBSH3.history);
 
@@ -208,7 +211,8 @@ async function main() {
                 purchaseValue: 3270.54,
                 datePurchased: new Date("2021-05-05")
             }
-        ]
+        ],
+        favorites: []
     };
 
     const userMetrics4 = {
@@ -240,7 +244,7 @@ async function main() {
         ]
     }
 
-    const myUser4 = await users.addUser(user4.firstName, user4.lastname, user4.email, user4.age, user4.password, user4.cash, user4.stocksPurchased);
+    const myUser4 = await users.addUser(user4.firstName, user4.lastname, user4.email, user4.age, user4.password, user4.cash, user4.stocksPurchased, user4.favorites);
     const myUserMetrics4 = await userMetrics.create(userMetrics4.email, userMetrics4.totalReturn, userMetrics4.percentGrowth, userMetrics4.volatility);
     const myUserBSH4 = await userBSH.create(userBSH4.email, userBSH4.history);
 
@@ -267,7 +271,8 @@ async function main() {
                 purchaseValue: 134.65,
                 datePurchased: new Date("2021-05-05")
             }
-        ]
+        ],
+        favorites: []
     };
 
     const userMetrics5 = {
@@ -299,7 +304,7 @@ async function main() {
         ]
     }
 
-    const myUser5 = await users.addUser(user5.firstName, user5.lastname, user5.email, user5.age, user5.password, user5.cash, user5.stocksPurchased);
+    const myUser5 = await users.addUser(user5.firstName, user5.lastname, user5.email, user5.age, user5.password, user5.cash, user5.stocksPurchased, user5.favorites);
     const myUserMetrics5 = await userMetrics.create(userMetrics5.email, userMetrics5.totalReturn, userMetrics5.percentGrowth, userMetrics5.volatility);
     const myUserBSH5 = await userBSH.create(userBSH5.email, userBSH5.history);
 

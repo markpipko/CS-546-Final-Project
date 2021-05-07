@@ -212,6 +212,31 @@ $("#refresh_button").click(function () {
 	});
 });
 
+$("#favorites_button").click(function () {
+	$.ajax({
+		method: "POST",
+		url: `/private/favorites/${this.name}`,
+		contentType: "application/json",
+		data: JSON.stringify({
+			ticker: this.name
+		})
+	});
+});
+
+$("#favorites_remove_button").click(function() {
+	$.ajax({
+		method: "DELETE",
+		url: `/private/favorites/${this.name}`,
+		contentType: "application/json",
+		data: JSON.stringify({
+			ticker: this.name
+		}),
+		async: false
+	});
+	
+	location.reload();
+});
+
 function blockTransaction() {
 	$.blockUI({
 		message: "Please wait...",

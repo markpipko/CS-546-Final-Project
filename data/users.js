@@ -43,7 +43,8 @@ async function addUser(
 	age,
 	password,
 	cash,
-	stocksPurchased
+	stocksPurchased,
+	favorites
 ) {
 	if (
 		!firstName ||
@@ -52,7 +53,8 @@ async function addUser(
 		!age ||
 		!password ||
 		!cash ||
-		!stocksPurchased
+		!stocksPurchased ||
+		!favorites
 	)
 		throw "Missing parameters";
 	if (
@@ -65,6 +67,7 @@ async function addUser(
 	if (typeof age != "number" || age % 1 != 0) throw "Age is invalid";
 	if (typeof cash != "number") throw "Cash is invalid";
 	if (!Array.isArray(stocksPurchased)) throw "StocksPurchased is invalid";
+	if (!Array.isArray(favorites)) throw "Favorites is invalid";
 
 	const userCollection = await users();
 	let newUser = {
@@ -76,6 +79,7 @@ async function addUser(
 		password: password,
 		cash: cash,
 		stocksPurchased: stocksPurchased,
+		favorites: favorites
 	};
 
 	const newInsertInformation = await userCollection.insertOne(newUser);
@@ -119,6 +123,8 @@ async function updateUser(id, updatedUser) {
 	if (updatedUser.cash) updateUserData.cash = updatedUser.cash;
 	if (updatedUser.stocksPurchased)
 		updateUserData.stocksPurchased = updatedUser.stocksPurchased;
+	if (updatedUser.favorites)
+		updateUserData.favorites = updatedUser.favorites;
 
 	await userCollection.updateOne({ _id: id }, { $set: updateUserData });
 
