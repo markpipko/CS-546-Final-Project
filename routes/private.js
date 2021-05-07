@@ -75,7 +75,7 @@ router.get("/stockHistory", async (req, res) => {
 	const metrics = await userMetrics.update(xss(req.session.user.email));
 	const trade = await historyData.getHistoryByEmail(xss(req.session.user.email));
 	res.render("stockHistory", { title: "History", 
-		trades: trade.history,
+		trades: trade.history.reverse(),
 		totalReturn: metrics.totalReturn,
 		percentGrowth: metrics.percentGrowth,
 		volatility: metrics.volatility });
@@ -238,7 +238,7 @@ router.post("/stocks", async (req, res) => {
 	if (!ticker.trim()) {
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
-		let userStocks = xss(req.session.user.stocksPurchased);
+		let userStocks = req.session.user.stocksPurchased;
 
 		let recList = await stocksData.giveRecommendation(userStocks);
 
@@ -279,7 +279,7 @@ router.post("/stocks", async (req, res) => {
 
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
-		let userStocks = xss(req.session.user.stocksPurchased);
+		let userStocks = req.session.user.stocksPurchased;
 
 		let recList = await stocksData.giveRecommendation(userStocks);
 

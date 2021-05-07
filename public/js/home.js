@@ -45,8 +45,14 @@ function graph(){
 			mode: "lines+markers",
 		};
 
+		var layout = {
+			autosize: false,
+			width: 500,
+			height: 500,
+		  };
+
 		var data = [trace];
-		Plotly.newPlot("userGraph", data);
+		Plotly.newPlot("userGraph", data, layout);
 
 		pValueTag.innerHTML = `Portfolio Value: $${responseMessage.pValue}`;
 	});

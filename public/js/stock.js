@@ -296,8 +296,14 @@ $(document).ready(function () {
 		}),
 	};
 
+	var layout = {
+		autosize: false,
+		width: 500,
+		height: 500,
+	  };
+
 	$.ajax(requestConfig).then(function (responseMessage) {
-		Plotly.newPlot("graph", responseMessage.chart);
+		Plotly.newPlot("graph", responseMessage.chart, layout);
 	});
 });
 
@@ -325,9 +331,14 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 			subtract: num,
 		}),
 	};
+	var layout = {
+		autosize: false,
+		width: 500,
+		height: 500,
+	  };
 
 	$.ajax(requestConfig).then(function (responseMessage) {
-		Plotly.newPlot("graph", responseMessage.chart);
+		Plotly.newPlot("graph", responseMessage.chart, layout);
 	});
 });
 
