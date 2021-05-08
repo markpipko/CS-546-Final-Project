@@ -1,27 +1,28 @@
-<h1>Paper Trading Stock Website</h1>
-<h2>Welcome, {{name}}</h2>
-<main>
-	<nav class="navbar navbar-default"> 
-		<div class="container-fluid">
-			<div class="navbar-header">
-				<a class="navbar-brand" href="/private/home">Paper Trader</a>
-			</div>
-			<ul class="nav navbar-nav">
-				 <li class="active"><a href="/private/home">Home</a></li>
-				 <li><a href="/private/stockListings">SP 500</a></li>
-				 <li><a href="/private/stockHistory">History</a></li>
-				 <li><a href="/private/recommendations">Recommendations</a></li>
-				 <li><a href="/private/favorites">Favorites</a></li>
-			</ul>
-			<ul class="nav navbar-nav navbar-right">
-				<li><a href="/updateUser"><span class="glyphicon glyphicon-edit"></span>Edit Account Info</a></li>
-				<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
-				<li><a href="/deleteAccount"><span class="glyphicon glyphicon-trash"></span>Delete Account</a> </li>
-			</ul>
-		</div>
-	</nav>
+<link rel="stylesheet" href="/public/css/home.css">
 
-	<form action="/private/stocks" method="POST">
+<nav class="navbar navbar-default">
+	<div class="container-fluid">
+		<div class="navbar-header">
+			<a class="navbar-brand">Paper Trader</a>
+		</div>
+		<ul class="nav navbar-nav">
+			<li class="active"><a href="/private/home">Home</a></li>
+			<li><a href="/private/stockListings">SP 500</a></li>
+			<li><a href="/private/stockHistory">History</a></li>
+			<li><a href="/private/recommendations">Recommendations</a></li>
+		</ul>
+		<ul class="nav navbar-nav navbar-right">
+			<li><a href="/updateUser"><span class="glyphicon glyphicon-edit"></span>Edit Account Info</a></li>
+			<li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+			<li><a href="/deleteAccount"><span class="glyphicon glyphicon-trash"></span>Delete Account</a> </li>
+		</ul>
+	</div>
+</nav>
+
+<main class="day">
+	<h1>Paper Trading Stock Website</h1>
+	<h2>Welcome, {{name}}</h2>
+	<form action="/private/stocks" method="GET">
 		<label for="stock_ticker">Look for a stock ticker: </label>
 		<input type="text" name="stock_ticker" id="stock_ticker" />
 
@@ -30,7 +31,7 @@
 	{{#if hasErrors}}
 	<p>{{error}}</p>
 	{{/if}}
-	
+
 	<h3> Portfolio </h3>
 	<div id="userGraph"> </div>
 	<p> Cash: ${{cash}}</p>
