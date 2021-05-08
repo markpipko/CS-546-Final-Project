@@ -9,7 +9,6 @@
 			<li class="active"><a href="/private/home">Home</a></li>
 			<li><a href="/private/stockListings">SP 500</a></li>
 			<li><a href="/private/stockHistory">History</a></li>
-			<li><a href="/private/recommendations">Recommendations</a></li>
 			<li><a href="/private/favorites">Favorites</a></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
@@ -41,13 +40,15 @@
 	{{else}}
 	<p id="pValue"> Portfolio Value: ${{pValue}} </p>
 	<br />
-	{{#each stocks}}
-	<p> Stock: <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </p>
-	<p> Amount: {{this.amount}} </p>
-	<p> Average Cost: ${{this.purchaseValue}} </p>
-	<p> Present Value: ${{this.value}} </p>
-	<br />
-	{{/each}}
+	<div id="stocksOwned">
+		{{#each stocks}}
+		<p> Stock: <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </p>
+		<p> Amount: {{this.amount}} </p>
+		<p> Average Cost: ${{this.purchaseValue}} </p>
+		<p> Present Value: ${{this.value}} </p>
+		<br />
+		{{/each}}
+	</div>
 	{{/if}}
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
