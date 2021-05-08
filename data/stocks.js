@@ -465,25 +465,18 @@ const exportedMethods = {
 		let recommendationList = [];
 		for (let i = 0; i < potentialRecommendationList.length; i++) {
 			let rec = await this.buyOrSell(potentialRecommendationList[i]);
-			if (rec == "Buy" || rec == "Strong Buy") {
-				recommendationList.push({
-					ticker: potentialRecommendationList[i],
-					recommendation: rec,
-				});
-			} else if (i >= 10) {
-				recommendationList.push({
-					ticker: potentialRecommendationList[i],
-					recommendation: rec,
-				});
-			}
-
-			if (recommendationList.length >= 3) {
+			recommendationList.push({
+				ticker: potentialRecommendationList[i],
+				recommendation: rec,
+			});
+		
+			if (recommendationList.length >= 2) {
 				break;
 			}
 		}
 
-		//Select first 3-5 (or less) to return
-		if (recommendationList.length >= 3) return recommendationList.slice(0, 3);
+		//Select first 2 (or less) to return
+		if (recommendationList.length >= 2) return recommendationList.slice(0, 2);
 		else if (recommendationList.length != 0)
 			return recommendationList.slice(0, recommendationList.length);
 		else return recommendationList;

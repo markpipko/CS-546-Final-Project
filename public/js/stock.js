@@ -246,7 +246,7 @@ function blockTransaction() {
 if (transForm) {
 	transForm.addEventListener("submit", (event) => {
 		event.preventDefault();
-		let transaction = $("input[name=transaction]:checked").val();
+		let transaction = $("input[class=form-check-input]:checked").val();
 		$("#modal-body").html("");
 
 		if (!transaction) {
@@ -255,6 +255,8 @@ if (transForm) {
 			errorStatus.innerHTML = "Transaction was not specified.";
 			$("#transaction_modal").modal("show");
 			$("#modal-body").append(errorStatus);
+			$("#twitter_share").hide();
+			$("#email_share").hide();
 			$.unblockUI();
 			return;
 		}
@@ -266,6 +268,8 @@ if (transForm) {
 			errorStatus.innerHTML = "Quantity was not specified.";
 			$("#transaction_modal").modal("show");
 			$("#modal-body").append(errorStatus);
+			$("#twitter_share").hide();
+			$("#email_share").hide();
 			$.unblockUI();
 			return;
 		}
@@ -281,6 +285,8 @@ if (transForm) {
 			}
 			$("#transaction_modal").modal("show");
 			$("#modal-body").append(errorStatus);
+			$("#twitter_share").hide();
+			$("#email_share").hide();
 			$.unblockUI();
 			return;
 		}
@@ -305,6 +311,8 @@ if (transForm) {
 					errorStatus.innerHTML = x.error;
 					$("#transaction_modal").modal("show");
 					$("#modal-body").append(errorStatus);
+					$("#twitter_share").hide();
+					$("#email_share").hide();
 				} else {
 					let result = document.createElement("p");
 					quantity = x.quantity;
@@ -329,6 +337,16 @@ if (transForm) {
 								temp.value.toUpperCase() +
 								" on Paper Trader! Go check them out!"
 						);
+						$("#email_share").attr(
+							"href",
+							"mailto:?subject=Check this out!&body=I just bought " +
+								quantity +
+								" " +
+								shares +
+								" of " +
+								temp.value.toUpperCase() +
+								" on Paper Trader! Go check them out!"
+						);
 					} else {
 						$("#twitter_share").attr(
 							"href",
@@ -340,8 +358,19 @@ if (transForm) {
 								temp.value.toUpperCase() +
 								" on Paper Trader! Go check them out!"
 						);
+						$("#email_share").attr(
+							"href",
+							"mailto:?subject=Check this out!&body=I just sold " +
+								quantity +
+								" " +
+								shares +
+								" of " +
+								temp.value.toUpperCase() +
+								" on Paper Trader! Go check them out!"
+						);
 					}
-
+					$("#twitter_share").show();
+					$("#email_share").show();
 					$("#modal-body").append(result);
 					transForm.reset();
 				}
