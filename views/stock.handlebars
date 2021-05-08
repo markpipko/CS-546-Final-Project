@@ -93,7 +93,7 @@
 		<label for="choice">Invest In:</label>
 		<select id="choice">
 			<option value="shares">Shares</option>
-			<option value="dollars">Dollars</option>
+			<option value="dollars">USD ($)</option>
 		</select>
 		<input type="number" step=".01" id="amount" />
 		<button type="submit" id="transaction_submit">Submit</button>
@@ -103,8 +103,6 @@
 		will
 		use. </p>
 	<div id="error_container2" hidden></div>
-
-	<a href="/private" id="homeLink">Back to home page</a>
 	{{/if}}
 
 	<script src="/public/js/jquery.blockUI.js"></script>
