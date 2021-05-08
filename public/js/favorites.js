@@ -30,9 +30,7 @@ function bindEvents(element, link) {
 		};
 		
 		$.ajax(requestConfig).then(function(responseMessage) {
-			console.log($(`#${link}1`))
 			$(`#${link}1`).remove()
-			console.log($(`#${link}`))
 			$(`#${link}`).remove()
 	})
 })}

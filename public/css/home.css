@@ -17,3 +17,9 @@ select{
 input{
     color: black;
 }
+
+#stocksOwned{
+    position: absolute;
+    top: 80px;
+    right: 50px;
+}
