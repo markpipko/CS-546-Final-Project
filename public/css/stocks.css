@@ -6,6 +6,12 @@
 	color: red;
 }
 
+.modal-header,
+.modal-body,
+.modal-footer {
+	color: black;
+}
+
 #loading {
 	color: green;
 	font-weight: bold;

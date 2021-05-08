@@ -69,24 +69,26 @@ router.post("/graph", async (req, res) => {
 
 router.get("/stockHistory", async (req, res) => {
 	const metrics = await userMetrics.update(xss(req.session.user.email));
-	const trade = await historyData.getHistoryByEmail(xss(req.session.user.email));
-	res.render("stockHistory", { title: "History", 
+	const trade = await historyData.getHistoryByEmail(
+		xss(req.session.user.email)
+	);
+	res.render("stockHistory", {
+		title: "History",
 		trades: trade.history.reverse(),
 		totalReturn: metrics.totalReturn,
 		percentGrowth: metrics.percentGrowth,
-		volatility: metrics.volatility });
+		volatility: metrics.volatility,
+	});
 });
 
 router.get("/recommendations", async (req, res) => {
 	const user = await users.getUserByEmail(xss(req.session.user.email));
 	let userStocks = user.stocksPurchased;
 	let recList = await stocksData.giveRecommendation(userStocks);
-	res.render("recommendations", 
-		{ 
-			title: "Recommendations",
-			recList: recList
-		}
-	);
+	res.render("recommendations", {
+		title: "Recommendations",
+		recList: recList,
+	});
 });
 
 router.get("/favorites", async (req, res) => {
@@ -100,7 +102,9 @@ router.post("/favorites/:id", async (req, res) => {
 	let favList = user.favorites;
 	if (!favList.includes(ticker)) {
 		favList.push(ticker);
-		const updatedFavList = await users.updateUser(user._id, { favorites: favList });
+		const updatedFavList = await users.updateUser(user._id, {
+			favorites: favList,
+		});
 	}
 });
 
@@ -116,7 +120,9 @@ router.delete("/favorites/:id", async (req, res) => {
 		}
 	}
 
-	const updatedFavList = await users.updateUser(user._id, { favorites: favList });
+	const updatedFavList = await users.updateUser(user._id, {
+		favorites: favList,
+	});
 	res.render("favorites", { title: "Favorites", favList: favList });
 });
 
@@ -149,6 +155,8 @@ router.post("/find", async (req, res) => {
 
 router.get("/stocks/:id", async (req, res) => {
 	let ticker = xss(req.params.id);
+	let x = xss(req.body["stock_ticker"]);
+
 	if (!ticker || !ticker.trim()) {
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
@@ -226,8 +234,29 @@ router.get("/stocks/:id", async (req, res) => {
 	}
 });
 
-router.post("/stock", async (req, res) => {
+router.get("/stock", async (req, res) => {
 	let ticker = req.body["stock_ticker"];
+	if (!ticker) {
+		try {
+			let { stock_ticker } = req.query;
+			ticker = stock_ticker;
+		} catch (e) {
+			const metrics = await userMetrics.update(xss(req.session.user.email));
+			const user = await users.getUserByEmail(xss(req.session.user.email));
+
+			return res.render("stock", {
+				title: "Home",
+				hasErrors: true,
+				error: "Please input a ticker",
+				name: xss(req.session.user.firstName),
+				totalReturn: metrics.totalReturn,
+				percentGrowth: metrics.percentGrowth,
+				volatility: metrics.volatility,
+				stocks: user.stocksPurchased,
+				isEmpty: user.stocksPurchased.length == 0 ? true : false,
+			});
+		}
+	}
 	if (!ticker || !ticker.trim()) {
 		return res.render("stock", {
 			title: "Error",
@@ -263,8 +292,29 @@ router.post("/stock", async (req, res) => {
 	}
 });
 
-router.post("/stocks", async (req, res) => {
+router.get("/stocks", async (req, res) => {
 	let ticker = xss(req.body["stock_ticker"]);
+	if (!ticker) {
+		try {
+			let { stock_ticker } = req.query;
+			ticker = stock_ticker;
+		} catch (e) {
+			const metrics = await userMetrics.update(xss(req.session.user.email));
+			const user = await users.getUserByEmail(xss(req.session.user.email));
+
+			return res.render("home", {
+				title: "Home",
+				hasErrors: true,
+				error: "Please input a ticker",
+				name: xss(req.session.user.firstName),
+				totalReturn: metrics.totalReturn,
+				percentGrowth: metrics.percentGrowth,
+				volatility: metrics.volatility,
+				stocks: user.stocksPurchased,
+				isEmpty: user.stocksPurchased.length == 0 ? true : false,
+			});
+		}
+	}
 	if (!ticker.trim()) {
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
