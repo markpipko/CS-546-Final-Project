@@ -6,6 +6,14 @@
 	color: red;
 }
 
+.twitter-share-button {
+	background-color: lightblue;
+}
+
+#email_share {
+	background-color: lightgreen;
+}
+
 .modal-header,
 .modal-body,
 .modal-footer {
