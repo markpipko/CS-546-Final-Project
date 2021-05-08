@@ -64,11 +64,12 @@ router.post("/signup", async (req, res) => {
 			parseInt(age),
 			hash,
 			Number(cash),
+			[],
 			[]
 		);
 		let userMetricsCreate = await userMetrics.create(email, 0, 0, 0);
     	let historyCreate = await buySell.create(email, [])
-		req.session.user = { email: email, firstName: firstName, stocksPurchased: [] };
+		req.session.user = { email: email, firstName: firstName, stocksPurchased: [], favList: [] };
 		res.redirect("/private");
 	} catch (e) {
 		console.log(e);
@@ -99,6 +100,7 @@ router.post("/login", async (req, res) => {
 					email: xss(req.body.email),
 					firstName: allUsers[i].firstName,
 					stocksPurchased: allUsers[i].stocksPurchased,
+					favorites: allUsers[i].favorites
 				};
 				res.redirect("/private");
 			}

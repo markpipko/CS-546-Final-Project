@@ -71,7 +71,7 @@ router.get("/stockHistory", async (req, res) => {
 	const metrics = await userMetrics.update(xss(req.session.user.email));
 	const trade = await historyData.getHistoryByEmail(xss(req.session.user.email));
 	res.render("stockHistory", { title: "History", 
-		trades: trade.history,
+		trades: trade.history.reverse(),
 		totalReturn: metrics.totalReturn,
 		percentGrowth: metrics.percentGrowth,
 		volatility: metrics.volatility });
@@ -87,6 +87,37 @@ router.get("/recommendations", async (req, res) => {
 			recList: recList
 		}
 	);
+});
+
+router.get("/favorites", async (req, res) => {
+	const user = await users.getUserByEmail(xss(req.session.user.email));
+	res.render("favorites", { title: "Favorites", favList: user.favorites });
+});
+
+router.post("/favorites/:id", async (req, res) => {
+	let ticker = xss(req.params.id);
+	const user = await users.getUserByEmail(xss(req.session.user.email));
+	let favList = user.favorites;
+	if (!favList.includes(ticker)) {
+		favList.push(ticker);
+		const updatedFavList = await users.updateUser(user._id, { favorites: favList });
+	}
+});
+
+router.delete("/favorites/:id", async (req, res) => {
+	let ticker = xss(req.params.id);
+	const user = await users.getUserByEmail(xss(req.session.user.email));
+	let favList = user.favorites;
+
+	for (let i = 0; i < favList.length; i++) {
+		if (favList[i] == ticker) {
+			favList.splice(i, 1);
+			break;
+		}
+	}
+
+	const updatedFavList = await users.updateUser(user._id, { favorites: favList });
+	res.render("favorites", { title: "Favorites", favList: favList });
 });
 
 router.post("/find", async (req, res) => {
@@ -308,13 +339,13 @@ router.post("/transaction", async (req, res) => {
 		quantity = quantity.trim();
 	}
 
-	if (!transaction || !quantity || !ticker || !choice) {
+	if (!transaction || !quantity || !ticker) {
 		return res.json({ error: "One or more inputs were not provided" });
 	}
 	transaction = transaction.trim();
 	ticker = ticker.trim();
 
-	if (!transaction || !quantity || !ticker || !choice) {
+	if (!transaction || !quantity || !ticker) {
 		return res.json({ error: "One or more inputs were not provided" });
 	}
 

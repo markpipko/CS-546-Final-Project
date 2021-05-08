@@ -10,6 +10,26 @@ const stockError = document.getElementById("error_container2");
 const refreshForm = document.getElementById("refresh");
 const temp = document.getElementById("temp_ticker");
 
+var nav = document.querySelector("nav")
+var main = document.querySelector("main")
+
+start()
+function start() {
+	var currTime = new Date();
+	var currHour = currTime.getHours();
+	var currMin = currTime.getMinutes();
+
+	if (currHour < 9 || currHour > 16 || (currHour == 9 && currMin < 30)) {
+		nav.className = "navbar navbar-inverse"
+		main.className = "night"
+		document.body.style.backgroundColor = "black";
+	}else{
+		nav.className = "navbar navbar-default"
+		main.className = "day"
+		document.body.style.backgroundColor = "white";
+	}
+}
+
 // if (myForm) {
 // 	myForm.addEventListener("submit", (event) => {
 // 		event.preventDefault();
@@ -192,6 +212,31 @@ $("#refresh_button").click(function () {
 	});
 });
 
+$("#favorites_button").click(function () {
+	$.ajax({
+		method: "POST",
+		url: `/private/favorites/${this.name}`,
+		contentType: "application/json",
+		data: JSON.stringify({
+			ticker: this.name
+		})
+	});
+});
+
+$("#favorites_remove_button").click(function() {
+	$.ajax({
+		method: "DELETE",
+		url: `/private/favorites/${this.name}`,
+		contentType: "application/json",
+		data: JSON.stringify({
+			ticker: this.name
+		}),
+		async: false
+	});
+	
+	location.reload();
+});
+
 function blockTransaction() {
 	$.blockUI({
 		message: "Please wait...",
@@ -322,8 +367,14 @@ $(document).ready(function () {
 		}),
 	};
 
+	var layout = {
+		autosize: false,
+		width: 500,
+		height: 500,
+	  };
+
 	$.ajax(requestConfig).then(function (responseMessage) {
-		Plotly.newPlot("graph", responseMessage.chart);
+		Plotly.newPlot("graph", responseMessage.chart, layout);
 	});
 });
 
@@ -351,9 +402,14 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 			subtract: num,
 		}),
 	};
+	var layout = {
+		autosize: false,
+		width: 500,
+		height: 500,
+	  };
 
 	$.ajax(requestConfig).then(function (responseMessage) {
-		Plotly.newPlot("graph", responseMessage.chart);
+		Plotly.newPlot("graph", responseMessage.chart, layout);
 	});
 });
 
