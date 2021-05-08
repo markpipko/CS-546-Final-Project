@@ -5,27 +5,26 @@ const stockInfo = document.getElementById("stock_info");
 
 const transForm = document.getElementById("transForm");
 const shareInput = document.getElementById("amount");
-const stockError = document.getElementById("error_container2");
 
 const refreshForm = document.getElementById("refresh");
 const temp = document.getElementById("temp_ticker");
 
-var nav = document.querySelector("nav")
-var main = document.querySelector("main")
+var nav = document.querySelector("nav");
+var main = document.querySelector("main");
 
-start()
+start();
 function start() {
 	var currTime = new Date();
 	var currHour = currTime.getHours();
 	var currMin = currTime.getMinutes();
 
 	if (currHour < 9 || currHour > 16 || (currHour == 9 && currMin < 30)) {
-		nav.className = "navbar navbar-inverse"
-		main.className = "night"
+		nav.className = "navbar navbar-inverse";
+		main.className = "night";
 		document.body.style.backgroundColor = "black";
-	}else{
-		nav.className = "navbar navbar-default"
-		main.className = "day"
+	} else {
+		nav.className = "navbar navbar-default";
+		main.className = "day";
 		document.body.style.backgroundColor = "white";
 	}
 }
@@ -218,22 +217,22 @@ $("#favorites_button").click(function () {
 		url: `/private/favorites/${this.name}`,
 		contentType: "application/json",
 		data: JSON.stringify({
-			ticker: this.name
-		})
+			ticker: this.name,
+		}),
 	});
 });
 
-$("#favorites_remove_button").click(function() {
+$("#favorites_remove_button").click(function () {
 	$.ajax({
 		method: "DELETE",
 		url: `/private/favorites/${this.name}`,
 		contentType: "application/json",
 		data: JSON.stringify({
-			ticker: this.name
+			ticker: this.name,
 		}),
-		async: false
+		async: false,
 	});
-	
+
 	location.reload();
 });
 
@@ -248,8 +247,6 @@ if (transForm) {
 	transForm.addEventListener("submit", (event) => {
 		event.preventDefault();
 		let transaction = $("input[name=transaction]:checked").val();
-		stockError.hidden = true;
-		stockError.innerHTML = "";
 		$("#modal-body").html("");
 
 		if (!transaction) {
@@ -313,12 +310,38 @@ if (transForm) {
 					quantity = x.quantity;
 					$("#modalTitle").html("Transaction Complete");
 					$("#transaction_modal").modal("show");
-
+					let shares = "";
 					if (quantity == 1) {
+						shares = "share";
 						result.innerHTML = `Your order to ${transaction} ${quantity} share of ${temp.value.toUpperCase()} was successful.`;
 					} else {
+						shares = "shares";
 						result.innerHTML = `Your order to ${transaction} ${quantity} shares of ${temp.value.toUpperCase()} was successful.`;
 					}
+					if (transaction == "buy") {
+						$("#twitter_share").attr(
+							"href",
+							"https://twitter.com/intent/tweet?text=I just bought " +
+								quantity +
+								" " +
+								shares +
+								" of " +
+								temp.value.toUpperCase() +
+								" on Paper Trader! Go check them out!"
+						);
+					} else {
+						$("#twitter_share").attr(
+							"href",
+							"https://twitter.com/intent/tweet?text=I just sold " +
+								quantity +
+								" " +
+								shares +
+								" of " +
+								temp.value.toUpperCase() +
+								" on Paper Trader! Go check them out!"
+						);
+					}
+
 					$("#modal-body").append(result);
 					transForm.reset();
 				}
@@ -345,7 +368,7 @@ $(document).ready(function () {
 		autosize: false,
 		width: 500,
 		height: 500,
-	  };
+	};
 
 	$.ajax(requestConfig).then(function (responseMessage) {
 		Plotly.newPlot("graph", responseMessage.chart, layout);
@@ -380,7 +403,7 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 		autosize: false,
 		width: 500,
 		height: 500,
-	  };
+	};
 
 	$.ajax(requestConfig).then(function (responseMessage) {
 		Plotly.newPlot("graph", responseMessage.chart, layout);
