@@ -40,13 +40,15 @@
 	{{else}}
 	<p id="pValue"> Portfolio Value: ${{pValue}} </p>
 	<br />
-	{{#each stocks}}
-	<p> Stock: <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </p>
-	<p> Amount: {{this.amount}} </p>
-	<p> Average Cost: ${{this.purchaseValue}} </p>
-	<p> Present Value: ${{this.value}} </p>
-	<br />
-	{{/each}}
+	<div id="stocksOwned">
+		{{#each stocks}}
+		<p> Stock: <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </p>
+		<p> Amount: {{this.amount}} </p>
+		<p> Average Cost: ${{this.purchaseValue}} </p>
+		<p> Present Value: ${{this.value}} </p>
+		<br />
+		{{/each}}
+	</div>
 	{{/if}}
 
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"
