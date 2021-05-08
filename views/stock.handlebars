@@ -83,10 +83,12 @@
 		<p id="recommendation">Recommendation: {{recommendation}}</p>
 	</div>
 	<form id="transForm">
-		<label for="buy">Buy</label>
-		<input type="radio" id="buy" name="transaction" value="buy">
-		<label for="sell">Sell</label>
-		<input type="radio" id="sell" name="transaction" value="sell">
+		<div class="form-check">
+			<input type="radio" class="form-check-input" id="buy" name="transaction flexRadioDefault" value="buy">
+			<label for="buy" class="form-check-label">Buy</label>
+			<input type="radio" class="form-check-input" id="sell" name="transaction flexRadioDefault" value="sell">
+			<label for="sell" class="form-check-label">Sell</label>
+		</div>
 
 		<label for="choice">Invest In:</label>
 		<select id="choice">
@@ -119,7 +121,14 @@
 				</div>
 				<div class="modal-body" id="modal-body"></div>
 				<div class="modal-footer">
-
+					<a class="btn btn-secondary mr-auto" href="mailto:?subject=" id="email_share"><svg
+							xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+							class="bi bi-envelope" viewBox="0 0 16 16">
+							<path
+								d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z" />
+						</svg>
+						Share by Email</a>
+					</a>
 					<a class="twitter-share-button btn btn-secondary mr-auto" href="https://twitter.com/intent/tweet"
 						id="twitter_share" target="_blank"> <svg xmlns="http://www.w3.org/2000/svg" width="16"
 							height="16" fill="currentColor" class="bi bi-twitter" viewBox="0 0 16 16">
@@ -132,7 +141,6 @@
 			</div>
 		</div>
 	</div>
-
 	{{!-- <div id="error_container"></div> --}}
 
 
