@@ -379,7 +379,7 @@ router.get("/stocks", async (req, res) => {
 });
 
 router.get("/stockListings", async (req, res) => {
-	return res.render("stockListings");
+	return res.render("stockListings", { title: "SP500" });
 });
 
 router.post("/transaction", async (req, res) => {

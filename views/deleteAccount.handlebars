@@ -19,7 +19,7 @@
 
 <h1>Delete Account</h1>
 <p>Are you sure you want to delete your account?</p>
-<form method="POST" action="/deleteAccount">
+<form id="deleteForm" method="POST" action="/deleteAccount">
     <label>
         Yes
         <input type="radio" id="deleteUserYes" name="deleteUser" value="yes" />
@@ -28,5 +28,12 @@
         No
         <input type="radio" id="deleteUserNo" name="deleteUser" value="no" checked="checked" />
     </label>
-    <button type="submit">Submit</button>
+    <button type="submit" id="delete_button">Submit</button>
 </form>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"
+	integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
+<script src="/public/js/jquery.blockUI.js"></script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
+<script src="/public/js/user.js"></script>

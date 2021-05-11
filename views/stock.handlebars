@@ -65,22 +65,25 @@
 
 		<div id="graph"> </div>
 
-		<button id="favorites_button" name="{{stock.ticker}}">Add to Favorites</button>
+		<div id="stockDetails">
+			<button id="favorites_button" name="{{stock.ticker}}">Add to Favorites</button> 
+			<br /><br />
 
-		<p>Exchange: {{stock.exchange}}</p>
-		<p>Industry: {{stock.industry}}</p>
-		{{#ifEquals stock.range52W.high "N/A"}}
-		<p id="52high">52 Week High: {{stock.range52W.high}}</p>
-		{{else}}
-		<p id="52high">52 Week High: ${{stock.range52W.high}}</p>
-		{{/ifEquals}}
-		{{#ifEquals stock.range52W.low "N/A"}}
-		<p id="52low">52 Week Low: {{stock.range52W.low}}</p>
-		{{else}}
-		<p id="52low">52 Week Low: ${{stock.range52W.low}}</p>
-		{{/ifEquals}}
-		<p id="volume">Volume: {{stock.volume}}</p>
-		<p id="recommendation">Recommendation: {{recommendation}}</p>
+			<p>Exchange: {{stock.exchange}}</p>
+			<p>Industry: {{stock.industry}}</p>
+			{{#ifEquals stock.range52W.high "N/A"}}
+			<p id="52high">52 Week High: {{stock.range52W.high}}</p>
+			{{else}}
+			<p id="52high">52 Week High: ${{stock.range52W.high}}</p>
+			{{/ifEquals}}
+			{{#ifEquals stock.range52W.low "N/A"}}
+			<p id="52low">52 Week Low: {{stock.range52W.low}}</p>
+			{{else}}
+			<p id="52low">52 Week Low: ${{stock.range52W.low}}</p>
+			{{/ifEquals}}
+			<p id="volume">Volume: {{stock.volume}}</p>
+			<p id="recommendation">Recommendation: {{recommendation}}</p>
+		</div>
 	</div>
 	<form id="transForm">
 		<div class="form-check">
