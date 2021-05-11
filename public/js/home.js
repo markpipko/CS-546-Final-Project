@@ -7,12 +7,16 @@ const pValueTag = document.getElementById("pValue");
 var nav = document.querySelector("nav")
 var main = document.querySelector("main")
 
-var pValue = []
-var dates = []
+var pValue = [];
+var dates = [];
 var repititions = 0;
 
+const sleep = (milliseconds) => {
+	return new Promise(resolve => setTimeout(resolve, milliseconds))
+  }
+
 start()
-function start() {
+async function start() {
 	var currTime = new Date();
 	var currHour = currTime.getHours();
 	var currMin = currTime.getMinutes();
@@ -20,15 +24,23 @@ function start() {
 	if (currHour < 9 || currHour > 16 || (currHour == 9 && currMin < 30)) {
 		nav.className = "navbar navbar-inverse"
 		main.className = "night"
-		document.body.style.backgroundColor = "black";
+		document.body.style.backgroundColor = "black";	
+		var n = 0;
+		graph();
+		while(n < 4){
+			await sleep(5000);
+			graph();
+			n++;
+		}
 	}else{
 		nav.className = "navbar navbar-default"
 		main.className = "day"
 		document.body.style.backgroundColor = "white";
+		var myTime = setInterval(graph, 5000); //calls every 5 seconds
+		graph();
 	}
 
-	var myTime = setInterval(graph, 5000); //calls every 5 seconds
-	graph();
+	
 }
 
 function graph(){
