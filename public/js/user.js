@@ -12,22 +12,14 @@ $("#update_button").click(function () {
 	});
 });
 
-$("#sign_up_button").click(function () {
-	$.blockUI({
-		message: "Creating User. Please wait...",
-		overlayCSS: { backgroundColor: "#0f0" },
-	});
-});
-
-$("#delete_button").click(function() {
+$("#delete_button").click(function () {
 	var radioValue = $("input[name='deleteUser']:checked").val();
 	if (radioValue == "yes") {
 		$.blockUI({
 			message: "Deleting User. Please wait...",
 			overlayCSS: { backgroundColor: "#0f0" },
 		});
-	}
-	else {
+	} else {
 		$.blockUI({
 			message: "Redirecting back to home page. Please wait...",
 			overlayCSS: { backgroundColor: "#0f0" },

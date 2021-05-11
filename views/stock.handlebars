@@ -11,7 +11,7 @@
 			<li><a href="/private/home">Home</a></li>
 			<li class="active"><a href="/private/stockListings">SP 500</a></li>
 			<li><a href="/private/stockHistory">History</a></li>
-			<li><a href="/private/favorites">Favorites</a></li>
+			<li><a href="/private/favorites">Recommendations and Favorites</a></li>
 		</ul>
 		<ul class="nav navbar-nav navbar-right">
 			<li><a href="/updateUser"><span class="glyphicon glyphicon-edit"></span>Edit Account Info</a></li>
@@ -53,8 +53,8 @@
 				<input type="text" name="temp_ticker" id="temp_ticker" value={{stock.ticker}} hidden />
 				<button type="submit" id="refresh_button">Refresh</button>
 			</form>
-			<a id="refreshbutton"></a>
-		</div> <br />
+			{{!-- <a id="refreshbutton"></a> --}}
+		</div>
 
 		<div id="buttons">
 			<button id="1w"> 1w </button>
@@ -66,7 +66,7 @@
 		<div id="graph"> </div>
 
 		<div id="stockDetails">
-			<button id="favorites_button" name="{{stock.ticker}}">Add to Favorites</button> 
+			<button id="favorites_button" name="{{stock.ticker}}">Add to Favorites</button>
 			<br /><br />
 
 			<p>Exchange: {{stock.exchange}}</p>
@@ -98,6 +98,7 @@
 			<option value="shares">Shares</option>
 			<option value="dollars">USD ($)</option>
 		</select>
+		<label for="amount"></label>
 		<input type="number" step=".01" id="amount" />
 		<button type="submit" id="transaction_submit">Submit</button>
 	</form>
@@ -120,7 +121,7 @@
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="modalTitle">Modal title</h5>
+					<h2 class="modal-title" id="modalTitle">Modal title</h5>
 				</div>
 				<div class="modal-body" id="modal-body"></div>
 				<div class="modal-footer">

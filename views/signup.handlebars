@@ -1,41 +1,55 @@
-<h1>Sign Up</h1>
-<form action="/signup" method="POST" id="signupForm">
-    <label id="firstNameLabelSignup">
-        First Name:
-        <input type="text" id="firstName_input_signup" name="firstName" />
-    </label><br />
-    <label id="lastNameLabelSignup">
-        Last Name:
-        <input type="text" id="lastName_input_signup" name="lastName" />
-    </label><br />
-    <label id="emailLabelSignup">
-        Email:
-        <input type="email" id="email_input_signup" name="email" />
-    </label><br />
-    <label id="passwordLabelSignup">
-        Password:
-        <input type="password" id="password_input_signup" name="password" />
-    </label><br />
-    <label id="ageLabelSignup">
-        Age:
-        <input type="number" id="age_input_signup" name="age" min="0" step="1" />
-    </label><br />
-    <label id="cashLabelSignup">
-        Starting Cash:
-        <input type="number" id="cash_input_signup" name="cash" min="0" />
-    </label><br />
-    <button type="submit" id="sign_up_button">Submit</button>
-</form>
+<link rel="stylesheet" href="/public/css/signup.css">
+<div class="container">
+	<h1>Sign Up</h1>
+	<form action="/signup" method="POST" id="signupForm" onsubmit="sign_up_button.disabled=true; return true;">
+		<div class="control-group">
+			<label id="firstNameLabelSignup" for="firstName_input_signup">
+				First Name:
+			</label>
+			<input type="text" class="form-control" id="firstName_input_signup" name="firstName" value="{{firstName}}"
+				required />
+		</div>
+		<div class="control-group">
+			<label id="lastNameLabelSignup" for="lastName_input_signup">
+				Last Name:
+			</label>
+			<input type="text" class="form-control" id="lastName_input_signup" name="lastName" value="{{lastName}}"
+				required />
+		</div>
+		<div class="control-group">
+			<label id="emailLabelSignup" for="email_input_signup">
+				Email:</label>
+			<input type="email" class="form-control" id="email_input_signup" name="email" value="{{email}}" required />
+		</div>
+		<div class="control-group">
+			<label id="passwordLabelSignup" for="password_input_signup">
+				Password:</label>
+			<input type="password" class="form-control" id="password_input_signup" name="password" required />
+		</div>
+		<div class="control-group">
+			<label id="ageLabelSignup" for="age_input_signup">
+				Age:</label>
+			<input type="number" class="form-control" id="age_input_signup" name="age" min="1" step="1" value="{{age}}"
+				required />
+		</div>
+		<div class="control-group">
+			<label id="cashLabelSignup" for="cash_input_signup">
+				Starting Cash:</label>
+			<input type="number" class="form-control" id="cash_input_signup" name="cash" min="0" value="{{cash}}"
+				required />
+		</div>
+		<button type="submit" id="sign_up_button">Submit</button>
+	</form>
+	<a href="/">Back to Login</a>
+	{{#if hasErrors}}
+	<p>{{error}}</p>
+	{{/if}}
+</div>
 
-{{#if hasErrors}}
-    <p>{{error}}</p>
-{{/if}}
 
-<a href="/">Back to Login</a>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"
 	integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
 <script src="/public/js/jquery.blockUI.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
-<script src="/public/js/user.js"></script>
+<script src="/public/js/signup.js"></script>

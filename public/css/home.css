@@ -1,25 +1,25 @@
-.day{
-    color: black;
+.day {
+	color: black;
 }
 
-.night{
-    color: white;
+.night {
+	color: white;
 }
 
-button{
-    color: black;
+button {
+	color: black;
 }
 
-select{
-    color: black;
+select {
+	color: black;
 }
 
-input{
-    color: black;
+input {
+	color: black;
 }
 
 #stocksOwned p {
-	transition: background-color .5s;
+	transition: background-color 0.5s;
 }
 
 #stocksOwned p:hover {
@@ -29,12 +29,12 @@ input{
 }
 
 .cashAndPortfolio {
-    font-size: 24px;
-    transition: font-size .5s;
+	font-size: 24px;
+	transition: font-size 0.5s;
 }
 
 .cashAndPortfolio:hover {
-    font-size: 32px;
+	font-size: 32px;
 }
 
 .cashAndPortfolioSpan {
@@ -42,18 +42,15 @@ input{
 }
 
 @media (min-width: 1000px) {
-    #stocksOwned{
-        position: absolute;
-        top: 80px;
-        right: 50px;
-    }
+	#stocksOwned {
+		position: absolute;
+		top: 80px;
+		right: 50px;
+	}
 }
 
 @media (max-width: 999px) {
-    #stocksOwned {
-        position: relative;
-    }
+	#stocksOwned {
+		position: relative;
+	}
 }
-
-
-
