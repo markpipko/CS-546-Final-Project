@@ -3,7 +3,7 @@
 <nav class="navbar navbar-default">
 	<div class="container-fluid">
 		<div class="navbar-header">
-			<a class="navbar-brand">Paper Trader</a>
+			<a class="navbar-brand" href="/private/home">Paper Trader</a>
 		</div>
 		<ul class="nav navbar-nav">
 			<li class="active"><a href="/private/home">Home</a></li>
@@ -33,12 +33,12 @@
 	{{/if}}
 
 	<h3> Portfolio </h3>
-	<div id="userGraph"> </div>
-	<p> Cash: ${{cash}}</p>
+	<div id="userGraph"> </div> <br />
+	<p class="cashAndPortfolio"> Cash: ${{cash}}</p>
 	{{#if isEmpty}}
-	<p>Portfolio is empty</p>
+	<p class="cashAndPortfolio">Portfolio is empty</p>
 	{{else}}
-	<p id="pValue"> Portfolio Value: ${{pValue}} </p>
+	<p id="pValue" class="cashAndPortfolio"> Portfolio Value: ${{pValue}} </p>
 	<br />
 	<div id="stocksOwned">
 		{{#each stocks}}

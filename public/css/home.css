@@ -18,8 +18,38 @@ input{
     color: black;
 }
 
-#stocksOwned{
-    position: absolute;
-    top: 80px;
-    right: 50px;
+#stocksOwned p {
+	transition: background-color .5s;
 }
+
+#stocksOwned p:hover {
+	background-color: gold;
+	color: black;
+	font-size: 16px;
+}
+
+.cashAndPortfolio {
+    font-size: 24px;
+    transition: font-size .5s;
+}
+
+.cashAndPortfolio:hover {
+    font-size: 32px;
+}
+
+@media (min-width: 1000px) {
+    #stocksOwned{
+        position: absolute;
+        top: 80px;
+        right: 50px;
+    }
+}
+
+@media (max-width: 999px) {
+    #stocksOwned {
+        position: relative;
+    }
+}
+
+
+

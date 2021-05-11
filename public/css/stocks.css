@@ -28,3 +28,35 @@
 #disclaimer {
 	font-size: 12px;
 }
+
+#stockDetails p {
+	transition: background-color .5s;
+}
+
+#stockDetails p:hover {
+	background-color: gold;
+	color: black;
+	font-size: 16px;
+}
+
+h1, h2 {
+	transition: font-size .5s;
+}
+
+h1:hover, h2:hover {
+	font-size: 40px;
+}
+
+@media (min-width: 1000px) {
+	#stockDetails {
+		position: absolute;
+        top: 80px;
+        right: 50px;
+	}
+}
+
+@media (max-width: 999px) {
+	#stockDetails {
+		position: relative;
+	}
+}
