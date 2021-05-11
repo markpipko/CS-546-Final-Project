@@ -1,0 +1,19 @@
+li {
+	transition: font-size .5s;
+}
+
+li:hover {
+	font-size: 18px;
+}
+
+#favs p {
+    transition: font-size .5s;
+}
+
+#favs p:hover {
+    font-size: 18px;
+}
+
+#favs button:hover {
+    background-color: rgb(226, 49, 49);
+}
