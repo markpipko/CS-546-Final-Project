@@ -136,7 +136,7 @@ router.post("/signup", async (req, res) => {
 			hasErrors: true,
 			firstName: firstName,
 			lastName: lastName,
-			email: email,
+			email: lowerCaseEmail,
 			age: age,
 			cash: cash,
 			error: "Error with creating user.",

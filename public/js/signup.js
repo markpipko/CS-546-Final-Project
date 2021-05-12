@@ -9,7 +9,6 @@
 	let cashInput = $("#cash_input_signup");
 
 	signupForm.submit((event) => {
-		console.log("ths ran");
 		event.preventDefault();
 		errors = false;
 
@@ -31,58 +30,51 @@
 		if (!firstName) {
 			alert("Please enter your first name");
 			firstNameInput.addClass("is-invalid");
-			document.getElementById("firstName_input_signup").style.borderColor =
-				"red";
+			firstNameInput.focus();
 			errors = true;
 		} else {
-			document.getElementById("firstName_input_signup").style.borderColor =
-				"green";
+			firstNameInput.addClass("is-valid");
 		}
 
 		if (!lastName) {
 			alert("Please enter your last name");
-			document.getElementById("lastName_input_signup").style.borderColor =
-				"red";
 			lastNameInput.addClass("is-invalid");
+			lastNameInput.focus();
 			errors = true;
 		} else {
-			document.getElementById("lastName_input_signup").style.borderColor =
-				"green";
+			lastNameInput.addClass("is-valid");
 		}
 		if (!email) {
 			alert("Please enter your email");
-			document.getElementById("email_input_signup").style.borderColor = "red";
 			emailInput.addClass("is-invalid");
+			emailInput.focus();
 			errors = true;
 		} else {
-			document.getElementById("email_input_signup").style.borderColor = "green";
+			emailInput.addClass("is-valid");
 		}
 		if (!password) {
 			alert("Please enter your password");
 			passwordInput.addClass("is-invalid");
-			document.getElementById("password_input_signup").style.borderColor =
-				"red";
-
+			passwordInput.focus();
 			errors = true;
 		} else {
-			document.getElementById("password_input_signup").style.borderColor =
-				"green";
+			passwordInput.addClass("is-valid");
 		}
 		if (!age) {
 			alert("Please enter your age");
 			ageInput.addClass("is-invalid");
-			document.getElementById("age_input_signup").style.borderColor = "red";
+			ageInput.focus();
 			errors = true;
 		} else {
-			document.getElementById("age_input_signup").style.borderColor = "green";
+			ageInput.addClass("is-valid");
 		}
 		if (!cash) {
 			alert("Please enter your starting cash");
 			cashInput.addClass("is-invalid");
-			document.getElementById("cash_input_signup").style.borderColor = "red";
+			cashInput.focus();
 			errors = true;
 		} else {
-			document.getElementById("cash_input_signup").style.borderColor = "green";
+			cashInput.addClass("is-valid");
 		}
 
 		if (!errors) {
