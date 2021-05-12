@@ -209,6 +209,18 @@ $("#refresh_button").click(function () {
 		message: "Loading...",
 		overlayCSS: { backgroundColor: "#0f0" },
 	});
+	var requestConfig = {
+		method: "POST",
+		url: `/private/updateStock`,
+		contentType: "application/json",
+		data: JSON.stringify({
+			ticker: temp.value,
+		}),
+	};
+	$.ajax(requestConfig).then(function (responseMessage) {
+		$('#cash').html("$" + responseMessage.cash)
+		$('#owned').html(responseMessage.sharesOwned);
+	});
 });
 
 $("#favorites_button").click(function () {

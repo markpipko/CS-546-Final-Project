@@ -50,6 +50,21 @@ router.post("/update", async (req, res) => {
 	});
 });
 
+router.post("/updateStock", async (req, res) => {
+	const user = await users.getUserByEmail(xss(req.session.user.email));
+	var ticker = xss(req.body["ticker"]);
+	var amountOwned = 0;
+	for(var i = 0; i < user.stocksPurchased.length; i++){
+		if(user.stocksPurchased[i].ticker == ticker){
+			amountOwned = user.stocksPurchased[i].amount;
+		}
+	}
+	res.json({
+		cash: user.cash,
+		sharesOwned: amountOwned,
+	});
+});
+
 router.post("/userGraph", async (req, res) => {
 	const user = await users.getUserByEmail(xss(req.session.user.email));
 	var data = await stocksData.getTotalValue(user.stocksPurchased);
@@ -164,10 +179,10 @@ router.post("/find", async (req, res) => {
 router.get("/stocks/:id", async (req, res) => {
 	let ticker = xss(req.params.id);
 	let x = xss(req.body["stock_ticker"]);
+	const user = await users.getUserByEmail(xss(req.session.user.email));
 
 	if (!ticker || !ticker.trim()) {
 		const metrics = await userMetrics.update(xss(req.session.user.email));
-		const user = await users.getUserByEmail(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
 
 		var totalValue = await stocksData.getTotalValue(userStocks);
@@ -205,17 +220,26 @@ router.get("/stocks/:id", async (req, res) => {
 		} else {
 			status = 0;
 		}
+		var amountOwned = 0;
+		for(var i = 0; i < user.stocksPurchased.length; i++){
+			if(user.stocksPurchased[i].ticker == ticker.toUpperCase()){
+				amountOwned = user.stocksPurchased[i].amount;
+			}
+		}
+	
 		res.render("stock", {
 			title: ticker.toUpperCase(),
 			stock: stockInfo,
 			recommendation: rec,
 			status: status,
+			cash: user.cash,
+			sharesOwned: amountOwned,
 		});
 	} catch (e) {
 		console.log(e);
 
 		const metrics = await userMetrics.update(xss(req.session.user.email));
-		const user = await users.getUserByEmail(xss(req.session.user.email));
+		//const user = await users.getUserByEmail(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
 
 		var totalValue = await stocksData.getTotalValue(userStocks);
@@ -244,13 +268,13 @@ router.get("/stocks/:id", async (req, res) => {
 
 router.get("/stock", async (req, res) => {
 	let ticker = req.body["stock_ticker"];
+	const user = await users.getUserByEmail(xss(req.session.user.email));
 	if (!ticker) {
 		try {
 			let { stock_ticker } = req.query;
 			ticker = stock_ticker;
 		} catch (e) {
 			const metrics = await userMetrics.update(xss(req.session.user.email));
-			const user = await users.getUserByEmail(xss(req.session.user.email));
 
 			return res.render("stock", {
 				title: "Home",
@@ -285,11 +309,19 @@ router.get("/stock", async (req, res) => {
 		} else {
 			status = 0;
 		}
+		var amountOwned = 0;
+		for(var i = 0; i < user.stocksPurchased.length; i++){
+			if(user.stocksPurchased[i].ticker == ticker.toUpperCase()){
+				amountOwned = user.stocksPurchased[i].amount;
+			}
+		}
 		res.render("stock", {
 			title: ticker.toUpperCase(),
 			stock: stockInfo,
 			recommendation: rec,
 			status: status,
+			cash: user.cash,
+			sharesOwned: amountOwned,
 		});
 	} catch (e) {
 		return res.render("stock", {
@@ -323,9 +355,9 @@ router.get("/stocks", async (req, res) => {
 			});
 		}
 	}
+	const user = await users.getUserByEmail(xss(req.session.user.email));
 	if (!ticker.trim()) {
 		const metrics = await userMetrics.update(xss(req.session.user.email));
-		const user = await users.getUserByEmail(xss(req.session.user.email));
 
 		return res.render("home", {
 			title: "Home",
@@ -339,7 +371,6 @@ router.get("/stocks", async (req, res) => {
 			isEmpty: user.stocksPurchased.length == 0 ? true : false,
 		});
 	}
-
 	try {
 		const stockInfo = await stocksData.getStock(ticker);
 		const rec = await stocksData.buyOrSell(ticker);
@@ -352,11 +383,20 @@ router.get("/stocks", async (req, res) => {
 		} else {
 			status = 0;
 		}
+		var amountOwned = 0;
+		for(var i = 0; i < user.stocksPurchased.length; i++){
+			if(user.stocksPurchased[i].ticker == ticker.toUpperCase()){
+				amountOwned = user.stocksPurchased[i].amount;
+			}
+		}
+		console.log(user, user.cash, amountOwned)
 		res.render("stock", {
 			title: ticker.toUpperCase(),
 			stock: stockInfo,
 			recommendation: rec,
 			status: status,
+			cash: user.cash,
+			sharesOwned: amountOwned,
 		});
 	} catch (e) {
 		console.log(e);
