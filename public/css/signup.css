@@ -1,7 +1,11 @@
-.control-group.success {
-	border-color: green;
+.error {
+	color: red;
 }
 
-.error {
+.is-invalid {
 	border-color: red;
+}
+
+.is-valid {
+	border-color: green;
 }
