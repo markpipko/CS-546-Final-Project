@@ -95,7 +95,7 @@ router.get("/favorites", async (req, res) => {
 	const user = await users.getUserByEmail(xss(req.session.user.email));
 	let userStocks = user.stocksPurchased;
 	let recList = await stocksData.giveRecommendation(userStocks);
-	res.render("favorites", { title: "Favorites", recList: recList});
+	res.render("favorites", { title: "Favorites", recList: recList });
 });
 
 router.post("/getFavorites", async (req, res) => {
@@ -107,7 +107,7 @@ router.post("/favorites/:id", async (req, res) => {
 	let ticker = xss(req.params.id);
 	const user = await users.getUserByEmail(xss(req.session.user.email));
 	let favList = user.favorites;
-	if (!favList.includes(ticker)) {
+	if (favList.length == 0 || !favList.includes(ticker)) {
 		favList.push(ticker);
 		const updatedFavList = await users.updateUser(user._id, {
 			favorites: favList,
