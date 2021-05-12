@@ -69,6 +69,8 @@
 			<button id="favorites_button" name="{{stock.ticker}}">Add to Favorites</button>
 			<br /><br />
 
+			<p id="cash">Cash: ${{cash}}</p>
+			<p id="owned">Shares Owned: {{sharesOwned}}</p>
 			<p>Exchange: {{stock.exchange}}</p>
 			<p>Industry: {{stock.industry}}</p>
 			{{#ifEquals stock.range52W.high "N/A"}}
