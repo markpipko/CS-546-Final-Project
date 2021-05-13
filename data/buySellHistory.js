@@ -47,12 +47,12 @@ async function addHistory(email, transaction, ticker, value, amount, date) {
 	if (!ticker || typeof ticker !== "string") throw "Invalid ticker parameter";
 	if (!value || typeof value !== "number") throw "Invalid value parameter";
 	if (!amount || typeof amount !== "number") throw "Invalid amount parameter";
-	if (!date || typeof date !== "string") throw "Invalid date parameter";
+	if (!date || typeof date !== "object" || Array.isArray(date))
+		throw "Invalid date parameter";
 
 	email = email.trim();
 	transaction = transaction.trim();
 	ticker = ticker.trim();
-	date = date.trim();
 	if (!email || !transaction || !ticker || !date) {
 		throw "One or more parameters are empty";
 	}

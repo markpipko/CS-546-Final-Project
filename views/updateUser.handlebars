@@ -20,7 +20,7 @@
 </nav>
 <main>
 	<h1>Update Account Information</h1>
-	<form action="/updateUser" method="POST" id="updateForm">
+	<form action="/updateUser" method="POST" id="updateForm" onsubmit="update_button.disabled=true; return true;">
 		<label id="firstNameLabelUpdate">
 			First Name:
 			<input type="text" id="firstName_input_update" name="firstName" />
@@ -43,7 +43,7 @@
 		</label><br />
 		<label id="ageLabelUpdate">
 			Age:
-			<input type="number" id="age_input_update" name="age" min="0" step="1" />
+			<input type="number" id="age_input_update" name="age" min="1" step="1" />
 		</label><br />
 		<label id="cashLabelUpdate">
 			Starting Cash:
@@ -64,4 +64,4 @@
 <script src="/public/js/jquery.blockUI.js"></script>
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
-<script src="/public/js/user.js"></script>
+<script src="/public/js/updateUser.js"></script>

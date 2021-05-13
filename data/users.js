@@ -8,7 +8,8 @@ async function getAllUsers() {
 }
 
 async function getUserById(id) {
-	if (!id || typeof id !== "object") throw "Invalid ID parameter";
+	if (!id || typeof id !== "object" || Array.isArray(id))
+		throw "Invalid ID parameter";
 
 	const userCollection = await users();
 	const user = await userCollection.findOne({ _id: id });

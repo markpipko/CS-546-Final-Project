@@ -44,6 +44,9 @@ function getSD(arr) {
 }
 
 function shuffle(a) {
+	if (!a || !Array.isArray(a)) {
+		throw "Array is undefined or not an array";
+	}
 	var j, x, i;
 	for (i = a.length - 1; i > 0; i--) {
 		j = Math.floor(Math.random() * (i + 1));
@@ -228,6 +231,7 @@ const exportedMethods = {
 					new Date()
 				);
 			} catch (e) {
+				console.log(e);
 				throw "Transaction could not be added to user history";
 			}
 
@@ -469,7 +473,7 @@ const exportedMethods = {
 				ticker: potentialRecommendationList[i],
 				recommendation: rec,
 			});
-		
+
 			if (recommendationList.length >= 2) {
 				break;
 			}
@@ -483,6 +487,12 @@ const exportedMethods = {
 	},
 
 	async getGraphData(ticker, subtract) {
+		if (!ticker || typeof ticker != "string" || !ticker.trim()) {
+			throw "Ticker not provided or not of proper type";
+		}
+		if (!subtract || typeof subtract != "string" || !subtract.trim()) {
+			throw "Subtract not provided or not of proper type";
+		}
 		var prices = []; //y-axis
 		var dates = []; //x-axis
 		var today = new Date();
@@ -520,6 +530,9 @@ const exportedMethods = {
 	},
 
 	async getTotalValue(stocksOwned) {
+		if (!stocksOwned || !Array.isArray(stocksOwned)) {
+			throw "StocksOwned is undefined or not of proper type";
+		}
 		var totalValue = 0;
 		for (var i = 0; i < stocksOwned.length; i++) {
 			let ticker = stocksOwned[i].ticker;

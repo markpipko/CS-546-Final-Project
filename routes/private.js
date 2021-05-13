@@ -413,6 +413,7 @@ router.post("/transaction", async (req, res) => {
 			let status = await stocksData.buy(email, ticker, quantity);
 			return res.json({ success: true, ticker: ticker, quantity: quantity });
 		} catch (e) {
+			console.log(e);
 			return res.json({ error: e });
 		}
 	} else {
