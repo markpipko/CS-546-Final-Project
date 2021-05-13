@@ -231,7 +231,6 @@ const exportedMethods = {
 					new Date()
 				);
 			} catch (e) {
-				console.log(e);
 				throw "Transaction could not be added to user history";
 			}
 

@@ -22,22 +22,21 @@
 		let age = ageInput.val().trim();
 		let cash = cashInput.val().trim();
 
+		if (email) {
+			let pattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/;
+			if (!pattern.test(email)) {
+				alert("Email is not valid");
+				emailInput.focus();
+				errors = true;
+			}
+		}
+
 		if (password || cpassword) {
 			if (password != cpassword) {
 				alert("Passwords do not match");
 				passwordInput.focus();
 				errors = true;
 			}
-		}
-		if (+age) {
-			alert("Only input numbers into age");
-			ageInput.focus();
-			errors = true;
-		}
-		if (+cash) {
-			alert("Only input numbers into cash");
-			errors = true;
-			cashInput.focus();
 		}
 		if (!errors) {
 			updateForm.off().submit();

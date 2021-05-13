@@ -212,8 +212,6 @@ router.get("/stocks/:id", async (req, res) => {
 			status: status,
 		});
 	} catch (e) {
-		console.log(e);
-
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
@@ -359,8 +357,6 @@ router.get("/stocks", async (req, res) => {
 			status: status,
 		});
 	} catch (e) {
-		console.log(e);
-
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
 
@@ -413,7 +409,6 @@ router.post("/transaction", async (req, res) => {
 			let status = await stocksData.buy(email, ticker, quantity);
 			return res.json({ success: true, ticker: ticker, quantity: quantity });
 		} catch (e) {
-			console.log(e);
 			return res.json({ error: e });
 		}
 	} else {

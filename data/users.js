@@ -98,7 +98,6 @@ async function removeUser(id) {
 	try {
 		user = await getUserById(id);
 	} catch (e) {
-		console.log(e);
 		return;
 	}
 

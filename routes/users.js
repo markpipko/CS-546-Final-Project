@@ -92,7 +92,21 @@ router.post("/signup", async (req, res) => {
 		return;
 	}
 	let lowerCaseEmail = email.toLowerCase();
+	let pattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/;
 
+	if (!pattern.test(lowerCaseEmail)) {
+		res.render("signup", {
+			title: "Sign Up",
+			hasErrors: true,
+			error: "Invalid email.",
+			firstName: firstName,
+			lastName: lastName,
+			email: email,
+			age: age,
+			cash: cash,
+		});
+		return;
+	}
 	const allUsers = await users.getAllUsers();
 	for (let i = 0; i < allUsers.length; i++) {
 		if (allUsers[i].email == lowerCaseEmail) {
@@ -131,6 +145,7 @@ router.post("/signup", async (req, res) => {
 		};
 		res.redirect("/private");
 	} catch (e) {
+		// console.log(e);
 		res.render("signup", {
 			title: "Sign Up",
 			hasErrors: true,
@@ -198,115 +213,181 @@ router.get("/updateUser", async (req, res) => {
 });
 
 router.post("/updateUser", async (req, res) => {
-	const firstName = xss(req.body.firstName);
-	const lastName = xss(req.body.lastName);
-	const email = xss(req.body.email);
-	const password = xss(req.body.password);
-	const passwordConfirm = xss(req.body.passwordConfirm);
-	const age = xss(req.body.age);
-	const cash = xss(req.body.cash);
+	let firstName = xss(req.body.firstName);
+	let lastName = xss(req.body.lastName);
+	let email = xss(req.body.email);
+	let password = xss(req.body.password);
+	let passwordConfirm = xss(req.body.passwordConfirm);
+	let age = xss(req.body.age);
+	let cash = xss(req.body.cash);
 
-	if (
-		!firstName ||
-		!lastName ||
-		!email ||
-		!password ||
-		!passwordConfirm ||
-		!age ||
-		!cash
-	) {
+	const updatedUser = {};
+	if (firstName) {
+		if (typeof firstName !== "string") {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "First name not of type string",
+			});
+			return;
+		}
+		firstName = firstName.trim();
+		if (!firstName) {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "First name is just spaces",
+			});
+			return;
+		}
+		updatedUser.firstName = firstName;
+	}
+	if (lastName) {
+		if (typeof lastName !== "string") {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Last name not of type string",
+			});
+			return;
+		}
+		lastName = lastName.trim();
+		if (!lastName) {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Last name is just spaces",
+			});
+			return;
+		}
+		updatedUser.lastName = lastName;
+	}
+	if (email) {
+		if (typeof email !== "string") {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Email not of type string",
+			});
+			return;
+		}
+		email = email.trim();
+		if (!email) {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Email is just spaces",
+			});
+			return;
+		}
+		email = email.toLowerCase();
+		let pattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/;
+		if (!pattern.test(email)) {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Invalid email",
+			});
+			return;
+		}
+		updatedUser.email = email;
+	}
+	if (password) {
+		if (!(password && passwordConfirm)) {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Both password and confirmed password must be inputted",
+			});
+			return;
+		}
+		if (typeof password !== "string" || typeof passwordConfirm !== "string") {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Password or confirmed password not of type string",
+			});
+			return;
+		}
+		if (password != passwordConfirm) {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Passwords do not match",
+			});
+			return;
+		}
+		const hash = await bcrypt.hash(password, saltRounds);
+		updatedUser.password = hash;
+	}
+
+	if (age) {
+		if (isNaN(age) || Number(age) % 1 != 0) {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Invalid age",
+			});
+			return;
+		}
+		updatedUser.age = parseInt(age);
+	}
+	if (cash) {
+		if (isNaN(cash)) {
+			res.render("updateUser", {
+				title: "Edit Account",
+				hasErrors: true,
+				error: "Invalid cash amount",
+			});
+			return;
+		}
+		updatedUser.cash = Number(cash);
+	}
+
+	try {
+		let oldEmail = xss(req.session.user.email);
+		let user = await users.getUserByEmail(oldEmail);
+		let updatedReturnUser = await users.updateUser(user._id, updatedUser);
+		if (email) {
+			if (email != oldEmail) {
+				let updatedUserMetrics = {
+					email: email,
+				};
+				let userMetricsReturn = await userMetrics.get(
+					xss(req.session.user.email)
+				);
+				let updatedReturnUserMetrics = await userMetrics.updateEmail(
+					userMetricsReturn._id.toString(),
+					updatedUserMetrics
+				);
+
+				let updatedBSH = {
+					email: email,
+				};
+				let bshReturn = await buySell.getHistoryByEmail(
+					xss(req.session.user.email)
+				);
+				let updatedReturnBSH = await buySell.updateEmail(
+					bshReturn._id.toString(),
+					updatedBSH
+				);
+
+				req.session.user.email = email;
+			}
+		}
+	} catch (e) {
+		console.log(e);
 		res.render("updateUser", {
 			title: "Edit Account",
 			hasErrors: true,
-			error: "Parameters cannot be blank",
+			error: "Error with updating info",
 		});
-		return;
 	}
-	if (
-		typeof firstName !== "string" ||
-		typeof lastName !== "string" ||
-		typeof email !== "string" ||
-		typeof password !== "string" ||
-		typeof passwordConfirm !== "string"
-	) {
-		res.render("updateUser", {
-			title: "Edit Account",
-			hasErrors: true,
-			error: "Invalid string parameters",
-		});
-		return;
-	}
-	if (
-		firstName.trim() == "" ||
-		lastName.trim() == "" ||
-		email.trim() == "" ||
-		password.trim() == "" ||
-		passwordConfirm.trim() == ""
-	) {
-		res.render("updateUser", {
-			title: "Edit Account",
-			hasErrors: true,
-			error: "Parameters cannot be empty",
-		});
-		return;
-	}
-	if (isNaN(age) || Number(age) % 1 != 0 || isNaN(cash)) {
-		res.render("updateUser", {
-			title: "Edit Account",
-			hasErrors: true,
-			error: "Invalid number parameters",
-		});
-		return;
-	}
-
-	if (password != passwordConfirm) {
-		res.render("updateUser", {
-			title: "Edit Account",
-			hasErrors: true,
-			error: "Passwords do not match",
-		});
-		return;
-	}
-
-	const hash = await bcrypt.hash(password, saltRounds);
-
-	let updatedUser = {
-		firstName: firstName,
-		lastName: lastName,
-		email: email,
-		password: hash,
-		age: parseInt(age),
-		cash: Number(cash),
-	};
-
-	let user = await users.getUserByEmail(xss(req.session.user.email));
-	let updatedReturnUser = await users.updateUser(user._id, updatedUser);
-
-	if (email != user.email) {
-		let updatedUserMetrics = {
-			email: email,
-		};
-		let userMetricsReturn = await userMetrics.get(xss(req.session.user.email));
-		let updatedReturnUserMetrics = await userMetrics.updateEmail(
-			userMetricsReturn._id.toString(),
-			updatedUserMetrics
-		);
-
-		let updatedBSH = {
-			email: email,
-		};
-		let bshReturn = await buySell.getHistoryByEmail(
-			xss(req.session.user.email)
-		);
-		let updatedReturnBSH = await buySell.updateEmail(
-			bshReturn._id.toString(),
-			updatedBSH
-		);
-
-		req.session.user.email = email;
-	}
-
-	res.redirect("/private");
+	res.render("updateUser", {
+		title: "Edit Account",
+		hasErrors: false,
+		success: true,
+	});
 });
 
 router.get("/logout", async (req, res) => {
