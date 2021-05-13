@@ -50,7 +50,15 @@
 			emailInput.focus();
 			errors = true;
 		} else {
-			emailInput.addClass("is-valid");
+			let pattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/;
+			if (!pattern.test(email)) {
+				alert("Email is not valid");
+				emailInput.addClass("is-invalid");
+				emailInput.focus();
+				errors = true;
+			} else {
+				emailInput.addClass("is-valid");
+			}
 		}
 		if (!password) {
 			alert("Please enter your password");

@@ -236,8 +236,6 @@ router.get("/stocks/:id", async (req, res) => {
 			sharesOwned: amountOwned,
 		});
 	} catch (e) {
-		console.log(e);
-
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		//const user = await users.getUserByEmail(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
@@ -399,8 +397,6 @@ router.get("/stocks", async (req, res) => {
 			sharesOwned: amountOwned,
 		});
 	} catch (e) {
-		console.log(e);
-
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
 

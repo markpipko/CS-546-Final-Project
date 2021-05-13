@@ -5,13 +5,6 @@ $("#login_button").click(function () {
 	});
 });
 
-$("#update_button").click(function () {
-	$.blockUI({
-		message: "Updating. Please wait...",
-		overlayCSS: { backgroundColor: "#0f0" },
-	});
-});
-
 $("#delete_button").click(function () {
 	var radioValue = $("input[name='deleteUser']:checked").val();
 	if (radioValue == "yes") {

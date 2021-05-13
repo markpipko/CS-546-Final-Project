@@ -1,11 +1,11 @@
 const mongoCollections = require("../config/mongoCollections");
 const UserMetrics = mongoCollections.userMetrics;
-const users = require('./users');
-const buySell = require('./buySellHistory');
+const users = require("./users");
+const buySell = require("./buySellHistory");
 //const stocks = mongoCollections.stocks;
 var yahooStockPrices = require("yahoo-stock-prices");
 var finviz = require("finvizor");
-let { ObjectId } = require('mongodb');
+let { ObjectId } = require("mongodb");
 
 function checkStr(str) {
 	if (str == undefined) {
@@ -57,7 +57,7 @@ const create = async function create(
 		email: email,
 		totalReturn: totalReturn,
 		percentGrowth: percentGrowth,
-		volatility: volatility
+		volatility: volatility,
 	};
 
 	const insertInfo = await metricsCollection.insertOne(newMetric);
@@ -70,25 +70,35 @@ const create = async function create(
 };
 
 const get = async function get(email) {
-	checkStr(email);
+	try {
+		checkStr(email);
+	} catch (e) {
+		throw e;
+	}
 	const metricsCollection = await UserMetrics();
 	const metric = await metricsCollection.findOne({ email: email });
 	return metric;
 };
 
-function clean(arr){
-	var newArr = []
-	var k = 0
-	for(var i = 0; i < arr.length; i++){
-		if(arr[i].adjclose != undefined){
-			newArr[k] = arr[i]
-			k++
+function clean(arr) {
+	if (!arr || !Array.isArray(arr)) {
+		throw "Array not provided or not of proper type";
+	}
+	var newArr = [];
+	var k = 0;
+	for (var i = 0; i < arr.length; i++) {
+		if (arr[i].adjclose != undefined) {
+			newArr[k] = arr[i];
+			k++;
 		}
 	}
-	return newArr
+	return newArr;
 }
 
 async function getVolatility(stocksPurchased) {
+	if (!stocksPurchased || !Array.isArray(stocksPurchased)) {
+		throw "Array not provided or not of type array";
+	}
 
 	if (stocksPurchased.length == 0) {
 		return 0;
@@ -102,10 +112,10 @@ async function getVolatility(stocksPurchased) {
 		let date = new Date(stocksPurchased[i].datePurchased);
 
 		stocksOwned += stocksPurchased[i].amount;
-		
+
 		let today = new Date();
 		var yearAgo = new Date();
-		yearAgo.setDate(yearAgo.getDate() - 365)
+		yearAgo.setDate(yearAgo.getDate() - 365);
 
 		var prices = await yahooStockPrices.getHistoricalPrices(
 			yearAgo.getMonth(),
@@ -117,12 +127,21 @@ async function getVolatility(stocksPurchased) {
 			ticker,
 			"1d"
 		);
-		prices = clean(prices)
+		if (!prices) {
+			throw "Error with fetching data";
+		}
+		try {
+			prices = clean(prices);
+		} catch (e) {
+			throw e;
+		}
 
 		var dailyReturns = [];
 
 		for (var k = 1; k < prices.length; k++) {
-			dailyReturns.push((prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose);
+			dailyReturns.push(
+				(prices[k].adjclose - prices[k - 1].adjclose) / prices[k - 1].adjclose
+			);
 		}
 
 		var mean = 0;
@@ -141,15 +160,26 @@ async function getVolatility(stocksPurchased) {
 			sd = Math.sqrt(sd / dailyReturns.length);
 			sd = sd * Math.sqrt(dailyReturns.length);
 		}
-		
+
 		totalVolatility += sd * stocksPurchased[i].amount;
 	}
 	return totalVolatility / stocksOwned;
 }
 
 async function getReturns(email) {
+	try {
+		checkStr(email);
+	} catch (e) {
+		throw e;
+	}
 	const user = await users.getUserByEmail(email);
+	if (!user) {
+		throw "User not found";
+	}
 	const person = await buySell.getHistoryByEmail(email);
+	if (!person) {
+		throw "History not found";
+	}
 
 	let bought = 0;
 	let sold = 0;
@@ -166,63 +196,92 @@ async function getReturns(email) {
 
 	for (var i = 0; i < user.stocksPurchased.length; i++) {
 		let ticker = user.stocksPurchased[i].ticker;
-		const data = await yahooStockPrices.getCurrentPrice(ticker);
+		let data = await yahooStockPrices.getCurrentPrice(ticker);
+		if (!data) {
+			data = 0;
+		}
 		owned += data * user.stocksPurchased[i].amount;
 	}
 
-	if(bought == 0 && sold == 0){
-		return [0,0,0]
+	if (bought == 0 && sold == 0) {
+		return [0, 0, 0];
 	}
 
-	let volatility = await getVolatility(user.stocksPurchased);
+	try {
+		let volatility = await getVolatility(user.stocksPurchased);
 
-	let totalReturn = sold + owned - bought;
-	let percentGrowth = (totalReturn / bought) * 100;
-	
-	return [totalReturn.toFixed(2), percentGrowth.toFixed(2), volatility.toFixed(2)];
+		let totalReturn = sold + owned - bought;
+		let percentGrowth = (totalReturn / bought) * 100;
+
+		return [
+			totalReturn.toFixed(2),
+			percentGrowth.toFixed(2),
+			volatility.toFixed(2),
+		];
+	} catch (e) {
+		throw e;
+	}
 }
 
 const update = async function update(email) {
-	checkStr(email);
+	try {
+		checkStr(email);
+	} catch (e) {
+		throw e;
+	}
 	const metricsCollection = await UserMetrics();
 
-	returns = await getReturns(email);
+	returns = [0, 0, 0];
+	try {
+		returns = await getReturns(email);
+	} catch (e) {
+		throw e;
+	}
 	let totalReturn = returns[0];
 	let percentGrowth = returns[1];
 	let volatility = returns[2];
 
 	let metric = await get(email);
 
-	if (metric.totalReturn != totalReturn || metric.percentGrowth != percentGrowth || metric.volatility != volatility) {
+	if (
+		metric.totalReturn != totalReturn ||
+		metric.percentGrowth != percentGrowth ||
+		metric.volatility != volatility
+	) {
 		let newMetric = {
 			email: metric.email,
 			totalReturn: totalReturn,
 			percentGrowth: percentGrowth,
 			volatility: volatility,
 		};
-	
+
 		const updatedInfo = await metricsCollection.updateOne(
 			{ email: email },
 			{ $set: newMetric }
 		);
-	
+
 		if (updatedInfo.modifiedCount === 0) {
 			throw "Could not update metrics";
 		}
-	
+
 		newMetric = await get(email);
 		newMetric._id = newMetric._id.toString();
 		return newMetric;
-	}
-	else {
+	} else {
 		return metric;
-	}	
+	}
 };
 
 const updateEmail = async function updateEmail(id, email) {
 	if (!id || typeof id !== "string") throw "Invalid ID Parameter";
-	if (!email || typeof email !== "object" || !email.email || typeof email.email !== "string" || email.email.trim() == "")
-        throw "Invalid email";
+	if (
+		!email ||
+		typeof email !== "object" ||
+		!email.email ||
+		typeof email.email !== "string" ||
+		email.email.trim() == ""
+	)
+		throw "Invalid email";
 
 	const metricsCollection = await UserMetrics();
 
@@ -235,14 +294,17 @@ const updateEmail = async function updateEmail(id, email) {
 		throw "Could not update email";
 	}
 
-
 	let newMetric = await get(email.email);
 	newMetric._id = newMetric._id.toString();
 	return newMetric;
-}
+};
 
 const remove = async function remove(email) {
-	checkStr(email);
+	try {
+		checkStr(email);
+	} catch (e) {
+		throw e;
+	}
 	const metricsCollection = await UserMetrics();
 	const deletionInfo = await metricsCollection.deleteOne({ email: email });
 
