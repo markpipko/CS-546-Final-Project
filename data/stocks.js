@@ -426,14 +426,24 @@ const exportedMethods = {
 	},
 
 	async giveRecommendation(userStocks) {
-		let sp500 = await axios.get(
-			"https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/8caaa9cecf5b6d60a147e15c20eee688/constituents_json.json"
-		);
+		if (!userStocks) {
+			throw "User stocks not provided";
+		}
+		let sp500 = {};
+		try {
+			sp500 = await axios.get(
+				"https://pkgstore.datahub.io/core/s-and-p-500-companies/constituents_json/data/8caaa9cecf5b6d60a147e15c20eee688/constituents_json.json"
+			);
+			if (!sp500) {
+				throw "Error getting SP500 data";
+			}
+		} catch (e) {
+			throw "Error getting SP500 data";
+		}
 
 		let myStocks = userStocks.slice();
 		let myStockTickers = [];
 		let potentialRecommendationList = [];
-
 		if (myStocks.length != 0) {
 			for (let i = 0; i < myStocks.length; i++) {
 				myStockTickers.push(myStocks[i].ticker);
@@ -447,11 +457,10 @@ const exportedMethods = {
 				stockRecsNum++;
 				myStocks.splice(randomIndex, 1);
 			}
-
 			for (let i = 0; i < myStockData.length; i++) {
 				for (let j = 0; j < sp500.data.length; j++) {
 					if (
-						!myStocks.includes(sp500.data[j].Symbol) &&
+						!(myStockData[i] == sp500.data[j].Symbol) &&
 						!potentialRecommendationList.includes(sp500.data[j].Symbol) &&
 						(myStockData[i].sector.includes(sp500.data[j].Sector) ||
 							sp500.data[j].Sector.includes(myStockData[i].sector))
@@ -469,14 +478,18 @@ const exportedMethods = {
 		potentialRecommendationList = shuffle(potentialRecommendationList);
 		let recommendationList = [];
 		for (let i = 0; i < potentialRecommendationList.length; i++) {
-			let rec = await this.buyOrSell(potentialRecommendationList[i]);
-			recommendationList.push({
-				ticker: potentialRecommendationList[i],
-				recommendation: rec,
-			});
+			try {
+				let rec = await this.buyOrSell(potentialRecommendationList[i]);
+				recommendationList.push({
+					ticker: potentialRecommendationList[i],
+					recommendation: rec,
+				});
 
-			if (recommendationList.length >= 2) {
-				break;
+				if (recommendationList.length >= 2) {
+					break;
+				}
+			} catch (e) {
+				continue;
 			}
 		}
 

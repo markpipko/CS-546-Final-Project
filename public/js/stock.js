@@ -218,8 +218,8 @@ $("#refresh_button").click(function () {
 		}),
 	};
 	$.ajax(requestConfig).then(function (responseMessage) {
-		$("#cash").html("$" + responseMessage.cash);
-		$("#owned").html(responseMessage.sharesOwned);
+		$("#cash").html("Cash: " + "$" + responseMessage.cash.toFixed(2));
+		$("#owned").html("Shares Owned: " + responseMessage.sharesOwned);
 	});
 });
 

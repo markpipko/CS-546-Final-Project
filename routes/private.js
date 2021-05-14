@@ -180,10 +180,14 @@ router.get("/favorites", async (req, res) => {
 		}
 		let userStocks = user.stocksPurchased;
 		let recList = await stocksData.giveRecommendation(userStocks);
-		if (!recList) {
+		if (!recList || recList.length == 0) {
 			throw "Recommendations not found";
 		}
-		res.render("favorites", { title: "Favorites", recList: recList });
+		res.render("favorites", {
+			title: "Favorites",
+			recList: recList,
+			rec: true,
+		});
 	} catch (e) {
 		res.render("favorites", { title: "Favorites", recList: [] });
 	}
