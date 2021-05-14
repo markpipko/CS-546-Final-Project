@@ -110,7 +110,7 @@ router.post("/userGraph", async (req, res) => {
 			throw "User not found";
 		}
 		var data = await stocksData.getTotalValue(user.stocksPurchased);
-		if (!data) {
+		if (data == null) {
 			throw "User information not found";
 		}
 		var cash = await user.cash;
@@ -554,7 +554,7 @@ router.post("/transaction", async (req, res) => {
 
 	const user = await users.getUserByEmail(xss(req.session.user.email));
 
-	if(transaction = 'sellAll'){
+	if(transaction == 'sellAll'){
 		choice = "shares";
 		for(var i = 0; i < user.stocksPurchased.length; i++){
 			if(ticker ==  user.stocksPurchased[i].ticker){

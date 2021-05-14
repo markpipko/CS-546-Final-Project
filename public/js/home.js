@@ -76,8 +76,9 @@ function graph(){
 
 		var data = [trace];
 		Plotly.newPlot("userGraph", data, layout);
-
-		pValueTag.innerHTML = `Portfolio Value: $${responseMessage.pValue}`;
+		if(pValueTag != null){
+			pValueTag.innerHTML = `Portfolio Value: $${responseMessage.pValue}`;
+		}	
 	});
 }
 
