@@ -278,7 +278,7 @@ if (transForm) {
 		}
 
 		let quantity = $("#amount").val();
-		if (!quantity) {
+		if (!quantity && transaction != "sellAll") {
 			$("#modalTitle").html("Transaction Incomplete");
 			let errorStatus = document.createElement("p");
 			errorStatus.innerHTML = "Quantity was not specified.";
@@ -291,7 +291,7 @@ if (transForm) {
 		}
 		let investOption = $("#choice").val();
 
-		if (quantity <= 0) {
+		if (quantity <= 0 && transaction != "sellAll") {
 			$("#modalTitle").html("Transaction Incomplete");
 			let errorStatus = document.createElement("p");
 			if (investOption == "shares") {
@@ -307,7 +307,7 @@ if (transForm) {
 			return;
 		}
 
-		if (temp.value.trim() && transaction && quantity) {
+		if (temp.value.trim() && transaction && quantity || transaction == "sellAll") {
 			temp.value = temp.value.trim();
 			blockTransaction();
 			$.ajax({
