@@ -214,12 +214,12 @@ $("#refresh_button").click(function () {
 		url: `/private/updateStock`,
 		contentType: "application/json",
 		data: JSON.stringify({
-			ticker: temp.value,
+			ticker: temp.value.trim(),
 		}),
 	};
 	$.ajax(requestConfig).then(function (responseMessage) {
-		$('#cash').html("$" + responseMessage.cash)
-		$('#owned').html(responseMessage.sharesOwned);
+		$("#cash").html("$" + responseMessage.cash);
+		$("#owned").html(responseMessage.sharesOwned);
 	});
 });
 

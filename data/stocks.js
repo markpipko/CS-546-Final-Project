@@ -143,7 +143,9 @@ const exportedMethods = {
 		if (!price) {
 			throw "Ticker not found";
 		}
-		let total_amount = parseFloat(price.toFixed(2)) * parseFloat(quantity);
+		let total_amount = parseFloat(
+			(parseFloat(price.toFixed(2)) * parseFloat(quantity)).toFixed(2)
+		);
 		if (user.cash < total_amount) {
 			throw "Not enough cash available.";
 		}
@@ -297,7 +299,7 @@ const exportedMethods = {
 			if (!price) {
 				throw "Ticker not found";
 			}
-			let sum = price * parseFloat(quantity);
+			let sum = parseFloat((price * parseFloat(quantity)).toFixed(2));
 			let updatedAmount = transactionDetails.amount - parseFloat(quantity);
 			let updatedTransaction = {};
 			let newUser = user;
