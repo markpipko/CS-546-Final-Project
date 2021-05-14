@@ -1,0 +1,8 @@
+p {
+    transition: font-size .5s;
+}
+
+p:hover {
+    font-size: 18px;
+    background-color: gold;
+}
