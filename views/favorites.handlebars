@@ -1,6 +1,6 @@
 <link rel="stylesheet" href="/public/css/home.css" />
 <link rel="stylesheet" href="/public/css/favorites.css" />
-<nav class="navbar navbar-default"> 
+<nav class="navbar navbar-default">
 	<div class="container-fluid">
 		<div class="navbar-header">
 			<a class="navbar-brand" href="/private/home">Paper Trader</a>
@@ -21,11 +21,16 @@
 
 <main>
 	<h1>Recommendations</h1>
+	{{#if rec}}
 	<ul>
 		{{#each recList}}
 		<li>{{this.recommendation}} <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </li>
 		{{/each}}
 	</ul>
+	{{else}}
+	<p>No recommendations found</p>
+	{{/if}}
+
 
 	<h1>Favorites</h1>
 
