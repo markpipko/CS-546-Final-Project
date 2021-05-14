@@ -36,8 +36,8 @@
 	{{else}}
 	<div id="stock_info">
 		<h1>{{stock.name}} ({{stock.ticker}})</h1>
-		{{#ifEquals status 1}}
 		<div id="refreshprice">
+		{{#ifEquals status 1}}
 			<h2 id="price" class="up">${{stock.price}}</h2>
 			{{else}}
 			{{#ifEquals status -1}}
@@ -124,7 +124,7 @@
 		<div class="modal-dialog modal-dialog-centered" role="document">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h2 class="modal-title" id="modalTitle">Modal title</h5>
+					<h2 class="modal-title" id="modalTitle">Modal title</h2>
 				</div>
 				<div class="modal-body" id="modal-body"></div>
 				<div class="modal-footer">
@@ -134,7 +134,7 @@
 							<path
 								d="M0 4a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V4zm2-1a1 1 0 0 0-1 1v.217l7 4.2 7-4.2V4a1 1 0 0 0-1-1H2zm13 2.383-4.758 2.855L15 11.114v-5.73zm-.034 6.878L9.271 8.82 8 9.583 6.728 8.82l-5.694 3.44A1 1 0 0 0 2 13h12a1 1 0 0 0 .966-.739zM1 11.114l4.758-2.876L1 5.383v5.73z" />
 						</svg>
-						Share by Email</a>
+						Share by Email
 					</a>
 					<a class="twitter-share-button btn btn-secondary mr-auto" href="https://twitter.com/intent/tweet"
 						id="twitter_share" target="_blank"> <svg xmlns="http://www.w3.org/2000/svg" width="16"

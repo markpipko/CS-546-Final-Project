@@ -39,11 +39,12 @@ input {
 
 .cashAndPortfolio:hover {
 	font-size: 32px;
-}
-
-.cashAndPortfolioSpan {
 	color: rgb(20, 115, 204);
 }
+
+/* .cashAndPortfolioSpan {
+	color: rgb(20, 115, 204);
+} */
 
 @media (min-width: 1000px) {
 	#stocksOwned {

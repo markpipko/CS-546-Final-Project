@@ -1,0 +1,29 @@
+<link rel="stylesheet" href="/public/css/home.css">
+    <nav class="navbar navbar-default"> 
+		<div class="container-fluid">
+			<div class="navbar-header">
+				<a class="navbar-brand" href="/private/home">Paper Trader</a>
+			</div>
+			 <ul class="nav navbar-nav">
+				 <li><a href="/private/home">Home</a></li>
+				 <li><a href="/private/stockListings">SP 500</a></li>
+				 <li><a href="/private/stockHistory">History</a></li>
+                 <li class="active"><a href="/private/recommendations">Recommendations</a></li>
+                 <li><a href="/private/favorites">Favorites</a></li>
+			 </ul>
+       	<ul class="nav navbar-nav navbar-right">
+          <li><a href="/updateUser"><span class="glyphicon glyphicon-edit"></span>Edit Account Info</a></li>
+          <li><a href="/logout"><span class="glyphicon glyphicon-log-out"></span>Logout</a></li>
+          <li><a href="/deleteAccount"><span class="glyphicon glyphicon-trash"></span>Delete Account</a> </li>
+			</ul>
+		</div>
+	</nav>
+<main>
+	<h1>Recommendations</h1>
+    <ul>
+		{{#each recList}}
+		<li>{{this.recommendation}} <a href="/private/stocks/{{this.ticker}}"> {{this.ticker}} </a> </li>
+		{{/each}}
+	</ul>
+</main>
+<script src="/public/js/recommendations.js"></script>
