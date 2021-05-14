@@ -34,11 +34,11 @@
 
 	<h3> Portfolio </h3>
 	<div id="userGraph"> </div> <br />
-	<span class="cashAndPortfolioSpan"><p class="cashAndPortfolio"> Cash: ${{cash}}</p></span>
+	<p class="cashAndPortfolio"> Cash: ${{cash}}</p>
 	{{#if isEmpty}}
-	<span class="cashAndPortfolioSpan"><p class="cashAndPortfolio">Portfolio is empty</p></span>
+	<p class="cashAndPortfolio">Portfolio is empty</p>
 	{{else}}
-	<span class="cashAndPortfolioSpan"><p id="pValue" class="cashAndPortfolio"> Portfolio Value: ${{pValue}} </p></span>
+	<p id="pValue" class="cashAndPortfolio"> Portfolio Value: ${{pValue}} </p>
 	<br />
 	<div id="stocksOwned">
 		{{#each stocks}}
