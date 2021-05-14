@@ -28,6 +28,10 @@ input {
 	font-size: 16px;
 }
 
+#errors_div {
+	color: red;
+}
+
 .cashAndPortfolio {
 	font-size: 24px;
 	transition: font-size 0.5s;
@@ -38,7 +42,7 @@ input {
 }
 
 .cashAndPortfolioSpan {
-    color: rgb(20, 115, 204);
+	color: rgb(20, 115, 204);
 }
 
 @media (min-width: 1000px) {

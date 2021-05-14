@@ -54,8 +54,8 @@ router.post("/updateStock", async (req, res) => {
 	const user = await users.getUserByEmail(xss(req.session.user.email));
 	var ticker = xss(req.body["ticker"]);
 	var amountOwned = 0;
-	for(var i = 0; i < user.stocksPurchased.length; i++){
-		if(user.stocksPurchased[i].ticker == ticker){
+	for (var i = 0; i < user.stocksPurchased.length; i++) {
+		if (user.stocksPurchased[i].ticker == ticker) {
 			amountOwned = user.stocksPurchased[i].amount;
 		}
 	}
@@ -221,12 +221,12 @@ router.get("/stocks/:id", async (req, res) => {
 			status = 0;
 		}
 		var amountOwned = 0;
-		for(var i = 0; i < user.stocksPurchased.length; i++){
-			if(user.stocksPurchased[i].ticker == ticker.toUpperCase()){
+		for (var i = 0; i < user.stocksPurchased.length; i++) {
+			if (user.stocksPurchased[i].ticker == ticker.toUpperCase()) {
 				amountOwned = user.stocksPurchased[i].amount;
 			}
 		}
-	
+
 		res.render("stock", {
 			title: ticker.toUpperCase(),
 			stock: stockInfo,
@@ -308,8 +308,8 @@ router.get("/stock", async (req, res) => {
 			status = 0;
 		}
 		var amountOwned = 0;
-		for(var i = 0; i < user.stocksPurchased.length; i++){
-			if(user.stocksPurchased[i].ticker == ticker.toUpperCase()){
+		for (var i = 0; i < user.stocksPurchased.length; i++) {
+			if (user.stocksPurchased[i].ticker == ticker.toUpperCase()) {
 				amountOwned = user.stocksPurchased[i].amount;
 			}
 		}
@@ -382,12 +382,12 @@ router.get("/stocks", async (req, res) => {
 			status = 0;
 		}
 		var amountOwned = 0;
-		for(var i = 0; i < user.stocksPurchased.length; i++){
-			if(user.stocksPurchased[i].ticker == ticker.toUpperCase()){
+		for (var i = 0; i < user.stocksPurchased.length; i++) {
+			if (user.stocksPurchased[i].ticker == ticker.toUpperCase()) {
 				amountOwned = user.stocksPurchased[i].amount;
 			}
 		}
-		console.log(user, user.cash, amountOwned)
+		// console.log(user, user.cash, amountOwned)
 		res.render("stock", {
 			title: ticker.toUpperCase(),
 			stock: stockInfo,

@@ -47,6 +47,22 @@ app.use("/login", (req, res, next) => {
 	}
 });
 
+app.use("/updateUser", (req, res, next) => {
+	if (!req.session.user) {
+		return res.redirect("/");
+	} else {
+		next();
+	}
+});
+
+app.use("/deleteAccount", (req, res, next) => {
+	if (!req.session.user) {
+		return res.redirect("/");
+	} else {
+		next();
+	}
+});
+
 configRoutes(app);
 
 app.listen(3000, () => {

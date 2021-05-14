@@ -343,6 +343,14 @@ router.post("/updateUser", async (req, res) => {
 		}
 		updatedUser.cash = Number(cash);
 	}
+	if (Object.keys(updatedUser).length == 0) {
+		res.render("updateUser", {
+			title: "Edit Account",
+			hasErrors: true,
+			error: "All fields are empty",
+		});
+		return;
+	}
 
 	try {
 		let oldEmail = xss(req.session.user.email);
@@ -376,8 +384,8 @@ router.post("/updateUser", async (req, res) => {
 			}
 		}
 	} catch (e) {
-		console.log(e);
-		res.render("updateUser", {
+		// console.log(e);
+		return res.render("updateUser", {
 			title: "Edit Account",
 			hasErrors: true,
 			error: "Error with updating info",

@@ -21,11 +21,17 @@
 		let cpassword = confirmedPassInput.val();
 		let age = ageInput.val().trim();
 		let cash = cashInput.val().trim();
+		$("#errors_div").hide();
+		$("#errors_div").html("");
 
+		let errorText = "";
 		if (email) {
 			let pattern = /^(([^<>()\[\]\.,;:\s@\"]+(\.[^<>()\[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/;
 			if (!pattern.test(email)) {
-				alert("Email is not valid");
+				errorText.concat("Email is not valid\n");
+				$("#errors_div").html(
+					$("#errors_div").text() + "<br />Email is not valid"
+				);
 				emailInput.focus();
 				errors = true;
 			}
@@ -33,14 +39,31 @@
 
 		if (password || cpassword) {
 			if (password != cpassword) {
-				alert("Passwords do not match");
+				$("#errors_div").html(
+					$("#errors_div").text() + "<br />Passwords do not match"
+				);
 				passwordInput.focus();
 				errors = true;
 			}
 		}
+		if (
+			!firstName &&
+			!lastName &&
+			!email &&
+			!password &&
+			!cpassword &&
+			!age &&
+			!cash
+		) {
+			$("#errors_div").html(
+				$("#errors_div").text() + "<br />You must update at least one field"
+			);
+			errors = true;
+		}
 		if (!errors) {
 			updateForm.off().submit();
 		} else {
+			$("#errors_div").show();
 			$("#update_button").prop("disabled", false);
 		}
 	});
