@@ -16,11 +16,25 @@ router.get("/", async (req, res) => {
 router.get("/home", async (req, res) => {
 	try {
 		const metrics = await userMetrics.update(xss(req.session.user.email));
+		if (!metrics) {
+			throw "User metrics not found";
+		}
 		const user = await users.getUserByEmail(xss(req.session.user.email));
+		if (!user) {
+			throw "User not found";
+		}
 
 		let userStocks = user.stocksPurchased;
+		let totalValue = 0;
+		if (userStocks.length == 0) {
+			totalValue = 0;
+		} else {
+			totalValue = await stocksData.getTotalValue(userStocks);
+			if (!totalValue) {
+				throw "Total value not found";
+			}
+		}
 
-		var totalValue = await stocksData.getTotalValue(userStocks);
 		var cash = await user.cash;
 		for (var i = 0; i < userStocks.length; i++) {
 			userStocks[i].value = await yahooStockPrices.getCurrentPrice(
@@ -42,110 +56,204 @@ router.get("/home", async (req, res) => {
 });
 
 router.post("/update", async (req, res) => {
-	const metrics = await userMetrics.update(xss(req.session.user.email));
-	res.json({
-		totalReturn: metrics.totalReturn,
-		percentGrowth: metrics.percentGrowth,
-		volatility: metrics.volatility,
-	});
-});
-
-router.post("/updateStock", async (req, res) => {
-	const user = await users.getUserByEmail(xss(req.session.user.email));
-	var ticker = xss(req.body["ticker"]);
-	var amountOwned = 0;
-	for(var i = 0; i < user.stocksPurchased.length; i++){
-		if(user.stocksPurchased[i].ticker == ticker){
-			amountOwned = user.stocksPurchased[i].amount;
+	try {
+		const metrics = await userMetrics.update(xss(req.session.user.email));
+		if (!metrics) {
+			throw "User metrics not found";
 		}
-	}
-	res.json({
-		cash: user.cash,
-		sharesOwned: amountOwned,
-	});
-});
-
-router.post("/userGraph", async (req, res) => {
-	const user = await users.getUserByEmail(xss(req.session.user.email));
-	var data = await stocksData.getTotalValue(user.stocksPurchased);
-	var cash = await user.cash;
-	res.json({
-		totalValue: (data + cash).toFixed(2),
-		pValue: data.toFixed(2),
-	});
-});
-
-router.post("/graph", async (req, res) => {
-	let ticker = xss(req.body["ticker"]);
-	let subtract = xss(req.body["subtract"]);
-	const data = await stocksData.getGraphData(ticker, subtract);
-	res.json({ chart: data });
-});
-
-router.get("/stockHistory", async (req, res) => {
-	const metrics = await userMetrics.update(xss(req.session.user.email));
-	const trade = await historyData.getHistoryByEmail(
-		xss(req.session.user.email)
-	);
-	res.render("stockHistory", {
-		title: "History",
-		trades: trade.history.reverse(),
-		totalReturn: metrics.totalReturn,
-		percentGrowth: metrics.percentGrowth,
-		volatility: metrics.volatility,
-	});
-});
-
-// router.get("/recommendations", async (req, res) => {
-// 	const user = await users.getUserByEmail(xss(req.session.user.email));
-// 	let userStocks = user.stocksPurchased;
-// 	let recList = await stocksData.giveRecommendation(userStocks);
-// 	res.render("recommendations", {
-// 		title: "Recommendations",
-// 		recList: recList,
-// 	});
-// });
-
-router.get("/favorites", async (req, res) => {
-	const user = await users.getUserByEmail(xss(req.session.user.email));
-	let userStocks = user.stocksPurchased;
-	let recList = await stocksData.giveRecommendation(userStocks);
-	res.render("favorites", { title: "Favorites", recList: recList});
-});
-
-router.post("/getFavorites", async (req, res) => {
-	const user = await users.getUserByEmail(xss(req.session.user.email));
-	res.json({ favList: user.favorites });
-});
-
-router.post("/favorites/:id", async (req, res) => {
-	let ticker = xss(req.params.id);
-	const user = await users.getUserByEmail(xss(req.session.user.email));
-	let favList = user.favorites;
-	if (!favList.includes(ticker)) {
-		favList.push(ticker);
-		const updatedFavList = await users.updateUser(user._id, {
-			favorites: favList,
+		res.json({
+			totalReturn: metrics.totalReturn,
+			percentGrowth: metrics.percentGrowth,
+			volatility: metrics.volatility,
+		});
+	} catch (e) {
+		res.json({
+			totalReturn: 0,
+			percentGrowth: 0,
+			volatility: 0,
 		});
 	}
 });
 
-router.delete("/favorites/:id", async (req, res) => {
-	let ticker = xss(req.params.id);
-	const user = await users.getUserByEmail(xss(req.session.user.email));
-	let favList = user.favorites;
-
-	for (let i = 0; i < favList.length; i++) {
-		if (favList[i] == ticker) {
-			favList.splice(i, 1);
-			break;
+router.post("/updateStock", async (req, res) => {
+	try {
+		const user = await users.getUserByEmail(xss(req.session.user.email));
+		if (!user) {
+			return res.json({
+				cash: 0,
+				sharesOwned: 0,
+			});
 		}
+		var ticker = xss(req.body["ticker"]);
+		var amountOwned = 0;
+		for (var i = 0; i < user.stocksPurchased.length; i++) {
+			if (user.stocksPurchased[i].ticker == ticker) {
+				amountOwned = user.stocksPurchased[i].amount;
+			}
+		}
+		res.json({
+			cash: user.cash,
+			sharesOwned: amountOwned,
+		});
+	} catch (e) {
+		res.json({
+			cash: 0,
+			sharesOwned: 0,
+		});
 	}
+});
 
-	const updatedFavList = await users.updateUser(user._id, {
-		favorites: favList,
-	});
-	res.json({});
+router.post("/userGraph", async (req, res) => {
+	try {
+		const user = await users.getUserByEmail(xss(req.session.user.email));
+		if (!user) {
+			throw "User not found";
+		}
+		var data = await stocksData.getTotalValue(user.stocksPurchased);
+		if (!data) {
+			throw "User information not found";
+		}
+		var cash = await user.cash;
+		res.json({
+			totalValue: (data + cash).toFixed(2),
+			pValue: data.toFixed(2),
+		});
+	} catch (e) {
+		res.json({
+			totalValue: 0,
+			pValue: 0,
+		});
+	}
+});
+
+router.post("/graph", async (req, res) => {
+	try {
+		let ticker = xss(req.body["ticker"]);
+		let subtract = xss(req.body["subtract"]);
+		const data = await stocksData.getGraphData(ticker, subtract);
+		if (!data) {
+			throw "Error getting stock data";
+		}
+		res.json({ chart: data });
+	} catch (e) {
+		return res.json({
+			chart: {},
+		});
+	}
+});
+
+router.get("/stockHistory", async (req, res) => {
+	try {
+		const metrics = await userMetrics.update(xss(req.session.user.email));
+		if (!metrics) {
+			throw "Error getting metrics";
+		}
+		const trade = await historyData.getHistoryByEmail(
+			xss(req.session.user.email)
+		);
+		if (!trade) {
+			throw "Error getting history";
+		}
+		res.render("stockHistory", {
+			title: "History",
+			trades: trade.history.reverse(),
+			totalReturn: metrics.totalReturn,
+			percentGrowth: metrics.percentGrowth,
+			volatility: metrics.volatility,
+		});
+	} catch (e) {
+		res.render("stockHistory", {
+			title: "History",
+			trades: [],
+			totalReturn: 0,
+			percentGrowth: 0,
+			volatility: 0,
+		});
+	}
+});
+
+router.get("/favorites", async (req, res) => {
+	try {
+		const user = await users.getUserByEmail(xss(req.session.user.email));
+		if (!user) {
+			throw "User not found";
+		}
+		let userStocks = user.stocksPurchased;
+		let recList = await stocksData.giveRecommendation(userStocks);
+		if (!recList || recList.length == 0) {
+			throw "Recommendations not found";
+		}
+		res.render("favorites", {
+			title: "Favorites",
+			recList: recList,
+			rec: true,
+		});
+	} catch (e) {
+		res.render("favorites", { title: "Favorites", recList: [] });
+	}
+});
+
+router.post("/getFavorites", async (req, res) => {
+	try {
+		const user = await users.getUserByEmail(xss(req.session.user.email));
+		if (!user) {
+			throw "User not found";
+		}
+		res.json({ favList: user.favorites });
+	} catch (e) {
+		res.json({ favList: [] });
+	}
+});
+
+router.post("/favorites/:id", async (req, res) => {
+	try {
+		let ticker = xss(req.params.id);
+		const user = await users.getUserByEmail(xss(req.session.user.email));
+		if (!user) {
+			throw "User not found";
+		}
+		let favList = user.favorites;
+		if (favList.length == 0 || !favList.includes(ticker)) {
+			favList.push(ticker);
+			const updatedFavList = await users.updateUser(user._id, {
+				favorites: favList,
+			});
+			if (!updatedFavList) {
+				throw "Could not update favorites list";
+			}
+		}
+		return res.json({});
+	} catch (e) {
+		return res.json({});
+	}
+});
+
+router.delete("/favorites/:id", async (req, res) => {
+	try {
+		let ticker = xss(req.params.id);
+		const user = await users.getUserByEmail(xss(req.session.user.email));
+		if (!user) {
+			throw "User not found";
+		}
+		let favList = user.favorites;
+
+		for (let i = 0; i < favList.length; i++) {
+			if (favList[i] == ticker) {
+				favList.splice(i, 1);
+				break;
+			}
+		}
+
+		const updatedFavList = await users.updateUser(user._id, {
+			favorites: favList,
+		});
+		if (!updatedFavList) {
+			throw "Could not update favorites list";
+		}
+		res.json({});
+	} catch (e) {
+		return res.json({});
+	}
 	// res.render("favorites", { title: "Favorites", favList: favList });
 });
 
@@ -158,10 +266,17 @@ router.post("/find", async (req, res) => {
 	if (!ticker) {
 		return res.json({ error: "Please input a ticker" });
 	}
+	ticker = ticker.toUpperCase();
 
 	try {
 		const stockInfo = await stocksData.getStock(ticker);
+		if (!stockInfo) {
+			throw "Stock info not found";
+		}
 		const rec = await stocksData.buyOrSell(ticker);
+		if (!rec) {
+			throw "Recommendation not found";
+		}
 		let status = 0;
 		if (stockInfo.price > stockInfo.prevClose) {
 			status = 1;
@@ -178,10 +293,29 @@ router.post("/find", async (req, res) => {
 
 router.get("/stocks/:id", async (req, res) => {
 	let ticker = xss(req.params.id);
-	let x = xss(req.body["stock_ticker"]);
-	const user = await users.getUserByEmail(xss(req.session.user.email));
+	let user = {};
+	try {
+		user = await users.getUserByEmail(xss(req.session.user.email));
+		if (!user) {
+			throw "User not found";
+		}
+	} catch (e) {
+		return res.render("home", {
+			title: "Home",
+			hasErrors: true,
+			error: "Error finding user",
+			name: xss(req.session.user.firstName),
+			totalReturn: metrics.totalReturn,
+			percentGrowth: metrics.percentGrowth,
+			volatility: metrics.volatility,
+			stocks: userStocks,
+			isEmpty: user.stocksPurchased.length == 0 ? true : false,
+			pValue: totalValue.toFixed(2),
+			cash: cash.toFixed(2),
+		});
+	}
 
-	if (!ticker || !ticker.trim()) {
+	if (!ticker || !ticker.trim() || typeof ticker !== "string") {
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
 
@@ -221,23 +355,21 @@ router.get("/stocks/:id", async (req, res) => {
 			status = 0;
 		}
 		var amountOwned = 0;
-		for(var i = 0; i < user.stocksPurchased.length; i++){
-			if(user.stocksPurchased[i].ticker == ticker.toUpperCase()){
+		for (var i = 0; i < user.stocksPurchased.length; i++) {
+			if (user.stocksPurchased[i].ticker == ticker.toUpperCase()) {
 				amountOwned = user.stocksPurchased[i].amount;
 			}
 		}
-	
+
 		res.render("stock", {
 			title: ticker.toUpperCase(),
 			stock: stockInfo,
 			recommendation: rec,
 			status: status,
-			cash: user.cash,
+			cash: user.cash.toFixed(2),
 			sharesOwned: amountOwned,
 		});
 	} catch (e) {
-		console.log(e);
-
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		//const user = await users.getUserByEmail(xss(req.session.user.email));
 		let userStocks = user.stocksPurchased;
@@ -267,29 +399,19 @@ router.get("/stocks/:id", async (req, res) => {
 });
 
 router.get("/stock", async (req, res) => {
-	let ticker = req.body["stock_ticker"];
-	const user = await users.getUserByEmail(xss(req.session.user.email));
-	if (!ticker) {
-		try {
-			let { stock_ticker } = req.query;
-			ticker = stock_ticker;
-		} catch (e) {
-			const metrics = await userMetrics.update(xss(req.session.user.email));
-
-			return res.render("stock", {
-				title: "Home",
-				hasErrors: true,
-				error: "Please input a ticker",
-				name: xss(req.session.user.firstName),
-				totalReturn: metrics.totalReturn,
-				percentGrowth: metrics.percentGrowth,
-				volatility: metrics.volatility,
-				stocks: user.stocksPurchased,
-				isEmpty: user.stocksPurchased.length == 0 ? true : false,
-			});
-		}
+	let { stock_ticker } = req.query;
+	ticker = stock_ticker;
+	let user = {};
+	try {
+		user = await users.getUserByEmail(xss(req.session.user.email));
+	} catch (e) {
+		return res.render("stock", {
+			title: "Error",
+			hasErrors: true,
+			error: "Cannot find user",
+		});
 	}
-	if (!ticker || !ticker.trim()) {
+	if (!ticker || !ticker.trim() || typeof ticker != "string") {
 		return res.render("stock", {
 			title: "Error",
 			hasErrors: true,
@@ -310,8 +432,8 @@ router.get("/stock", async (req, res) => {
 			status = 0;
 		}
 		var amountOwned = 0;
-		for(var i = 0; i < user.stocksPurchased.length; i++){
-			if(user.stocksPurchased[i].ticker == ticker.toUpperCase()){
+		for (var i = 0; i < user.stocksPurchased.length; i++) {
+			if (user.stocksPurchased[i].ticker == ticker.toUpperCase()) {
 				amountOwned = user.stocksPurchased[i].amount;
 			}
 		}
@@ -320,7 +442,7 @@ router.get("/stock", async (req, res) => {
 			stock: stockInfo,
 			recommendation: rec,
 			status: status,
-			cash: user.cash,
+			cash: user.cash.toFixed(2),
 			sharesOwned: amountOwned,
 		});
 	} catch (e) {
@@ -333,14 +455,23 @@ router.get("/stock", async (req, res) => {
 });
 
 router.get("/stocks", async (req, res) => {
-	let ticker = xss(req.body["stock_ticker"]);
-	if (!ticker) {
+	let { stock_ticker } = req.query;
+	ticker = stock_ticker;
+
+	let user = {};
+	try {
+		user = await users.getUserByEmail(xss(req.session.user.email));
+	} catch (e) {
+		return res.render("home", {
+			title: "Error",
+			hasErrors: true,
+			error: "Cannot find user",
+		});
+	}
+
+	if (!ticker || !ticker.trim() || typeof ticker != "string") {
 		try {
-			let { stock_ticker } = req.query;
-			ticker = stock_ticker;
-		} catch (e) {
 			const metrics = await userMetrics.update(xss(req.session.user.email));
-			const user = await users.getUserByEmail(xss(req.session.user.email));
 
 			return res.render("home", {
 				title: "Home",
@@ -353,23 +484,19 @@ router.get("/stocks", async (req, res) => {
 				stocks: user.stocksPurchased,
 				isEmpty: user.stocksPurchased.length == 0 ? true : false,
 			});
+		} catch (e) {
+			return res.render("home", {
+				title: "Home",
+				hasErrors: true,
+				error: "Please input a ticker",
+				name: xss(req.session.user.firstName),
+				totalReturn: 0,
+				percentGrowth: 0,
+				volatility: 0,
+				stocks: user.stocksPurchased,
+				isEmpty: user.stocksPurchased.length == 0 ? true : false,
+			});
 		}
-	}
-	const user = await users.getUserByEmail(xss(req.session.user.email));
-	if (!ticker.trim()) {
-		const metrics = await userMetrics.update(xss(req.session.user.email));
-
-		return res.render("home", {
-			title: "Home",
-			hasErrors: true,
-			error: "Please input a ticker",
-			name: xss(req.session.user.firstName),
-			totalReturn: metrics.totalReturn,
-			percentGrowth: metrics.percentGrowth,
-			volatility: metrics.volatility,
-			stocks: user.stocksPurchased,
-			isEmpty: user.stocksPurchased.length == 0 ? true : false,
-		});
 	}
 	try {
 		const stockInfo = await stocksData.getStock(ticker);
@@ -384,23 +511,20 @@ router.get("/stocks", async (req, res) => {
 			status = 0;
 		}
 		var amountOwned = 0;
-		for(var i = 0; i < user.stocksPurchased.length; i++){
-			if(user.stocksPurchased[i].ticker == ticker.toUpperCase()){
+		for (var i = 0; i < user.stocksPurchased.length; i++) {
+			if (user.stocksPurchased[i].ticker == ticker.toUpperCase()) {
 				amountOwned = user.stocksPurchased[i].amount;
 			}
 		}
-		console.log(user, user.cash, amountOwned)
 		res.render("stock", {
 			title: ticker.toUpperCase(),
 			stock: stockInfo,
 			recommendation: rec,
 			status: status,
-			cash: user.cash,
+			cash: user.cash.toFixed(2),
 			sharesOwned: amountOwned,
 		});
 	} catch (e) {
-		console.log(e);
-
 		const metrics = await userMetrics.update(xss(req.session.user.email));
 		const user = await users.getUserByEmail(xss(req.session.user.email));
 
@@ -430,9 +554,16 @@ router.post("/transaction", async (req, res) => {
 
 	if (choice == "dollars") {
 		quantity = parseFloat(quantity);
-		const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker);
-		quantity = quantity / yahoo_data;
-		quantity = quantity.toString();
+		try {
+			const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker);
+			if (!yahoo_data) {
+				throw "Cannot fetch price";
+			}
+			quantity = quantity / yahoo_data;
+			quantity = quantity.toString();
+		} catch (e) {
+			return res.json({ error: "Cannot fetch price" });
+		}
 	} else {
 		quantity = quantity.trim();
 	}

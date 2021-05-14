@@ -214,12 +214,12 @@ $("#refresh_button").click(function () {
 		url: `/private/updateStock`,
 		contentType: "application/json",
 		data: JSON.stringify({
-			ticker: temp.value,
+			ticker: temp.value.trim(),
 		}),
 	};
 	$.ajax(requestConfig).then(function (responseMessage) {
-		$('#cash').html("$" + responseMessage.cash)
-		$('#owned').html(responseMessage.sharesOwned);
+		$("#cash").html("Cash: " + "$" + responseMessage.cash.toFixed(2));
+		$("#owned").html("Shares Owned: " + responseMessage.sharesOwned);
 	});
 });
 
@@ -232,6 +232,8 @@ $("#favorites_button").click(function () {
 			ticker: this.name,
 		}),
 	});
+	// $("favorites_button").hide();
+	// $("#favorites_remove_button").show();
 });
 
 $("#favorites_remove_button").click(function () {
@@ -244,8 +246,10 @@ $("#favorites_remove_button").click(function () {
 		}),
 		async: false,
 	});
+	// $("#favorites_remove_button").hide();
+	// $("favorites_button").show();
 
-	location.reload();
+	// location.reload();
 });
 
 function blockTransaction() {
@@ -395,6 +399,9 @@ if (transForm) {
 
 $(document).ready(function () {
 	let ticker = temp.value;
+	if (!ticker || !ticker.trim()) {
+		throw "Ticker is empty";
+	}
 	var requestConfig = {
 		method: "POST",
 		url: `/private/graph`,
@@ -419,6 +426,9 @@ $(document).ready(function () {
 $("#1w, #1m, #1y, #5y").click(function (event) {
 	event.preventDefault();
 	let ticker = temp.value;
+	if (!ticker || !ticker.trim()) {
+		throw "Ticker is empty";
+	}
 	var num;
 	if ($(event.target).attr("id") == "1w") {
 		num = 7;
@@ -450,6 +460,3 @@ $("#1w, #1m, #1y, #5y").click(function (event) {
 		Plotly.newPlot("graph", responseMessage.chart, layout);
 	});
 });
-
-// 	Ploty.newPlot('graph', trace)
-// })

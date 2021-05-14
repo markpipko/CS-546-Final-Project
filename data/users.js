@@ -8,7 +8,8 @@ async function getAllUsers() {
 }
 
 async function getUserById(id) {
-	if (!id || typeof id !== "object") throw "Invalid ID parameter";
+	if (!id || typeof id !== "object" || Array.isArray(id))
+		throw "Invalid ID parameter";
 
 	const userCollection = await users();
 	const user = await userCollection.findOne({ _id: id });
@@ -69,17 +70,18 @@ async function addUser(
 	if (!Array.isArray(stocksPurchased)) throw "StocksPurchased is invalid";
 	if (!Array.isArray(favorites)) throw "Favorites is invalid";
 
+	let lowerCaseEmail = email.toLowerCase();
 	const userCollection = await users();
 	let newUser = {
 		_id: new ObjectId(),
 		firstName: firstName,
 		lastName: lastName,
-		email: email,
+		email: lowerCaseEmail,
 		age: age,
 		password: password,
 		cash: cash,
 		stocksPurchased: stocksPurchased,
-		favorites: favorites
+		favorites: favorites,
 	};
 
 	const newInsertInformation = await userCollection.insertOne(newUser);
@@ -96,7 +98,6 @@ async function removeUser(id) {
 	try {
 		user = await getUserById(id);
 	} catch (e) {
-		console.log(e);
 		return;
 	}
 
@@ -123,8 +124,7 @@ async function updateUser(id, updatedUser) {
 	if (updatedUser.cash) updateUserData.cash = updatedUser.cash;
 	if (updatedUser.stocksPurchased)
 		updateUserData.stocksPurchased = updatedUser.stocksPurchased;
-	if (updatedUser.favorites)
-		updateUserData.favorites = updatedUser.favorites;
+	if (updatedUser.favorites) updateUserData.favorites = updatedUser.favorites;
 
 	await userCollection.updateOne({ _id: id }, { $set: updateUserData });
 

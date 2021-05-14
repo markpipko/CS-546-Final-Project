@@ -1,8 +1,8 @@
 #stockList li {
-    transition: font-size .5s;
+	transition: font-size 0.5s;
 }
 
 #stockList li:hover {
-    font-size: 18px;
-    background-color: gold;
+	font-size: 18px;
+	background-color: gold;
 }
