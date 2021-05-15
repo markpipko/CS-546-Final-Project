@@ -554,17 +554,17 @@ router.post("/transaction", async (req, res) => {
 
 	const user = await users.getUserByEmail(xss(req.session.user.email));
 
-	if(transaction == 'sellAll'){
+	if (transaction && transaction == "sellAll") {
 		choice = "shares";
-		for(var i = 0; i < user.stocksPurchased.length; i++){
-			if(ticker ==  user.stocksPurchased[i].ticker){
+		for (var i = 0; i < user.stocksPurchased.length; i++) {
+			if (ticker == user.stocksPurchased[i].ticker) {
 				quantity = user.stocksPurchased[i].amount.toString();
 				break;
 			}
 		}
 	}
 
-	if (choice == "dollars") {
+	if (choice && choice == "dollars") {
 		quantity = parseFloat(quantity);
 		try {
 			const yahoo_data = await yahooStockPrices.getCurrentPrice(ticker);
@@ -576,7 +576,7 @@ router.post("/transaction", async (req, res) => {
 		} catch (e) {
 			return res.json({ error: "Cannot fetch price" });
 		}
-	} else{
+	} else {
 		quantity = quantity.trim();
 	}
 
