@@ -307,7 +307,10 @@ if (transForm) {
 			return;
 		}
 
-		if (temp.value.trim() && transaction && quantity || transaction == "sellAll") {
+		if (
+			(temp.value.trim() && transaction && quantity) ||
+			transaction == "sellAll"
+		) {
 			temp.value = temp.value.trim();
 			blockTransaction();
 			$.ajax({
@@ -334,6 +337,9 @@ if (transForm) {
 					quantity = x.quantity;
 					$("#modalTitle").html("Transaction Complete");
 					$("#transaction_modal").modal("show");
+					if (transaction == "sellAll") {
+						transaction = "sell";
+					}
 					let shares = "";
 					if (quantity == 1) {
 						shares = "share";
